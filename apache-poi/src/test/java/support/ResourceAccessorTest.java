@@ -8,7 +8,9 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class ResourceAccessorTest {
 
     @Test
-    public void canAccessLovePdf() {
-        assertThat(ResourceAccessor.excelFileWithName("prime-factors-scenarios"), notNullValue());
+    public void canAccessExcelFileInResourcesFolder() {
+        String filename = ResourceAccessor.excelFileWithName("prime-factors-scenarios");
+
+        assertThat(filename, notNullValue());
     }
 }

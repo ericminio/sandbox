@@ -12,7 +12,12 @@ import static sandbox.Einstein.primeFactorsOf;
 public class PrimeFactorsTest {
 
     @Test
-    public void canDecomposeFour() {
-        assertThat(primeFactorsOf(4), equalTo(Arrays.asList(2, 2)));
+    public void canDecomposeTwo() {
+        assertThat(primeFactorsOf(2), equalTo(Arrays.asList(2)));
+    }
+
+    @Test
+    public void canDecompose64() {
+        assertThat(primeFactorsOf(64), equalTo(Arrays.asList(2, 2, 2, 2, 2, 2)));
     }
 }

@@ -12,7 +12,7 @@
     <modules>
         <module>apache-poi</module>
         <module>pitest</module>
+        <module>htmlunit</module>
     </modules>
-
 
 </project>

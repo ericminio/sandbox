@@ -57,12 +57,13 @@ public class CanDetectThatAnElementBecomesInvisibleTest {
     }
 
     @Test
-    public void assertDisplayNone() throws Exception {
+    public void yesWeCan() throws Exception {
         client = openBrowser();
         HtmlPage page = client.getPage("http://localhost:8000/");
         HtmlElement label = find("label#hiddable", page);
-        label.click();
 
+        assertThat(getComputedStyle(label).getDisplay(), equalTo("inline"));
+        label.click();
         assertThat(getComputedStyle(label).getDisplay(), equalTo("none"));
     }
 

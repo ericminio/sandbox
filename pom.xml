@@ -13,6 +13,7 @@
         <module>apache-poi</module>
         <module>pitest</module>
         <module>htmlunit</module>
+        <module>selenium</module>
     </modules>
 
 </project>

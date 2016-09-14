@@ -7,10 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import support.Drivers;
-import support.DriversPath;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -38,7 +35,7 @@ public class SeleniumCanReadFieldByIdTest {
             exchange.close();
         } );
         server.start();
-        browser = Drivers.firefox();
+        browser = Drivers.htmlunit();
     }
 
     @After

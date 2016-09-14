@@ -1,10 +1,12 @@
 package support;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -23,6 +25,7 @@ public class Drivers {
     }
 
     @Test
+    @Ignore
     public void firefoxCanBeInstantiated() {
         browser = Drivers.firefox();
 
@@ -30,10 +33,25 @@ public class Drivers {
     }
 
     @Test
+    @Ignore
     public void chromeCanBeInstantiated() {
         browser = Drivers.chrome();
 
         assertThat(browser, not(equalTo(null)));
+    }
+
+    @Test
+    public void htmlunitCanBeInstantiated() {
+        assertThat(Drivers.htmlunit(), not(equalTo(null)));
+    }
+
+    public static HtmlUnitDriver htmlunit() {
+        System.setProperty("webdriver.chrome.driver", DriversPath.chrome());
+        DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+        capabilities.setCapability("marionette", true);
+        capabilities.setJavascriptEnabled(true);
+
+        return new HtmlUnitDriver(capabilities);
     }
 
     public static WebDriver chrome() {

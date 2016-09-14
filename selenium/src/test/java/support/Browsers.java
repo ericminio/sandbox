@@ -13,7 +13,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class Drivers {
+public class Browsers {
 
     private WebDriver browser;
 
@@ -27,7 +27,7 @@ public class Drivers {
     @Test
     @Ignore
     public void firefoxCanBeInstantiated() {
-        browser = Drivers.firefox();
+        browser = Browsers.firefox();
 
         assertThat(browser, not(equalTo(null)));
     }
@@ -35,17 +35,17 @@ public class Drivers {
     @Test
     @Ignore
     public void chromeCanBeInstantiated() {
-        browser = Drivers.chrome();
+        browser = Browsers.chrome();
 
         assertThat(browser, not(equalTo(null)));
     }
 
     @Test
     public void htmlunitCanBeInstantiated() {
-        assertThat(Drivers.htmlunit(), not(equalTo(null)));
+        assertThat(Browsers.headless(), not(equalTo(null)));
     }
 
-    public static HtmlUnitDriver htmlunit() {
+    public static HtmlUnitDriver headless() {
         System.setProperty("webdriver.chrome.driver", DriversPath.chrome());
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         capabilities.setCapability("marionette", true);

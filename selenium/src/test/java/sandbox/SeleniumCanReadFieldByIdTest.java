@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import support.Drivers;
+import support.Browsers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -35,7 +35,7 @@ public class SeleniumCanReadFieldByIdTest {
             exchange.close();
         } );
         server.start();
-        browser = Drivers.htmlunit();
+        browser = Browsers.headless();
     }
 
     @After

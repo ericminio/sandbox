@@ -12,12 +12,12 @@ public class SynchronizationTest {
 
     Step one = new Spy();
     Step two = new Spy();
-    Scenario scenario = new Scenario(one, two);
+    Workflow workflow = new Workflow(one, two);
 
     @Test
     public void isNeeded() throws Exception {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scenario.go());
-        scenario.go();
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> workflow.execute());
+        workflow.execute();
         future.get();
 
         assertThat(Spy.firstCaller, not(equalTo(Spy.secondCaller)));
@@ -25,8 +25,8 @@ public class SynchronizationTest {
 
     @Test
     public void works() throws Exception {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scenario.goTheSynchronizedWay());
-        scenario.goTheSynchronizedWay();
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> workflow.executeSynchronously());
+        workflow.executeSynchronously();
         future.get();
 
         assertThat(Spy.firstCaller, equalTo(Spy.secondCaller));

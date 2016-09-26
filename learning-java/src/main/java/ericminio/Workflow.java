@@ -1,21 +1,21 @@
 package ericminio;
 
-public class Scenario {
+public class Workflow {
 
     private final Step stepOne;
     private final Step stepTwo;
 
-    public Scenario(Step one, Step two) {
+    public Workflow(Step one, Step two) {
         this.stepOne = one;
         this.stepTwo = two;
     }
 
-    public void go() {
+    public void execute() {
         stepOne.execute();
         stepTwo.execute();
     }
 
-    public synchronized void goTheSynchronizedWay() {
+    public synchronized void executeSynchronously() {
         stepOne.execute();
         stepTwo.execute();
     }

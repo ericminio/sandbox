@@ -10,26 +10,24 @@ import static org.junit.Assert.assertThat;
 
 public class SynchronizationTest {
 
+    Step one = new Spy();
+    Step two = new Spy();
+    Scenario scenario = new Scenario(one, two);
+
     @Test
     public void isNeeded() throws Exception {
-        Step one = new Spy();
-        Step two = new Spy();
-        Scenario scenario = new Scenario(one, two);
-        CompletableFuture<Void> process1 = CompletableFuture.runAsync(() -> scenario.go());
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scenario.go());
         scenario.go();
-        process1.get();
+        future.get();
 
         assertThat(Spy.firstCaller, not(equalTo(Spy.secondCaller)));
     }
 
     @Test
     public void works() throws Exception {
-        Step one = new Spy();
-        Step two = new Spy();
-        Scenario scenario = new Scenario(one, two);
-        CompletableFuture<Void> process1 = CompletableFuture.runAsync(() -> scenario.goTheSynchronizedWay());
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> scenario.goTheSynchronizedWay());
         scenario.goTheSynchronizedWay();
-        process1.get();
+        future.get();
 
         assertThat(Spy.firstCaller, equalTo(Spy.secondCaller));
     }

@@ -16,18 +16,20 @@ public class SynchronizationTest {
 
     @Test
     public void isNeeded() throws Exception {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> workflow.execute());
-        workflow.execute();
-        future.get();
+        CompletableFuture<Void> firstCall = CompletableFuture.runAsync(() -> workflow.execute());
+        CompletableFuture<Void> secondCall = CompletableFuture.runAsync(() -> workflow.execute());
+        firstCall.get();
+        secondCall.get();
 
         assertThat(Spy.firstCaller, not(equalTo(Spy.secondCaller)));
     }
 
     @Test
     public void works() throws Exception {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> workflow.executeSynchronously());
-        workflow.executeSynchronously();
-        future.get();
+        CompletableFuture<Void> firstCall = CompletableFuture.runAsync(() -> workflow.executeSynchronously());
+        CompletableFuture<Void> secondCall = CompletableFuture.runAsync(() -> workflow.executeSynchronously());
+        firstCall.get();
+        secondCall.get();
 
         assertThat(Spy.firstCaller, equalTo(Spy.secondCaller));
     }
@@ -53,7 +55,7 @@ public class SynchronizationTest {
                 }
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

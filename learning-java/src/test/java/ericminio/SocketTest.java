@@ -17,6 +17,7 @@ public class SocketTest {
 
     private int port = 5001;
     private ServerSocket server;
+    private Thread thread;
 
     @Before
     public void startServer() throws IOException {
@@ -26,11 +27,12 @@ public class SocketTest {
     @After
     public void stopServer() throws IOException, InterruptedException {
         server.close();
+        assertThat(thread.isAlive(), equalTo(false));
     }
 
     @Test(timeout = 200)
     public void canReceiveDataFromServer() throws IOException {
-        Thread thread = new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {

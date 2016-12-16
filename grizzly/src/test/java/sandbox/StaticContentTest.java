@@ -1,20 +1,19 @@
 package sandbox;
 
-import http.Resource;
-import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.filterchain.*;
 import org.glassfish.grizzly.http.*;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.glassfish.grizzly.utils.StringFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
+import static org.glassfish.grizzly.http.Protocol.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 
@@ -30,12 +29,12 @@ public class StaticContentTest {
         serverFilterChainBuilder.add(new BaseFilter() {
             @Override
             public NextAction handleRead(FilterChainContext ctx) {
-                HttpContent httpContent = ctx.getMessage();
-                HttpRequestPacket request = (HttpRequestPacket) httpContent.getHttpHeader();
-                HttpResponsePacket response = HttpResponsePacket.builder(request).protocol(request.getProtocol()).status(200).reasonPhrase("OK").build();
-                HttpContent content = response.httpContentBuilder().content(Buffers.wrap(null, "hello Grizzly :)")).build();
-                ctx.write(content);
 
+                HttpResponsePacket response = HttpResponsePacket.builder(
+                        (HttpRequestPacket) ctx.<HttpContent>getMessage().getHttpHeader())
+                        .protocol(HTTP_1_1).status(200).build();
+                ctx.write(response.httpContentBuilder().content(
+                        Buffers.wrap(null, "hello Grizzly :)")).build());
                 return ctx.getStopAction();
             }
         });
@@ -53,6 +52,16 @@ public class StaticContentTest {
     @Test
     public void grizzlyCanServeStaticContent() throws Exception {
 
-        assertThat(Resource.withUrl("http://localhost:8888"), containsString("hello Grizzly :)"));
+        assertThat(get("http://localhost:8888"), containsString("hello Grizzly :)"));
+    }
+
+    private String get(String uri) throws Exception {
+        URL url = new URL( uri );
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        InputStream inputStream = connection.getInputStream();
+        byte[] response = new byte[ inputStream.available() ];
+        inputStream.read(response);
+
+        return new String(response);
     }
 }

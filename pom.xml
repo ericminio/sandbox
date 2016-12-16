@@ -15,6 +15,7 @@
         <module>htmlunit</module>
         <module>selenium</module>
         <module>learning-java</module>
+        <module>grizzly</module>
     </modules>
 
 </project>

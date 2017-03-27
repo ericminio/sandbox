@@ -6,7 +6,6 @@ public class Entry {
     public String data;
 
     public Entry(String reference, String data) {
-
         this.reference = reference;
         this.data = data;
     }

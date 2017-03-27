@@ -27,7 +27,10 @@ public class Firebase {
 
         int code = postConnection.getResponseCode();
         if (code != 200) {
-            throw new RuntimeException("save failed with code " + code);
+            InputStream inputStream = postConnection.getInputStream();
+            byte[] response = new byte[ inputStream.available() ];
+            inputStream.read( response );
+            throw new RuntimeException("save failed with code " + code + ". " + response);
         }
     }
 

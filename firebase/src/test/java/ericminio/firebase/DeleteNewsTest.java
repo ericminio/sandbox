@@ -11,7 +11,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class NewsGeneratorTest {
+public class DeleteNewsTest {
 
     private Firebase database;
     private String url = "https://sandbox-5f095.firebaseio.com/";

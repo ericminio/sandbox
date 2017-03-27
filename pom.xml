@@ -16,6 +16,7 @@
         <module>selenium</module>
         <module>learning-java</module>
         <module>grizzly</module>
+        <module>firebase</module>
     </modules>
 
 </project>

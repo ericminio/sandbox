@@ -1,4 +1,4 @@
-package ericminio;
+package ericminio.firebase;
 
 import ericminio.firebase.Entry;
 import ericminio.firebase.Firebase;

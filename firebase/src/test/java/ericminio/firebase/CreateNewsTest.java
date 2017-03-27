@@ -1,4 +1,4 @@
-package ericminio;
+package ericminio.firebase;
 
 
 import org.junit.Test;

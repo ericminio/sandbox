@@ -1,14 +1,9 @@
 package ericminio.firebase;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class Firebase {
@@ -20,8 +15,7 @@ public class Firebase {
     }
 
     public void save(Entry entry) throws Exception {
-        URL postUrl = new URL( this.url + entry.reference + ".json" );
-        HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+        HttpURLConnection postConnection = openConnection(entry.reference);
         postConnection.setDoOutput(true);
         postConnection.setRequestMethod("PUT");
 
@@ -38,8 +32,7 @@ public class Firebase {
     }
 
     public void delete(String reference) throws Exception {
-        URL postUrl = new URL( this.url + reference + ".json" );
-        HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+        HttpURLConnection postConnection = openConnection(reference);
         postConnection.setDoOutput(true);
         postConnection.setRequestMethod("DELETE");
 
@@ -50,13 +43,17 @@ public class Firebase {
     }
 
     public String read(String reference) throws Exception {
-        URL getUrl = new URL( this.url + reference + ".json" );
-        HttpURLConnection getConnection = (HttpURLConnection) getUrl.openConnection();
+        HttpURLConnection getConnection = openConnection(reference);
 
         InputStream inputStream = getConnection.getInputStream();
         BufferedReader responseBuffer = new BufferedReader(new InputStreamReader(inputStream));
         String response = responseBuffer.lines().collect(Collectors.joining());
 
         return response;
+    }
+
+    private HttpURLConnection openConnection(String reference) throws IOException {
+        URL getUrl = new URL( this.url + reference + ".json" );
+        return (HttpURLConnection) getUrl.openConnection();
     }
 }

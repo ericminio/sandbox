@@ -2,6 +2,7 @@ package ericminio.domain;
 
 import ericminio.firebase.Entry;
 import ericminio.firebase.Firebase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ public class GeneratorTest {
 
     private Firebase database = new Firebase("https://sandbox-5f095.firebaseio.com/");
 
+    @Ignore
     @Test
     public void go() throws Exception {
         RandomEvent randomEvent = new RandomEvent();

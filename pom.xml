@@ -17,6 +17,7 @@
         <module>learning-java</module>
         <module>grizzly</module>
         <module>firebase</module>
+        <module>spring-boot-test</module>
     </modules>
 
 </project>

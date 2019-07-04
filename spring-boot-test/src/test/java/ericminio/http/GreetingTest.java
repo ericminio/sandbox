@@ -1,15 +1,16 @@
 package ericminio.http;
 
+import ericminio.support.HttpResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static ericminio.support.GetRequest.get;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
@@ -27,22 +28,24 @@ public class GreetingTest {
         assertThat( connection.getResponseCode(), equalTo( 200 ) );
     }
 
-    
+    @Test
     public void answersWithJson() throws Exception {
-        URL url = new URL( "http://localhost:8000/greeting" );
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        HttpResponse response = get("http://localhost:8080/greeting" );
 
-        assertThat( connection.getHeaderField( "content-type" ), equalTo( "application/json" ) );
+        assertThat( response.getContentType(), equalTo( "application/json;charset=UTF-8" ) );
     }
 
     @Test
     public void sendsGreetings() throws Exception {
-        URL url = new URL( "http://localhost:8080/greeting?name=Joe" );
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        InputStream inputStream = connection.getInputStream();
-        byte[] response = new byte[ inputStream.available() ];
-        inputStream.read( response );
+        HttpResponse response = get( "http://localhost:8080/greeting?name=Joe" );
 
-        assertThat( new String( response ), equalTo( "{\"content\":\"Hello, Joe!\"}" ) );
+        assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, Joe!\"}" ) );
+    }
+
+    @Test
+    public void defaultGreetings() throws Exception {
+        HttpResponse response = get( "http://localhost:8080/greeting" );
+
+        assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, World!\"}" ) );
     }
 }

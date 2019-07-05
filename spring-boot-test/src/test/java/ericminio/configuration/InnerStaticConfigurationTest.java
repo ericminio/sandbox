@@ -1,4 +1,4 @@
-package ericminio;
+package ericminio.configuration;
 
 import ericminio.domain.Something;
 import org.junit.Test;
@@ -12,8 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SharableConfiguration.class})
-public class ContextConfigurationWinsAgainstInnerClassTest {
+public class InnerStaticConfigurationTest {
 
     @Autowired
     Something something;
@@ -25,7 +24,7 @@ public class ContextConfigurationWinsAgainstInnerClassTest {
 
     @Test
     public void injectedInstanceIsTheExpectedOne() {
-        assertThat(something.getName()).isEqualTo("shared");
+        assertThat(something.getName()).isEqualTo("inner");
     }
 
     @Configuration

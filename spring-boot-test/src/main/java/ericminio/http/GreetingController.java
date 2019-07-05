@@ -2,6 +2,7 @@ package ericminio.http;
 
 import ericminio.domain.ExtractName;
 import ericminio.domain.Greeting;
+import ericminio.domain.BuildGreeting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,23 +14,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 public class GreetingController {
 
-    private static final String template = "Hello, %s!";
+    @Autowired
+    private BuildGreeting buildGreeting;
 
     @Autowired
     private ExtractName extractName;
 
     @RequestMapping(value="/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
-        Greeting data = new Greeting();
-        data.content = String.format(template, name);
-
-        return data;
+        return buildGreeting.from(name).please();
     }
 
     @RequestMapping(method = POST, value="/greetings")
     public String greetings(@RequestBody Greeting greeting) {
-        String name = extractName.please(greeting.content, template);
-
-        return "My name is not " + name;
+        return "My name is not " + extractName.from(greeting).please();
     }
 }

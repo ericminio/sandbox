@@ -23,16 +23,16 @@ public class HttpGetTest {
     @LocalServerPort
     int port;
 
-    private String endpoint;
+    private String greeting;
 
     @Before
     public void buildEndpoint() {
-        endpoint = "http://localhost:"+ port +"/greeting";
+        greeting = "http://localhost:"+ port +"/greeting";
     }
 
     @Test
     public void isAvailable() throws Exception {
-        URL url = new URL(endpoint);
+        URL url = new URL(greeting);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         assertThat( connection.getResponseCode(), equalTo( 200 ) );
@@ -40,21 +40,21 @@ public class HttpGetTest {
 
     @Test
     public void answersWithJson() throws Exception {
-        HttpResponse response = get(endpoint);
+        HttpResponse response = get(greeting);
 
         assertThat( response.getContentType(), equalTo( "application/json;charset=UTF-8" ) );
     }
 
     @Test
     public void sendsGreetings() throws Exception {
-        HttpResponse response = get( endpoint + "?name=Joe" );
+        HttpResponse response = get( greeting + "?name=Joe" );
 
         assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, Joe!\"}" ) );
     }
 
     @Test
     public void defaultGreetings() throws Exception {
-        HttpResponse response = get(endpoint);
+        HttpResponse response = get(greeting);
 
         assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, World!\"}" ) );
     }

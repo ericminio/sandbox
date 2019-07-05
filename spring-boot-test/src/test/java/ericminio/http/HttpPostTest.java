@@ -20,17 +20,17 @@ public class HttpPostTest {
     @LocalServerPort
     int port;
 
-    private String endpoint;
+    private String greetings;
 
     @Before
     public void buildEndpoint() {
-        endpoint = "http://localhost:"+ port +"/greetings";
+        greetings = "http://localhost:"+ port +"/greetings";
     }
 
     @Test
     public void works() throws Exception {
         String message = "{\"content\":\"Hello, Hal!\"}";
-        HttpResponse response = post(endpoint, message.getBytes());
+        HttpResponse response = post(greetings, message.getBytes());
 
         assertThat( response.getBody(), equalTo( "My name is not Hal" ) );
     }

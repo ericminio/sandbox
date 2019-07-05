@@ -1,14 +1,9 @@
 package ericminio.domain;
 
-public class Greeting {
+import java.io.Serializable;
 
-    private final String content;
+public class Greeting implements Serializable {
 
-    public Greeting(String content) {
-        this.content = content;
-    }
+    public String content;
 
-    public String getContent() {
-        return content;
-    }
 }

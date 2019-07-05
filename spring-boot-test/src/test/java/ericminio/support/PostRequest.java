@@ -15,6 +15,7 @@ public class PostRequest {
         HttpURLConnection request = (HttpURLConnection) new URL( url ).openConnection();
         request.setDoOutput(true);
         request.setRequestMethod("POST");
+        request.setRequestProperty( "Content-Type", "application/json");
         request.setRequestProperty( "Content-Length", Integer.toString(data.length));
         for (String header: headers.keySet()) {
             request.setRequestProperty( header, headers.get(header));

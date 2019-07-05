@@ -25,7 +25,7 @@ public class GreetingController {
 
     @RequestMapping(method = POST, value="/greetings")
     public String greetings(@RequestBody Greeting greeting) {
-        Pattern pattern = Pattern.compile("Hello,\\s(.*?)!");
+        Pattern pattern = Pattern.compile(template.replace(" ", "\\s").replace("%s", "(.*)"));
         Matcher matcher = pattern.matcher(greeting.content);
         matcher.find();
         String name = matcher.group(1);

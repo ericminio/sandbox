@@ -22,7 +22,7 @@ import static org.springframework.http.HttpMethod.POST;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= RANDOM_PORT)
-public class HttpPostWithRestTemplateTest {
+public class RestTemplatePostTest {
 
     @LocalServerPort
     int port;

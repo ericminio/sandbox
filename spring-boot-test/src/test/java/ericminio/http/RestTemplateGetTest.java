@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= RANDOM_PORT)
-public class HttpGetWithRestTemplateTest {
+public class RestTemplateGetTest {
 
     @LocalServerPort
     int port;

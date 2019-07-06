@@ -1,20 +1,17 @@
-package ericminio.configuration;
+package ericminio.documentation.configuration;
 
 import ericminio.domain.Something;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-/**
- * Created by perso on 2017-06-22.
- */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SharableConfiguration.class})
-public class SharableConfigurationTest {
+public class InnerStaticConfigurationTest {
 
     @Autowired
     Something something;
@@ -26,6 +23,15 @@ public class SharableConfigurationTest {
 
     @Test
     public void injectedInstanceIsTheExpectedOne() {
-        assertThat(something.getName()).isEqualTo("shared");
+        assertThat(something.getName()).isEqualTo("inner");
+    }
+
+    @Configuration
+    static class AutowiredBeanFactory {
+
+        @Bean
+        public Something knowsHowToBuildSomething() {
+            return new Something("inner");
+        }
     }
 }

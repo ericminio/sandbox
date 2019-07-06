@@ -1,4 +1,4 @@
-package ericminio.http;
+package ericminio.documentation.http;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

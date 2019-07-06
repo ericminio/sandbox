@@ -1,4 +1,4 @@
-package ericminio.configuration;
+package ericminio.documentation.configuration;
 
 import ericminio.domain.Something;
 import org.springframework.context.annotation.Bean;

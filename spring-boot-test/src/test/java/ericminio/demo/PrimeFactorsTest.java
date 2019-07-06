@@ -72,7 +72,7 @@ public class PrimeFactorsTest {
             }
         }).build();
         HttpEntity<Integer> request = new HttpEntity<>(new HttpHeaders());
-        ResponseEntity<Decomposition> response = restTemplate.exchange(primeFactorsOf + "9999999", GET, request, Decomposition.class);
+        ResponseEntity<Decomposition> response = restTemplate.exchange(primeFactorsOf + "10001", GET, request, Decomposition.class);
 
         assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));
     }

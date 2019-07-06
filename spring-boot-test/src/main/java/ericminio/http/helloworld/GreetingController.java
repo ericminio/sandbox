@@ -1,8 +1,8 @@
-package ericminio.http;
+package ericminio.http.helloworld;
 
-import ericminio.domain.ExtractName;
-import ericminio.domain.Greeting;
-import ericminio.domain.BuildGreeting;
+import ericminio.domain.helloworld.ExtractName;
+import ericminio.domain.helloworld.Greeting;
+import ericminio.domain.helloworld.BuildGreeting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

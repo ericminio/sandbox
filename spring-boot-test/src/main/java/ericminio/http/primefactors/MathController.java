@@ -1,7 +1,7 @@
-package ericminio.http;
+package ericminio.http.primefactors;
 
-import ericminio.domain.Decomposition;
-import ericminio.domain.Mathematician;
+import ericminio.domain.primefactors.Decomposition;
+import ericminio.domain.primefactors.Mathematician;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

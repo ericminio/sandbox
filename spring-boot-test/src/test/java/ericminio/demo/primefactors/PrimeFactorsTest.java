@@ -1,8 +1,6 @@
 package ericminio.demo.primefactors;
 
-import ericminio.domain.BuildGreeting;
-import ericminio.domain.Decomposition;
-import ericminio.domain.Greeting;
+import ericminio.domain.primefactors.Decomposition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static org.hamcrest.core.IsEqual.equalTo;

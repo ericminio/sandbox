@@ -1,4 +1,4 @@
-package ericminio.domain;
+package ericminio.domain.helloworld;
 
 import org.springframework.stereotype.Component;
 

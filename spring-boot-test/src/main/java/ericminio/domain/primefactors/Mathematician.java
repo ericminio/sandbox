@@ -1,4 +1,4 @@
-package ericminio.domain;
+package ericminio.domain.primefactors;
 
 import org.springframework.stereotype.Component;
 

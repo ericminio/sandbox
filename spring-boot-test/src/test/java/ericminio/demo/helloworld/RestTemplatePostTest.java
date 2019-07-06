@@ -1,15 +1,13 @@
 package ericminio.demo.helloworld;
 
-import ericminio.domain.BuildGreeting;
-import ericminio.domain.Greeting;
-import ericminio.support.HttpResponse;
+import ericminio.domain.helloworld.BuildGreeting;
+import ericminio.domain.helloworld.Greeting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;

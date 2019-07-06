@@ -1,4 +1,4 @@
-package ericminio.domain;
+package ericminio.domain.configuration;
 
 public class Something {
     private String name;

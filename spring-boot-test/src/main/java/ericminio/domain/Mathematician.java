@@ -8,6 +8,10 @@ import java.util.ArrayList;
 public class Mathematician {
 
     public Decomposition primeFactorsOf(Integer number) {
+        if (number > 10000) {
+            throw new IllegalArgumentException("number <= 10000 expected");
+        }
+
         ArrayList<Integer> factors = new ArrayList<>();
         Integer candidate = 2;
         while (number > 1) {

@@ -72,8 +72,9 @@ public class PrimeFactorsTest {
             }
         }).build();
         HttpEntity<Integer> request = new HttpEntity<>(new HttpHeaders());
-        ResponseEntity<Decomposition> response = restTemplate.exchange(primeFactorsOf + "10001", GET, request, Decomposition.class);
+        ResponseEntity<String> response = restTemplate.exchange(primeFactorsOf + "10001", GET, request, String.class);
 
         assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));
+        assertThat(response.getBody(), equalTo("number <= 10000 expected"));
     }
 }

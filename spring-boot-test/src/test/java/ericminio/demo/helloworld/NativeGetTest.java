@@ -1,4 +1,4 @@
-package ericminio.documentation.http;
+package ericminio.demo.helloworld;
 
 import ericminio.support.HttpResponse;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package ericminio.demo;
+package ericminio.demo.primefactors;
 
 import ericminio.domain.BuildGreeting;
 import ericminio.domain.Decomposition;

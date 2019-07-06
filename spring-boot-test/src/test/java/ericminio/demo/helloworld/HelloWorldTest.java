@@ -1,4 +1,4 @@
-package ericminio.demo;
+package ericminio.demo.helloworld;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ericminio.domain.BuildGreeting;

@@ -45,7 +45,7 @@ public class PrimeFactorsTest {
         ResponseEntity<Decomposition> response = restTemplate.getForEntity(primeFactorsOf + "2", Decomposition.class);
         Decomposition decomposition = response.getBody();
 
-        assertThat(decomposition.factors, equalTo(Arrays.asList(2)));
+        assertThat(decomposition.getFactors(), equalTo(Arrays.asList(2)));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class PrimeFactorsTest {
         ResponseEntity<Decomposition> response = restTemplate.getForEntity(primeFactorsOf + "1492", Decomposition.class);
         Decomposition decomposition = response.getBody();
 
-        assertThat(decomposition.factors, equalTo(Arrays.asList(2, 2, 373)));
+        assertThat(decomposition.getFactors(), equalTo(Arrays.asList(2, 2, 373)));
     }
 
     @Autowired

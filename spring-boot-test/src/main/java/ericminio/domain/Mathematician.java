@@ -22,8 +22,6 @@ public class Mathematician {
             candidate ++;
         }
 
-        Decomposition decomposition = new Decomposition();
-        decomposition.factors = factors;
-        return decomposition;
+        return new Decomposition(factors);
     }
 }

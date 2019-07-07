@@ -3,52 +3,78 @@ package ericminio.demo.chat;
 import ericminio.domain.chat.Exclusion;
 import ericminio.domain.chat.Group;
 import ericminio.domain.chat.Person;
-import ericminio.http.chat.Data;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpMethod.POST;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= RANDOM_PORT)
 public class ExclusionTest {
 
-    @LocalServerPort
-    int port;
-
-    private String apply;
+    private Group group;
 
     @Before
-    public void buildEndpoint() {
-        apply = "http://localhost:"+ port +"/apply";
+    public void init() {
+        group = new Group(diana(), joe(), jenny());
+        group.setOwner(diana());
+    }
+    private Person diana() { return new Person("Diana"); }
+    private Person joe() { return new Person("Joe"); }
+    private Person jenny() { return new Person("Jenny"); }
+    private Person clark() { return new Person("Clark"); }
+    private Person bruce() { return new Person("Bruce"); }
+
+    @Test
+    public void keepsLeftOwner() {
+        Exclusion exclusion = new Exclusion(diana(), jenny());
+        Group actual = exclusion.visit(group);
+        Group expected = new Group(diana(), joe());
+
+        assertThat( actual, equalTo( expected ) );
     }
 
     @Test
-    public void works() {
-        Group group = new Group();
-        group.setPersons(Arrays.asList(new Person("Diana"), new Person("Joe"), new Person("Jenny")));
-        Exclusion exclusion = new Exclusion(new Person("Diana"), new Person("Jenny"));
-        Data data = new Data(group, exclusion);
+    public void keepsRightOwner() {
+        Exclusion exclusion = new Exclusion(jenny(), diana());
+        Group actual = exclusion.visit(group);
+        Group expected = new Group(diana(), joe());
 
-        HttpEntity<Data> request = new HttpEntity<>(data);
+        assertThat( actual, equalTo( expected ) );
+    }
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Group> response = restTemplate.exchange(apply, POST, request, Group.class);
-        Group expected = new Group();
-        expected.setPersons(Arrays.asList(new Person("Diana"), new Person("Joe")));
+    @Test
+    public void ignoresExclusionWithSomeoneNotInTheGroup() {
+        Exclusion exclusion = new Exclusion(diana(), clark());
+        Group actual = exclusion.visit(group);
+        Group expected = new Group(diana(), joe(), jenny());
 
-        assertThat( response.getBody(), equalTo( expected ) );
+        assertThat( actual, equalTo( expected ) );
+    }
+
+    @Test
+    public void ignoresUnrelatedExclusion() {
+        Exclusion exclusion = new Exclusion(clark(), bruce());
+        Group actual = exclusion.visit(group);
+        Group expected = new Group(diana(), joe(), jenny());
+
+        assertThat( actual, equalTo( expected ) );
+    }
+
+    @Test
+    public void removesFirstAddedInGroupWhenLeftExcluded() {
+        Exclusion exclusion = new Exclusion(joe(), jenny());
+        Group actual = exclusion.visit(group);
+        Group expected = new Group(diana(), joe());
+
+        assertThat( actual, equalTo( expected ) );
+    }
+
+    @Test
+    public void removesFirstAddedInGroupWhenRightExcluded() {
+        Exclusion exclusion = new Exclusion(jenny(), joe());
+        Group actual = exclusion.visit(group);
+        Group expected = new Group(diana(), joe());
+
+        assertThat( actual, equalTo( expected ) );
     }
 }

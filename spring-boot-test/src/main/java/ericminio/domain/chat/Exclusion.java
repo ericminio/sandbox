@@ -34,13 +34,28 @@ public class Exclusion implements Serializable {
     }
 
     public Group visit(Group group) {
-        List<Person> persons = group.getPersons();
-        Group clean = new Group();
-        List<Person> candidates = new ArrayList<>();
-        clean.setPersons(candidates);
+        Group clean = new Group(group.getPersons());
+        clean.setOwner(group.getOwner());
 
-        candidates.add(persons.get(0));
-        candidates.add(persons.get(1));
+        int rightIndex = group.getPersons().indexOf(this.right);
+        int leftIndex = group.getPersons().indexOf(this.left);
+        int ownerIndex = group.getPersons().indexOf(group.getOwner());
+        if (rightIndex >= 0 && leftIndex >= 0) {
+            if (leftIndex == ownerIndex) {
+                group.getPersons().remove(rightIndex);
+            }
+            else if (rightIndex == ownerIndex) {
+                group.getPersons().remove(leftIndex);
+            }
+            else {
+                if (rightIndex > leftIndex) {
+                    group.getPersons().remove(rightIndex);
+                }
+                else {
+                    group.getPersons().remove(leftIndex);
+                }
+            }
+        }
 
         return clean;
     }

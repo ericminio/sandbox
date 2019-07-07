@@ -1,22 +1,26 @@
 package ericminio.domain.chat;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Group implements Serializable {
 
-    private List<Person> persons;
+    private ArrayList<Person> persons;
+    private Person owner;
 
-    public List<Person> getPersons() {
-        return persons;
+    public Group() {
+
     }
 
-    public void setPersons(List<Person> persons) {
+    public Group(Person ... persons) {
+        this.persons = new ArrayList<>(Arrays.asList(persons));
+    }
+
+    public Group(ArrayList<Person> persons) {
         this.persons = persons;
-    }
-
-    public String toString() {
-        return persons.toString();
     }
 
     public boolean equals(Object o) {
@@ -33,5 +37,25 @@ public class Group implements Serializable {
             }
         }
         return true;
+    }
+
+    public String toString() {
+        return persons.toString();
+    }
+
+    public ArrayList<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(ArrayList<Person> persons) {
+        this.persons = persons;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
+    }
+
+    public Person getOwner() {
+        return owner;
     }
 }

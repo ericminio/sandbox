@@ -1,5 +1,7 @@
 package ericminio.demo.helloworld;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ericminio.demo.helloworld.domain.Greeting;
 import ericminio.support.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,5 +59,13 @@ public class NativeGetTest {
         HttpResponse response = get(greeting);
 
         assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, World!\"}" ) );
+    }
+
+    @Test
+    public void jsonSupportOfferedByJackson() throws Exception {
+        HttpResponse response = get(greeting);
+        Greeting value = new ObjectMapper().readValue(response.getBody(), Greeting.class);
+
+        assertThat( value.content, equalTo( "Hello, World!" ) );
     }
 }

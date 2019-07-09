@@ -1,10 +1,8 @@
-package ericminio.domain.chat;
+package ericminio.demo.chat.domain;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Group implements Serializable {
 

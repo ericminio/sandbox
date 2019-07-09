@@ -1,4 +1,4 @@
-package ericminio.domain.chat;
+package ericminio.demo.chat.domain;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package ericminio.domain.helloworld;
+package ericminio.demo.helloworld.domain;
 
 import java.io.Serializable;
 import java.util.regex.Pattern;

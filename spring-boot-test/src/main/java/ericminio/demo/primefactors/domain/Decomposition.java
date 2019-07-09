@@ -1,4 +1,4 @@
-package ericminio.domain.primefactors;
+package ericminio.demo.primefactors.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;

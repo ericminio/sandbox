@@ -1,7 +1,7 @@
 package ericminio.demo.helloworld;
 
-import ericminio.domain.helloworld.BuildGreeting;
-import ericminio.domain.helloworld.Greeting;
+import ericminio.demo.helloworld.domain.BuildGreeting;
+import ericminio.demo.helloworld.domain.Greeting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

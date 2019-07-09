@@ -1,6 +1,6 @@
 package ericminio.demo.primefactors;
 
-import ericminio.domain.primefactors.Decomposition;
+import ericminio.demo.primefactors.domain.Decomposition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

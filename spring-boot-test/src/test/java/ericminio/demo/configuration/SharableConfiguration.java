@@ -1,6 +1,5 @@
 package ericminio.demo.configuration;
 
-import ericminio.domain.configuration.Something;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

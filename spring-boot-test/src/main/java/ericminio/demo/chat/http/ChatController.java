@@ -1,6 +1,6 @@
-package ericminio.http.chat;
+package ericminio.demo.chat.http;
 
-import ericminio.domain.chat.Group;
+import ericminio.demo.chat.domain.Group;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

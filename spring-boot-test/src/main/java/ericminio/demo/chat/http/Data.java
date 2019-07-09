@@ -1,7 +1,7 @@
-package ericminio.http.chat;
+package ericminio.demo.chat.http;
 
-import ericminio.domain.chat.Exclusion;
-import ericminio.domain.chat.Group;
+import ericminio.demo.chat.domain.Exclusion;
+import ericminio.demo.chat.domain.Group;
 
 public class Data {
 

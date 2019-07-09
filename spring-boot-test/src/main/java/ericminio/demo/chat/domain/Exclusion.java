@@ -1,8 +1,6 @@
-package ericminio.domain.chat;
+package ericminio.demo.chat.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Exclusion implements Serializable {
 

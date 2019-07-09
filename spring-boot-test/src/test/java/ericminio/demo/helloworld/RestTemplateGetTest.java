@@ -1,8 +1,8 @@
 package ericminio.demo.helloworld;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ericminio.domain.helloworld.BuildGreeting;
-import ericminio.domain.helloworld.Greeting;
+import ericminio.demo.helloworld.domain.BuildGreeting;
+import ericminio.demo.helloworld.domain.Greeting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

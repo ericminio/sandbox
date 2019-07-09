@@ -1,9 +1,9 @@
 package ericminio.demo.chat;
 
-import ericminio.domain.chat.Exclusion;
-import ericminio.domain.chat.Group;
-import ericminio.domain.chat.Person;
-import ericminio.http.chat.Data;
+import ericminio.demo.chat.domain.Exclusion;
+import ericminio.demo.chat.domain.Group;
+import ericminio.demo.chat.domain.Person;
+import ericminio.demo.chat.http.Data;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +13,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;

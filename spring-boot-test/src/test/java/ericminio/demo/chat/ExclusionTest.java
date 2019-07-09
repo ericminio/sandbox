@@ -1,8 +1,8 @@
 package ericminio.demo.chat;
 
-import ericminio.domain.chat.Exclusion;
-import ericminio.domain.chat.Group;
-import ericminio.domain.chat.Person;
+import ericminio.demo.chat.domain.Exclusion;
+import ericminio.demo.chat.domain.Group;
+import ericminio.demo.chat.domain.Person;
 import org.junit.Before;
 import org.junit.Test;
 

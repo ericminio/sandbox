@@ -1,9 +1,8 @@
-package ericminio.demo.primefactors;
+package ericminio.demo.primefactors.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ericminio.demo.primefactors.domain.Decomposition;
 import ericminio.support.HttpResponse;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-
 import static ericminio.support.GetRequest.get;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
@@ -32,37 +30,27 @@ public class PrimeFactorsTest {
     @LocalServerPort
     int port;
 
-    private String primeFactorsOf;
+    @Test
+    public void isAvailable() throws Exception {
+        HttpResponse response = get("http://localhost:" + port + "/primeFactorsOf?number=1492");
 
-    @Before
-    public void buildEndpoint() {
-        primeFactorsOf = "http://localhost:"+ port +"/primeFactorsOf?number=";
+        assertThat(response.getStatusCode(), equalTo(200));
     }
 
     @Test
-    public void canDecompose2() {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Decomposition> response = restTemplate.getForEntity(primeFactorsOf + "2", Decomposition.class);
-        Decomposition decomposition = response.getBody();
-
-        assertThat(decomposition.getFactors(), equalTo(Arrays.asList(2)));
-    }
-
-    @Test
-    public void canDecompose1492() {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Decomposition> response = restTemplate.getForEntity(primeFactorsOf + "1492", Decomposition.class);
-        Decomposition decomposition = response.getBody();
-
-        assertThat(decomposition.getFactors(), equalTo(Arrays.asList(2, 2, 373)));
-    }
-
-    @Test
-    public void bragAboutGoingLowTech() throws Exception {
-        HttpResponse response = get(primeFactorsOf + "1492");
+    public void returnsDecomposition() throws Exception {
+        HttpResponse response = get("http://localhost:" + port + "/primeFactorsOf?number=1492");
         Decomposition decomposition = new ObjectMapper().readValue(response.getBody(), Decomposition.class);
 
-        assertThat(decomposition.getFactors(), equalTo(Arrays.asList(2, 2, 373)));
+        assertThat(decomposition.getFactors(), equalTo(asList(2, 2, 373)));
+    }
+
+    @Test
+    public void hasLimits() throws Exception {
+        HttpResponse response = get("http://localhost:" + port + "/primeFactorsOf?number=10001");
+
+        assertThat(response.getStatusCode(), equalTo(501));
+        assertThat(response.getBody(), equalTo("number <= 10000 expected"));
     }
 
     @Autowired
@@ -79,9 +67,10 @@ public class PrimeFactorsTest {
             public void handleError(ClientHttpResponse clientHttpResponse) {
             }
         }).build();
-        ResponseEntity<String> response = restTemplate.exchange(primeFactorsOf + "10001", GET, null, String.class);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/primeFactorsOf?number=10001", GET, null, String.class);
 
         assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));
         assertThat(response.getBody(), equalTo("number <= 10000 expected"));
     }
+
 }

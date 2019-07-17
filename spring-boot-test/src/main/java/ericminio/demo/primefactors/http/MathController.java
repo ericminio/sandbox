@@ -16,13 +16,14 @@ public class MathController {
     @Autowired
     Mathematician einstein;
 
-    @RequestMapping(value="/primeFactorsOf")
-    public Decomposition primeFactorsOf(@RequestParam(value="number") Integer number) {
-        return einstein.primeFactorsOf(number);
+    @RequestMapping("/primeFactorsOf")
+    public Decomposition primeFactorsOf(@RequestParam Integer number) {
+        return einstein.decompose(number);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleMathematicianLimitations(IllegalArgumentException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_IMPLEMENTED);
     }
+
 }

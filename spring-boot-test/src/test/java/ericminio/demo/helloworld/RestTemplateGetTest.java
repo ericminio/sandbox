@@ -6,12 +6,16 @@ import ericminio.demo.helloworld.domain.Greeting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -19,6 +23,8 @@ import java.io.IOException;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
 @RunWith(SpringRunner.class)
@@ -74,5 +80,24 @@ public class RestTemplateGetTest {
         Greeting actual = new ObjectMapper().readValue(response.getBody(), Greeting.class);
 
         assertThat( actual, equalTo( new BuildGreeting().from("Joe").please() ) );
+    }
+
+    @Autowired
+    RestTemplateBuilder restTemplateBuilder;
+
+    @Test
+    public void canHandleErrors() {
+        RestTemplate restTemplate = restTemplateBuilder.errorHandler(new ResponseErrorHandler() {
+            @Override
+            public boolean hasError(ClientHttpResponse clientHttpResponse) {
+                return false;
+            }
+            @Override
+            public void handleError(ClientHttpResponse clientHttpResponse) {
+            }
+        }).build();
+        ResponseEntity<String> response = restTemplate.exchange(greeting + "?name=XXX", GET, null, String.class);
+
+        assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));
     }
 }

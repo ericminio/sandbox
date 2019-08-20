@@ -9,6 +9,14 @@
     <packaging>pom</packaging>
     <version>1.0</version>
 
+    <repositories>
+        <repository>
+            <id>central-repo</id>
+            <name>Central Repository</name>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+    </repositories>
+
     <modules>
         <module>apache-poi</module>
         <module>pitest</module>

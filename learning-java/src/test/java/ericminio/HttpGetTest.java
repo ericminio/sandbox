@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import support.HttpResponse;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -12,6 +13,7 @@ import java.net.URL;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static support.GetRequest.get;
 
 public class HttpGetTest {
 
@@ -31,6 +33,13 @@ public class HttpGetTest {
         } );
         server.createContext( "/need", exchange -> {
             String body = "Love";
+            exchange.sendResponseHeaders( 200, body.length() );
+            exchange.getResponseBody().write( body.getBytes() );
+            exchange.close();
+        } );
+        server.createContext( "/greetings", exchange -> {
+            String name = exchange.getRequestURI().getQuery();
+            String body = "Received: " + name;
             exchange.sendResponseHeaders( 200, body.length() );
             exchange.getResponseBody().write( body.getBytes() );
             exchange.close();
@@ -76,5 +85,12 @@ public class HttpGetTest {
         inputStream.read( response );
 
         assertThat( new String( response ), equalTo( "Love" ) );
+    }
+
+    @Test
+    public void canSpecifyQuery() throws Exception {
+        HttpResponse response = get( "http://localhost:8000/greetings?name=Joe" );
+
+        assertThat( response.getBody(), equalTo( "Received: name=Joe" ) );
     }
 }

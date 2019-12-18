@@ -4,19 +4,16 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import support.HttpResponse;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static support.PostRequest.post;
 
 public class HttpPostTest {
 
@@ -43,21 +40,9 @@ public class HttpPostTest {
 
     @Test
     public void canSendDataViaPost() throws Exception {
-        URL url = new URL( "http://localhost:8001/create" );
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        byte[] postData = "key".getBytes( StandardCharsets.UTF_8 );
-        connection.setRequestProperty( "Content-Length", Integer.toString(postData.length));
-        DataOutputStream writer = new DataOutputStream( connection.getOutputStream());
-        writer.write(postData);
+        HttpResponse response = post("http://localhost:8001/create", "key" );
 
-        assertThat( connection.getResponseCode(), equalTo( 200 ) );
-
-        InputStream inputStream = connection.getInputStream();
-        byte[] response = new byte[ inputStream.available() ];
-        inputStream.read( response );
-
-        assertThat( new String( response ), equalTo( "method=POST data=key" ) );
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getBody(), equalTo( "method=POST data=key" ) );
     }
 }

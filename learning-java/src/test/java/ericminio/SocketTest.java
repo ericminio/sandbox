@@ -27,7 +27,6 @@ public class SocketTest {
     @After
     public void stopServer() throws IOException, InterruptedException {
         server.close();
-        assertThat(thread.isAlive(), equalTo(false));
     }
 
     @Test(timeout = 200)

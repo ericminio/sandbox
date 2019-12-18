@@ -21,7 +21,7 @@ public class HttpGetTest {
 
     @Before
     public void startServer() throws Exception {
-        server = HttpServer.create( new InetSocketAddress( 8000 ), 0 );
+        server = HttpServer.create( new InetSocketAddress( 8002 ), 0 );
         server.createContext( "/", exchange -> {
             exchange.sendResponseHeaders( 200, 0 );
             exchange.close();
@@ -54,7 +54,7 @@ public class HttpGetTest {
 
     @Test
     public void canAnswerOKForAnyGetRequest() throws Exception {
-        URL url = new URL( "http://localhost:8000" );
+        URL url = new URL( "http://localhost:8002" );
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         assertThat( connection.getResponseCode(), equalTo( 200 ) );
@@ -62,7 +62,7 @@ public class HttpGetTest {
 
     @Test
     public void answersWithoutContentTypeByDefault() throws Exception {
-        URL url = new URL( "http://localhost:8000" );
+        URL url = new URL( "http://localhost:8002" );
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         assertThat( connection.getHeaderField( "content-type" ), equalTo( null ) );
@@ -70,7 +70,7 @@ public class HttpGetTest {
 
     @Test
     public void canAnswerWithJsonContentType() throws Exception {
-        URL url = new URL( "http://localhost:8000/json" );
+        URL url = new URL( "http://localhost:8002/json" );
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         assertThat( connection.getHeaderField( "content-type" ), equalTo( "application/json" ) );
@@ -78,7 +78,7 @@ public class HttpGetTest {
 
     @Test
     public void canSendContent() throws Exception {
-        URL url = new URL( "http://localhost:8000/need" );
+        URL url = new URL( "http://localhost:8002/need" );
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         InputStream inputStream = connection.getInputStream();
         byte[] response = new byte[ inputStream.available() ];
@@ -89,7 +89,7 @@ public class HttpGetTest {
 
     @Test
     public void canSpecifyQuery() throws Exception {
-        HttpResponse response = get( "http://localhost:8000/greetings?name=Joe" );
+        HttpResponse response = get( "http://localhost:8002/greetings?name=Joe" );
 
         assertThat( response.getBody(), equalTo( "Received: name=Joe" ) );
     }

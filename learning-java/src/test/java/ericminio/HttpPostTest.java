@@ -24,7 +24,7 @@ public class HttpPostTest {
 
     @Before
     public void startServer() throws Exception {
-        server = HttpServer.create( new InetSocketAddress( 8000 ), 0 );
+        server = HttpServer.create( new InetSocketAddress( 8001 ), 0 );
         server.createContext( "/create", exchange -> {
             String method = exchange.getRequestMethod();
             BufferedReader data = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
@@ -43,7 +43,7 @@ public class HttpPostTest {
 
     @Test
     public void canSendDataViaPost() throws Exception {
-        URL url = new URL( "http://localhost:8000/create" );
+        URL url = new URL( "http://localhost:8001/create" );
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");

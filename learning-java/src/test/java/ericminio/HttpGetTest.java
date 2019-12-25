@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -40,6 +42,13 @@ public class HttpGetTest {
         server.createContext( "/greetings", exchange -> {
             String name = exchange.getRequestURI().getQuery();
             String body = "Received: " + name;
+            exchange.sendResponseHeaders( 200, body.length() );
+            exchange.getResponseBody().write( body.getBytes() );
+            exchange.close();
+        } );
+        server.createContext( "/headers", exchange -> {
+            String message = exchange.getRequestHeaders().getFirst("X-message");
+            String body = "Received: " + message;
             exchange.sendResponseHeaders( 200, body.length() );
             exchange.getResponseBody().write( body.getBytes() );
             exchange.close();
@@ -92,5 +101,14 @@ public class HttpGetTest {
         HttpResponse response = get( "http://localhost:8002/greetings?name=Joe" );
 
         assertThat( response.getBody(), equalTo( "Received: name=Joe" ) );
+    }
+
+    @Test
+    public void canSendHeaders() throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-message", "hello-world");
+        HttpResponse response = get( "http://localhost:8002/headers", headers );
+
+        assertThat( response.getBody(), equalTo( "Received: hello-world" ) );
     }
 }

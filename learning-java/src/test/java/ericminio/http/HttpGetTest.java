@@ -1,4 +1,4 @@
-package ericminio;
+package ericminio.http;
 
 import com.sun.net.httpserver.HttpServer;
 import org.junit.After;

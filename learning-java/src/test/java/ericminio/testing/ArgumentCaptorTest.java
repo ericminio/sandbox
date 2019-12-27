@@ -1,11 +1,13 @@
-package ericminio;
+package ericminio.testing;
 
+import ericminio.Domain;
+import ericminio.Service;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
-import static ericminio.ListMatcher.equalList;
+import static ericminio.testing.ListMatcher.equalList;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;

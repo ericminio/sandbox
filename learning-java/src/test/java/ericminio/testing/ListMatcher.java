@@ -1,4 +1,4 @@
-package ericminio;
+package ericminio.testing;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

@@ -1,10 +1,10 @@
-package ericminio;
+package ericminio.testing;
 
 import org.junit.Test;
 
 import java.util.List;
 
-import static ericminio.ListMatcher.equalList;
+import static ericminio.testing.ListMatcher.equalList;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 

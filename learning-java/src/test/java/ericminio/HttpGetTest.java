@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import support.HttpResponse;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -58,7 +57,7 @@ public class HttpGetTest {
 
     @After
     public void stopServer() {
-        server.stop( 0 );
+        server.stop( 1 );
     }
 
     @Test
@@ -87,13 +86,9 @@ public class HttpGetTest {
 
     @Test
     public void canSendContent() throws Exception {
-        URL url = new URL( "http://localhost:8002/need" );
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        InputStream inputStream = connection.getInputStream();
-        byte[] response = new byte[ inputStream.available() ];
-        inputStream.read( response );
+        HttpResponse response = get( "http://localhost:8002/need" );
 
-        assertThat( new String( response ), equalTo( "Love" ) );
+        assertThat( response.getBody(), equalTo( "Love" ) );
     }
 
     @Test

@@ -6,12 +6,19 @@ import java.util.Properties;
 
 public class Environment {
 
-    public String valueOf(String key) throws IOException {
-        String env = System.getProperty("environment");
-        Properties properties = new Properties();
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("application-"+env+".properties");
-        properties.load(stream);
+    private Properties properties;
 
-        return properties.getProperty(key);
+    public String valueOf(String key) throws IOException {
+        return read().getProperty(key);
+    }
+
+    protected Properties read() throws IOException {
+        if (properties == null) {
+            properties = new Properties();
+            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(
+                    "application-"+ System.getProperty("environment") +".properties");
+            properties.load(stream);
+        }
+        return properties;
     }
 }

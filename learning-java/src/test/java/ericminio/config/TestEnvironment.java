@@ -7,5 +7,6 @@ public class TestEnvironment {
     @Before
     public void forceTest() {
         System.setProperty("environment", "test");
+        new Inject().visit(this);
     }
 }

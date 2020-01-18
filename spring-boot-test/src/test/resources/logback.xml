@@ -13,7 +13,7 @@
         </encoder>
     </appender>
 
-    <logger name="ericminio" level="debug" additivity="false">
+    <logger name="ericminio.demo.logging" level="debug" additivity="false">
         <appender-ref ref="FILE" />
     </logger>
     <logger name="ericminio.demo.logging.JavaConfigurationTest" level="debug" additivity="false">

@@ -18,8 +18,9 @@ public class XmlConfigurationTest {
     String filename = "logs/42.log";
 
     @Before
-    public void cleanStart() throws IOException {
-        clearFile(filename);
+    public void cleanStart() {
+        try { clearFile(filename); }
+        catch (IOException e) {}
     }
 
     @Test

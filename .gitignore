@@ -3,3 +3,4 @@ target
 *.iml
 selenium/log.txt
 *.log
+LOG_FILE_IS_UNDEFINED

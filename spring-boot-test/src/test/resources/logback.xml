@@ -1,0 +1,22 @@
+<configuration debug="true" scan="true" scanPeriod="15 seconds">
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/42.log</file>
+        <encoder>
+            <pattern>%date [%class{0}] - %message %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="CONFIGURABLE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>%date ** %class{0} ** - %message %n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ericminio" level="debug" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="ericminio.demo.logging.JavaConfigurationTest" level="debug" additivity="false">
+        <appender-ref ref="CONFIGURABLE" />
+    </logger>
+</configuration>

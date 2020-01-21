@@ -7,13 +7,20 @@
         </encoder>
     </appender>
     <appender name="CONFIGURABLE" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_FILE}</file>
+        <file>${LOG_FILE:-logs/default.log}</file>
         <encoder>
             <pattern>%date ** %class{0} ** - %message %n</pattern>
         </encoder>
     </appender>
 
+    <root level="info">
+        <appender-ref ref="CONFIGURABLE" />
+    </root>
+
     <logger name="ericminio.demo.logging" level="debug" additivity="false">
+        <appender-ref ref="CONFIGURABLE" />
+    </logger>
+    <logger name="ericminio.demo.logging.XmlConfigurationTest" level="debug" additivity="false">
         <appender-ref ref="FILE" />
     </logger>
     <logger name="ericminio.demo.logging.JavaConfigurationTest" level="debug" additivity="false">

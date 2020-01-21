@@ -16,6 +16,7 @@ import java.util.List;
 import static ericminio.support.ClearFile.clearFile;
 import static ericminio.support.FileContent.contentOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 public class JavaConfigurationTest {
@@ -33,6 +34,7 @@ public class JavaConfigurationTest {
         System.setProperty("LOG_FILE", filename);
 
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.reset();
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(context);
         configurator.doConfigure(this.getClass().getClassLoader().getResourceAsStream("logback.xml"));
@@ -40,5 +42,6 @@ public class JavaConfigurationTest {
         logger.info("coucou");
 
         assertThat(contentOf(filename), containsString("** JavaConfigurationTest ** - coucou"));
+        assertThat(contentOf("logs/default.log"), not(containsString("** JavaConfigurationTest ** - coucou")));
     }
 }

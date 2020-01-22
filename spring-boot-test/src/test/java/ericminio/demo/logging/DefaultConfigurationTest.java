@@ -13,8 +13,8 @@ public class DefaultConfigurationTest {
     @Test
     public void worksAsExpected() throws Exception {
         Logger logger = LoggerFactory.getLogger(DefaultConfigurationTest.class);
-        logger.info("this goes to default log");
+        logger.debug("this goes to default log");
 
-        assertThat(lastLineOf("logs/default.log"), containsString("** DefaultConfigurationTest ** - this goes to default log"));
+        assertThat(lastLineOf(   "logs/default.log"), containsString("DEBUG [DefaultConfigurationTest] - this goes to default log"));
     }
 }

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 
 @SpringBootTest(
         properties= {
-                "spring.profiles.active=peace"
+                "spring.profiles.include=peace"
         }
 )
 @RunWith(SpringRunner.class)
@@ -19,6 +19,6 @@ public class RootLevelTest {
 
     @Test
     public void worksWellAsCatchAll() throws Exception {
-        assertThat(contentOf("logs/default.log"), containsString("The following profiles are active: peace"));
+        assertThat(contentOf("logs/default.log"), containsString("INFO [SpringApplication] - The following profiles are active: peace"));
     }
 }

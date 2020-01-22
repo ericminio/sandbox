@@ -1,5 +1,11 @@
-<configuration debug="true" scan="true" scanPeriod="15 seconds">
+<configuration debug="true">
 
+    <appender name="DEFAULT" class="ch.qos.logback.core.FileAppender">
+        <file>logs/default.log</file>
+        <encoder>
+            <pattern>%date %level [%class{0}] - %message %n</pattern>
+        </encoder>
+    </appender>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/42.log</file>
         <encoder>
@@ -7,18 +13,18 @@
         </encoder>
     </appender>
     <appender name="CONFIGURABLE" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_FILE:-logs/default.log}</file>
+        <file>${LOG_FILE}</file>
         <encoder>
-            <pattern>%date ** %class{0} ** - %message %n</pattern>
+            <pattern>%date %level ** %class{0} ** - %message %n</pattern>
         </encoder>
     </appender>
 
     <root level="info">
-        <appender-ref ref="CONFIGURABLE" />
+        <appender-ref ref="DEFAULT" />
     </root>
 
     <logger name="ericminio.demo.logging" level="debug" additivity="false">
-        <appender-ref ref="CONFIGURABLE" />
+        <appender-ref ref="DEFAULT" />
     </logger>
     <logger name="ericminio.demo.logging.XmlConfigurationTest" level="debug" additivity="false">
         <appender-ref ref="FILE" />

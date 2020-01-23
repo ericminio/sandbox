@@ -33,6 +33,7 @@ public class ExceptionLoggingTest {
 
             assertThat(contentOf(filename), containsString("[ExceptionLoggingTest] - oops"));
             assertThat(contentOf(filename), containsString("java.lang.RuntimeException: something bad happened"));
+            assertThat(contentOf(filename), containsString("at ericminio.demo.logging.ExceptionLoggingTest.isAvailable"));
         }
     }
 }

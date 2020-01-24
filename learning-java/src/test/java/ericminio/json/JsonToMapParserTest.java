@@ -2,12 +2,14 @@ package ericminio.json;
 
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static ericminio.json.JsonToMapsParser.parse;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class JsonToMapParserTest {
 
@@ -71,7 +73,7 @@ public class JsonToMapParserTest {
         assertThat(obsolete.get("value"), equalTo(Boolean.FALSE));
     }
     @Test
-    public void canParseTwoLevelsNestedObject() {
+    public void canParseTwoLevelsOfNestedObjects() {
         String json = "{ \"attributes\": { \"old\": true, \"but\": { \"obsolete\": false } } }";
         Map<String, Object> tree = parse(json);
 
@@ -86,5 +88,33 @@ public class JsonToMapParserTest {
         Map<String, Object> but = (Map<String, Object>) attributes.get("but");
         assertThat(but.size(), equalTo(1));
         assertThat(but.get("obsolete"), equalTo(Boolean.FALSE));
+    }
+    @Test
+    public void canParseCollection() {
+        String json = "{ \"attributes\": [ { \"key\": \"old\", \"value\": \"yes\" }, { \"key\": \"obsolete\", \"value\": \"no\" } ] }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("attributes"), instanceOf(List.class));
+
+        List<Map<String, Object>> values = (List<Map<String, Object>>) tree.get("attributes");
+        assertThat(values.size(), equalTo(2));
+
+        assertThat(values.get(0).get("key"), equalTo("old"));
+        assertThat(values.get(0).get("value"), equalTo("yes"));
+
+        assertThat(values.get(1).get("key"), equalTo("obsolete"));
+        assertThat(values.get(1).get("value"), equalTo("no"));
+    }
+    @Test
+    public void resistsMalformedJson() {
+        String json = "{ looks like json: but no :(";
+        try{
+            parse(json);
+            fail();
+        }
+        catch(RuntimeException e) {
+            assertThat(e.getMessage(), equalTo("Malformed json?"));
+        }
     }
 }

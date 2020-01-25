@@ -29,7 +29,7 @@ public class JsonToMapsParser {
             return tree;
         }
         catch (Exception any) {
-            throw new RuntimeException("Malformed json?");
+            throw new RuntimeException("Malformed json?", any);
         }
     }
 
@@ -55,6 +55,10 @@ public class JsonToMapsParser {
         if (input.startsWith("\"") && input.endsWith("\"")) {
             return input.substring(1, input.length()-1);
         }
+        try {
+            return new Integer(input);
+        }
+        catch (NumberFormatException e) {}
 
         throw new RuntimeException("teach me what to do with: " + input);
     }

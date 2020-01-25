@@ -114,7 +114,16 @@ public class JsonToMapParserTest {
             fail();
         }
         catch(RuntimeException e) {
+            e.printStackTrace();
             assertThat(e.getMessage(), equalTo("Malformed json?"));
         }
+    }
+    @Test
+    public void resistsIntegers() {
+        String json = "{ \"answer\": 42 }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("answer"), equalTo(42));
     }
 }

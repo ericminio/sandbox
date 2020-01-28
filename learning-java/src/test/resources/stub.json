@@ -1,6 +1,38 @@
 {
     "routes": [
         {
+            "when": {
+                "urlStartsWith": "/ping"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "pong"
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/object",
+                "methodIs": "POST"
+            },
+            "answer": {
+                "statusCode": 201,
+                "contentType": "text/plain",
+                "body": "created"
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/object",
+                "methodIs": "PUT"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "updated"
+            }
+        },
+        {
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",

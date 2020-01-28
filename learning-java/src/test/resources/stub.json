@@ -13,6 +13,18 @@
         {
             "when": {
                 "urlStartsWith": "/object",
+                "methodIs": "POST",
+                "bodyContains": "key"
+            },
+            "answer": {
+                "statusCode": 201,
+                "contentType": "text/plain",
+                "body": "created key"
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/object",
                 "methodIs": "POST"
             },
             "answer": {

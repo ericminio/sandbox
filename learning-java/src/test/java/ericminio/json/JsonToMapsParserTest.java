@@ -2,6 +2,7 @@ package ericminio.json;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -125,5 +126,21 @@ public class JsonToMapsParserTest {
 
         assertThat(tree.size(), equalTo(1));
         assertThat(tree.get("answer"), equalTo(42));
+    }
+    @Test
+    public void preservesSpaceData() {
+        String json = "{  \"obsolete\" :  \"of course not!\"  }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("obsolete"), equalTo("of course not!"));
+    }
+    @Test
+    public void resistsBigDecimals() {
+        String json = "{ \"answer\": 4.2 }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("answer"), equalTo(BigDecimal.valueOf(4.2)));
     }
 }

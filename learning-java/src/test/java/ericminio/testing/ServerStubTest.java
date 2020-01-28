@@ -60,4 +60,13 @@ public class ServerStubTest {
         assertThat( response.getContentType(), equalTo( "text/plain" ) );
         assertThat( response.getBody(), equalTo( "updated" ) );
     }
+
+    @Test
+    public void canMatchIncomingBody() throws Exception {
+        HttpResponse response = post( "http://localhost:"+port+"/object", "key" );
+
+        assertThat( response.getStatusCode(), equalTo( 201 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "created key" ) );
+    }
 }

@@ -1,5 +1,6 @@
 package ericminio.json;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,34 +11,45 @@ public class JsonToMapsParser {
     public static Map<String, Object> parse(String json) {
         try {
             json = json
-                    .replaceAll("\\s", "")
+                    .replaceAll("\\n", "")
                     .replaceAll("\\t", "")
+                    .replaceAll("\\{\\s*", "{")
+                    .replaceAll("\\[\\s*", "[")
+                    .replaceAll(":\\s*", ":")
+                    .replaceAll("\\s*:", ":")
+                    .replaceAll(",\\s*", ",")
+                    .replaceAll("\\s*\\]", "]")
+                    .replaceAll("\\s*\\}", "}")
             ;
             debug("->" + json);
 
-            Map<String, Object> tree = new HashMap<>();
-            while (!"{}".equalsIgnoreCase(json)) {
-                String key = extractFirstKey(json);
-                String value = extractFirstValue(json);
-                debug(key);
-                debug(value);
-                tree.put(key, digest(value));
-
-                json = removeFirstAttribute(json, key, value);
-            }
-
-            return tree;
+            return parseObject(json);
         }
         catch (Exception any) {
             throw new RuntimeException("Malformed json?", any);
         }
     }
 
+    private static Map<String, Object> parseObject(String json) {
+        Map<String, Object> tree = new HashMap<>();
+        while (!"{}".equalsIgnoreCase(json)) {
+            String key = extractFirstKey(json);
+            String value = extractFirstValue(json);
+            debug(key);
+            debug(value);
+            tree.put(key, digest(value));
+
+            json = removeFirstAttribute(json, key, value);
+        }
+
+        return tree;
+    }
+
     private static List<Map<String, Object>> parseCollection(String value) {
         List<Map<String, Object>> collection = new ArrayList<>();
         while (! "[]".equalsIgnoreCase(value)) {
             String item = extractItem(value, 1, '{', '}');
-            collection.add(parse(item));
+            collection.add(parseObject(item));
             value = removeFirstItem(value, item);
         }
         return collection;
@@ -46,7 +58,7 @@ public class JsonToMapsParser {
     private static Object digest(String value) {
         if (value.indexOf("{") == -1) { return clean(value); }
         if (value.indexOf("[") == 0) { return parseCollection(value); }
-        return parse(value);
+        return parseObject(value);
     }
 
     private static Object clean(String input) {
@@ -59,8 +71,12 @@ public class JsonToMapsParser {
             return new Integer(input);
         }
         catch (NumberFormatException e) {}
+        try {
+            return new BigDecimal(input);
+        }
+        catch (NumberFormatException e) {}
 
-        throw new RuntimeException("teach me what to do with: " + input);
+        throw new RuntimeException("teach me what to do with:" + input);
     }
 
     private static String removeFirstAttribute(String json, String key, String value) {

@@ -79,6 +79,10 @@ public class StubServer {
             String expectedMethod = (String) this.definition.get("methodIs");
             if (expectedMethod != null && !exchange.getRequestMethod().equalsIgnoreCase(expectedMethod)) { return false; }
 
+            String expectedBody = (String) this.definition.get("bodyContains");
+            String incomingBody = new BufferedReader(new InputStreamReader(exchange.getRequestBody())).lines().collect(Collectors.joining());
+            if (expectedBody != null && !incomingBody.contains(expectedBody)) { return false; }
+
             return true;
         }
     }

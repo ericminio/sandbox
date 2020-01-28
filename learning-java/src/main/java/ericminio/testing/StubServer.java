@@ -2,6 +2,7 @@ package ericminio.testing;
 
 import com.sun.net.httpserver.HttpServer;
 import ericminio.json.JsonToMapsParser;
+import ericminio.json.MapsToJsonParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class StubServer {
             Map<String, Object> answer = (Map<String, Object>) route.get("answer");
             exchange.getResponseHeaders().add( "Content-Type", (String) answer.get("contentType"));
             exchange.sendResponseHeaders((Integer) answer.get("statusCode"), 0 );
-            exchange.getResponseBody().write( "{ \"alive\": true }".getBytes() );
+            exchange.getResponseBody().write( MapsToJsonParser.stringify(answer.get("body")).getBytes() );
             exchange.close();
         } );
         server.start();

@@ -31,6 +31,6 @@ public class ServerStubTest {
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "application/json" ) );
-        assertThat( response.getBody(), equalTo( "{ \"alive\": true }" ) );
+        assertThat( response.getBody(), equalTo( "{\"alive\":true}" ) );
     }
 }

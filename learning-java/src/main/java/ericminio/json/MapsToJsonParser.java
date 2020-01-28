@@ -1,7 +1,5 @@
 package ericminio.json;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

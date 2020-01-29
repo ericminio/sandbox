@@ -21,8 +21,6 @@ public class JsonToMapsParser {
                     .replaceAll("\\s*\\]", "]")
                     .replaceAll("\\s*\\}", "}")
             ;
-            debug("->" + json);
-
             return parseObject(json);
         }
         catch (Exception any) {
@@ -31,6 +29,7 @@ public class JsonToMapsParser {
     }
 
     private static Map<String, Object> parseObject(String json) {
+        debug("->" + json);
         Map<String, Object> tree = new HashMap<>();
         while (!"{}".equalsIgnoreCase(json)) {
             String key = extractFirstKey(json);
@@ -40,6 +39,7 @@ public class JsonToMapsParser {
             tree.put(key, digest(value));
 
             json = removeFirstAttribute(json, key, value);
+            debug("-->" + json);
         }
 
         return tree;
@@ -93,6 +93,8 @@ public class JsonToMapsParser {
                         .replace("}", "\\}")
                         .replace("[", "\\[")
                         .replace("]", "\\]")
+                        .replace("(", "\\(")
+                        .replace(")", "\\)")
                 , "");
     }
 

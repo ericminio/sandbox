@@ -21,11 +21,13 @@ public class ServerStubTest {
     StubServer server;
     private int port = 5018;
     private Map<String, Object> variables;
+    private Map<String, StubServer.Function> functions;
 
     @Before
     public void startServer() throws IOException {
         variables = new HashMap<>();
-        server = new StubServer("stub.json", variables);
+        functions = new HashMap<>();
+        server = new StubServer("stub.json", variables, functions);
         server.start(port);
     }
     @After
@@ -93,5 +95,17 @@ public class ServerStubTest {
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "application/json" ) );
         assertThat( response.getBody(), equalTo( "{\"one\":\"this-segment\",\"two\":\"that-other-segment\"}" ) );
+    }
+
+    @Test
+    public void offersFunctionCallInAnsweredBody() throws Exception {
+        functions.put("reverse", (incoming, variables) ->
+                variables.get("groupCount") + ": " + variables.get("group-1") + " " + incoming.getBody()
+        );
+        HttpResponse response = post( "http://localhost:"+port+"/modify/world", "hello" );
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "application/json" ) );
+        assertThat( response.getBody(), equalTo( "1: world hello" ) );
     }
 }

@@ -19,15 +19,17 @@ import java.util.stream.Collectors;
 
 public class StubServer {
     private HttpServer server;
-    private final List<Route> routes;
+    private List<Route> routes;
     private Map<String, Object> variables;
+    private Map<String, StubServer.Function> functions;
 
     public StubServer(String configFile) {
-        this(configFile, new HashMap<>());
+        this(configFile, new HashMap<>(), new HashMap<>());
     }
 
-    public StubServer(String configFile, Map<String, Object> variables) {
+    public StubServer(String configFile, Map<String, Object> variables, Map<String, StubServer.Function> functions) {
         this.variables = variables;
+        this.functions = functions;
         InputStream resource = this.getClass().getClassLoader().getResourceAsStream(configFile);
         String config = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining());
         routes = ((List<Map<String, Object>>) JsonToMapsParser.parse(config).get("routes"))
@@ -37,9 +39,10 @@ public class StubServer {
     public void start(int port) throws IOException {
         server = HttpServer.create( new InetSocketAddress( port ), 0 );
         server.createContext( "/", exchange -> {
-            Answer answer = routes.stream().filter(route -> route.isOpen(exchange))
+            Incoming incoming = new Incoming(exchange, variables);
+            Answer answer = routes.stream().filter(route -> route.isOpen(incoming))
                     .findFirst().get().getAnswer();
-            String body = evaluate(answer.getBody());
+            String body = evaluate(answer.getBody(), incoming);
             exchange.getResponseHeaders().add( "Content-Type", answer.getContentType());
             exchange.sendResponseHeaders(answer.getStatusCode(), body.length() );
             exchange.getResponseBody().write(body.getBytes());
@@ -48,10 +51,14 @@ public class StubServer {
         server.start();
     }
 
-    private String evaluate(String body) {
+    private String evaluate(String body, Incoming incoming) {
         String evaluated = body;
         for (String key :variables.keySet()) {
             evaluated = evaluated.replaceAll("#"+key, variables.get(key).toString());
+        }
+        for (String key :functions.keySet()) {
+            Function function = functions.get(key);
+            evaluated = evaluated.replaceAll("~"+key+"\\(\\)", function.execute(incoming, variables));
         }
         return evaluated;
     }
@@ -67,8 +74,8 @@ public class StubServer {
             this.definition = definition;
         }
 
-        public boolean isOpen(HttpExchange exchange) {
-            return getGate().isOpen(exchange);
+        public boolean isOpen(Incoming incoming) {
+            return getGate().isOpen(incoming);
         }
 
         public Gate getGate() {
@@ -79,39 +86,83 @@ public class StubServer {
             return new Answer((Map<String, Object>) this.definition.get("answer"));
         }
     }
+    class Incoming {
+
+        private String uri;
+        private String method;
+        private String body;
+        private HttpExchange exchange;
+        private Map<String, Object> variables;
+
+        public Incoming(HttpExchange exchange, Map<String, Object> variables) {
+            this.exchange = exchange;
+            this.variables = variables;
+
+            this.uri = exchange.getRequestURI().toString();
+            this.method = exchange.getRequestMethod().toUpperCase();
+            this.body = new BufferedReader(new InputStreamReader(exchange.getRequestBody())).lines().collect(Collectors.joining());
+        }
+
+        public String getUri() {
+            return this.uri;
+        }
+
+        public String getMethod() {
+            return this.method;
+        }
+
+        public String getBody() {
+            return this.body;
+        }
+
+        public boolean hasUriStartingWith(String expectedUrlPrefix) {
+            return this.getUri().startsWith(expectedUrlPrefix);
+        }
+
+        public boolean hasUriMatching(String expectedUrlMatch) {
+            Pattern pattern = Pattern.compile(expectedUrlMatch);
+            Matcher matcher = pattern.matcher(this.getUri());
+            if (matcher.matches()) {
+                this.variables.put("groupCount", matcher.groupCount());
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    this.variables.put("group-"+i, matcher.group(i));
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        public boolean hasMethod(String expectedMethod) {
+            return this.getMethod().equalsIgnoreCase(expectedMethod);
+        }
+
+        public boolean hasBodyContaining(String expectedBody) {
+            return this.getBody().contains(expectedBody);
+        }
+    }
     class Gate {
-        Map<String, Object> definition;
+        private Map<String, Object> definition;
 
         public Gate(Map<String, Object> definition) {
             this.definition = definition;
         }
 
-        public boolean isOpen(HttpExchange exchange) {
+        public boolean isOpen(Incoming incoming) {
             if (this.definition == null) { return true; }
 
             String expectedUrlPrefix = (String) this.definition.get("urlStartsWith");
-            if (expectedUrlPrefix != null && !exchange.getRequestURI().toString().startsWith(expectedUrlPrefix)) { return false; }
+            if (expectedUrlPrefix != null && !incoming.hasUriStartingWith(expectedUrlPrefix)) { return false; }
 
             String expectedMethod = (String) this.definition.get("methodIs");
-            if (expectedMethod != null && !exchange.getRequestMethod().equalsIgnoreCase(expectedMethod)) { return false; }
+            if (expectedMethod != null && !incoming.hasMethod(expectedMethod)) { return false; }
 
             String expectedBody = (String) this.definition.get("bodyContains");
-            String incomingBody = new BufferedReader(new InputStreamReader(exchange.getRequestBody())).lines().collect(Collectors.joining());
-            if (expectedBody != null && !incomingBody.contains(expectedBody)) { return false; }
+            if (expectedBody != null && !incoming.hasBodyContaining(expectedBody)) { return false; }
 
             String expectedUrlMatch = (String) this.definition.get("urlMatches");
-            if (expectedUrlMatch != null) {
-                Pattern pattern = Pattern.compile(expectedUrlMatch);
-                Matcher matcher = pattern.matcher(exchange.getRequestURI().toString());
-                if (matcher.matches()) {
-                    for (int i = 1; i <= matcher.groupCount(); i++) {
-                        variables.put("group-"+i, matcher.group(i));
-                    }
-                }
-                else {
-                    return false;
-                }
-            }
+            if (expectedUrlMatch != null && !incoming.hasUriMatching(expectedUrlMatch)) { return false; }
 
             return true;
         }
@@ -137,6 +188,10 @@ public class StubServer {
 
             return MapsToJsonParser.stringify(body);
         }
+    }
+
+    interface Function {
+        String execute(Incoming incoming, Map<String, Object> variables);
     }
 }
 

@@ -65,6 +65,17 @@
             }
         },
         {
+            "when": {
+                "urlMatches": "/modify/(.*?)"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": "~reverse()"
+            }
+        },
+
+        {
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",

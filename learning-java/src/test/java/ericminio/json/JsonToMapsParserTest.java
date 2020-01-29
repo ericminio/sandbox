@@ -143,4 +143,12 @@ public class JsonToMapsParserTest {
         assertThat(tree.size(), equalTo(1));
         assertThat(tree.get("answer"), equalTo(BigDecimal.valueOf(4.2)));
     }
+    @Test
+    public void resistsParenthesis() {
+        String json = "{ \"answer\": \"(42)\" }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("answer"), equalTo("(42)"));
+    }
 }

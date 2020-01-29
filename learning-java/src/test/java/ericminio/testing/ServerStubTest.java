@@ -99,13 +99,13 @@ public class ServerStubTest {
 
     @Test
     public void offersFunctionCallInAnsweredBody() throws Exception {
-        functions.put("reverse", (incoming, variables) ->
-                variables.get("groupCount") + ": " + variables.get("group-1") + " " + incoming.getBody()
+        functions.put("combine", (incoming, variables) ->
+                variables.get("groupCount") + ": " + incoming.getBody() + " " + variables.get("group-1")
         );
         HttpResponse response = post( "http://localhost:"+port+"/modify/world", "hello" );
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "application/json" ) );
-        assertThat( response.getBody(), equalTo( "1: world hello" ) );
+        assertThat( response.getBody(), equalTo( "{\"message\":\"1: hello world\"}" ) );
     }
 }

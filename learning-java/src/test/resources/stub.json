@@ -71,7 +71,7 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",
-                "body": "~reverse()"
+                "body": { "message": "~combine()" }
             }
         },
 

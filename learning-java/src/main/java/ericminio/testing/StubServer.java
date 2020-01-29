@@ -10,18 +10,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class StubServer {
     private HttpServer server;
     private final List<Route> routes;
+    private Map<String, Object> variables;
 
-    public StubServer(String file) {
-        InputStream resource = this.getClass().getClassLoader().getResourceAsStream(file);
-        BufferedReader data = new BufferedReader(new InputStreamReader(resource));
-        String config = data.lines().collect(Collectors.joining());
+    public StubServer(String configFile) {
+        this(configFile, new HashMap<>());
+    }
+
+    public StubServer(String configFile, Map<String, Object> variables) {
+        this.variables = variables;
+        InputStream resource = this.getClass().getClassLoader().getResourceAsStream(configFile);
+        String config = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining());
         routes = ((List<Map<String, Object>>) JsonToMapsParser.parse(config).get("routes"))
                 .stream().map(e -> new Route(e)).collect(Collectors.toList());
     }
@@ -31,13 +39,21 @@ public class StubServer {
         server.createContext( "/", exchange -> {
             Answer answer = routes.stream().filter(route -> route.isOpen(exchange))
                     .findFirst().get().getAnswer();
-            byte[] body = answer.getBody();
+            String body = evaluate(answer.getBody());
             exchange.getResponseHeaders().add( "Content-Type", answer.getContentType());
-            exchange.sendResponseHeaders(answer.getStatusCode(), body.length );
-            exchange.getResponseBody().write(body);
+            exchange.sendResponseHeaders(answer.getStatusCode(), body.length() );
+            exchange.getResponseBody().write(body.getBytes());
             exchange.close();
         } );
         server.start();
+    }
+
+    private String evaluate(String body) {
+        String evaluated = body;
+        for (String key :variables.keySet()) {
+            evaluated = evaluated.replaceAll("#"+key, variables.get(key).toString());
+        }
+        return evaluated;
     }
 
     public void stop() {
@@ -83,6 +99,20 @@ public class StubServer {
             String incomingBody = new BufferedReader(new InputStreamReader(exchange.getRequestBody())).lines().collect(Collectors.joining());
             if (expectedBody != null && !incomingBody.contains(expectedBody)) { return false; }
 
+            String expectedUrlMatch = (String) this.definition.get("urlMatches");
+            if (expectedUrlMatch != null) {
+                Pattern pattern = Pattern.compile(expectedUrlMatch);
+                Matcher matcher = pattern.matcher(exchange.getRequestURI().toString());
+                if (matcher.matches()) {
+                    for (int i = 1; i <= matcher.groupCount(); i++) {
+                        variables.put("group-"+i, matcher.group(i));
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+
             return true;
         }
     }
@@ -101,8 +131,11 @@ public class StubServer {
             return (Integer) this.definition.get("statusCode");
         }
 
-        public byte[] getBody() {
-            return MapsToJsonParser.stringify(this.definition.get("body")).getBytes();
+        public String getBody() {
+            Object body = this.definition.get("body");
+            if (body instanceof String) { return body.toString(); }
+
+            return MapsToJsonParser.stringify(body);
         }
     }
 }

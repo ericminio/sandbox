@@ -52,4 +52,12 @@ public class MapsToJsonParserTest {
 
         assertThat(MapsToJsonParser.stringify(tree), equalTo("{\"attributes\":[{\"old\":true},{\"obsolete\":false}]}"));
     }
+    @Test
+    public void canHandleStrings() {
+        Map<String, Object> tree = new HashMap<>();
+        tree.put("old", "yes");
+        tree.put("obsolete", "no");
+
+        assertThat(MapsToJsonParser.stringify(tree), equalTo("{\"old\":\"yes\",\"obsolete\":\"no\"}"));
+    }
 }

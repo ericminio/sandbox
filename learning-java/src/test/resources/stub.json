@@ -45,10 +45,30 @@
             }
         },
         {
+            "when": {
+                "urlStartsWith": "/greetings"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "hello #who"
+            }
+        },
+        {
+            "when": {
+                "urlMatches": "/echo/(.*?)/and/(.*?)"
+            },
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",
-                "body": { "alive": true }
+                "body": { "one": "#group-1", "two": "#group-2" }
+            }
+        },
+        {
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": { "old": true, "obsolete": "no" }
             }
         }
     ]

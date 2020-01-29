@@ -4,8 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import support.HttpResponse;
+import support.PutRequest;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -17,10 +20,12 @@ public class ServerStubTest {
 
     StubServer server;
     private int port = 5018;
+    private Map<String, Object> variables;
 
     @Before
     public void startServer() throws IOException {
-        server = new StubServer("stub.json");
+        variables = new HashMap<>();
+        server = new StubServer("stub.json", variables);
         server.start(port);
     }
     @After
@@ -34,7 +39,7 @@ public class ServerStubTest {
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "application/json" ) );
-        assertThat( response.getBody(), equalTo( "{\"alive\":true}" ) );
+        assertThat( response.getBody(), equalTo( "{\"old\":true,\"obsolete\":\"no\"}" ) );
     }
 
     @Test
@@ -68,5 +73,25 @@ public class ServerStubTest {
         assertThat( response.getStatusCode(), equalTo( 201 ) );
         assertThat( response.getContentType(), equalTo( "text/plain" ) );
         assertThat( response.getBody(), equalTo( "created key" ) );
+    }
+
+    @Test
+    public void offersVariableSubstitutionInAnsweredBody() throws Exception {
+        variables.put("who", "world");
+
+        HttpResponse response = get( "http://localhost:"+port+"/greetings" );
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "hello world" ) );
+    }
+
+    @Test
+    public void offersUrlSegmentExtraction() throws Exception {
+        HttpResponse response = get( "http://localhost:"+port+"/echo/this-segment/and/that-other-segment" );
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "application/json" ) );
+        assertThat( response.getBody(), equalTo( "{\"one\":\"this-segment\",\"two\":\"that-other-segment\"}" ) );
     }
 }

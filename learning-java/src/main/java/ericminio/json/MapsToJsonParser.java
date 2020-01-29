@@ -11,6 +11,7 @@ public class MapsToJsonParser {
     public static String stringify(Object o) {
         if (o == Boolean.TRUE) { return "true"; }
         if (o == Boolean.FALSE) { return "false"; }
+        if (o instanceof String) { return "\"" + o + "\""; }
         if (o instanceof List) { return stringifyCollection((List) o); }
         if (! (o instanceof Map)) { return o.toString(); }
 

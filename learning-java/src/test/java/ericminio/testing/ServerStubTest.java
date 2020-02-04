@@ -6,8 +6,6 @@ import org.junit.Test;
 import support.HttpResponse;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -19,14 +17,10 @@ public class ServerStubTest {
 
     ServerStub server;
     private int port = 5018;
-    private Map<String, Object> variables;
-    private Map<String, ServerStub.Function> functions;
 
     @Before
     public void startServer() throws IOException {
-        variables = new HashMap<>();
-        functions = new HashMap<>();
-        server = new ServerStub("stub.json", variables, functions);
+        server = new ServerStub("stub.json");
         server.start(port);
     }
     @After
@@ -78,7 +72,7 @@ public class ServerStubTest {
 
     @Test
     public void offersVariableSubstitutionInAnsweredBody() throws Exception {
-        variables.put("who", "world");
+        server.getVariables().put("who", "world");
 
         HttpResponse response = get( "http://localhost:"+port+"/greetings" );
 
@@ -98,7 +92,7 @@ public class ServerStubTest {
 
     @Test
     public void offersFunctionCallInAnsweredBody() throws Exception {
-        functions.put("combine", (incoming, variables) ->
+        server.getFunctions().put("combine", (incoming, variables) ->
                 variables.get("groupCount") + ": " + incoming.getBody() + " " + variables.get("group-1")
         );
         HttpResponse response = post( "http://localhost:"+port+"/modify/world", "hello" );

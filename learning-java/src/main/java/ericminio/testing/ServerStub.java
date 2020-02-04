@@ -17,17 +17,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class StubServer {
+public class ServerStub {
     private HttpServer server;
     private List<Route> routes;
     private Map<String, Object> variables;
-    private Map<String, StubServer.Function> functions;
+    private Map<String, ServerStub.Function> functions;
 
-    public StubServer(String configFile) {
+    public ServerStub(String configFile) {
         this(configFile, new HashMap<>(), new HashMap<>());
     }
 
-    public StubServer(String configFile, Map<String, Object> variables, Map<String, StubServer.Function> functions) {
+    public ServerStub(String configFile, Map<String, Object> variables, Map<String, ServerStub.Function> functions) {
         this.variables = variables;
         this.functions = functions;
         InputStream resource = this.getClass().getClassLoader().getResourceAsStream(configFile);

@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import support.HttpResponse;
-import support.PutRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,16 +17,16 @@ import static support.PutRequest.put;
 
 public class ServerStubTest {
 
-    StubServer server;
+    ServerStub server;
     private int port = 5018;
     private Map<String, Object> variables;
-    private Map<String, StubServer.Function> functions;
+    private Map<String, ServerStub.Function> functions;
 
     @Before
     public void startServer() throws IOException {
         variables = new HashMap<>();
         functions = new HashMap<>();
-        server = new StubServer("stub.json", variables, functions);
+        server = new ServerStub("stub.json", variables, functions);
         server.start(port);
     }
     @After

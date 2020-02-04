@@ -6,6 +6,8 @@ import org.junit.Test;
 import support.HttpResponse;
 
 import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -100,5 +102,17 @@ public class ServerStubTest {
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "application/json" ) );
         assertThat( response.getBody(), equalTo( "{\"message\":\"1: hello world\"}" ) );
+    }
+
+    @Test
+    public void functionCanGenerateObject() throws Exception {
+        server.getFunctions().put("create-object", (incoming, variables) ->
+                Arrays.asList("one", "two").stream().map(v ->new HashMap<String, Object>() {{ put("value", v); }}).collect(Collectors.toList())
+        );
+        HttpResponse response = get("http://localhost:"+port+"/function-collection");
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "application/json" ) );
+        assertThat( response.getBody(), equalTo( "{\"values\":[{\"value\":\"one\"},{\"value\":\"two\"}]}" ) );
     }
 }

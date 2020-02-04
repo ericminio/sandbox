@@ -56,7 +56,7 @@
         },
         {
             "when": {
-                "urlMatches": "/echo/(.*?)/and/(.*?)"
+                "urlMatches": "/echo/(.*)/and/(.*)"
             },
             "answer": {
                 "statusCode": 200,
@@ -71,7 +71,17 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",
-                "body": { "message": "~combine()" }
+                "body": { "message": "~string~combine()" }
+            }
+        },
+        {
+            "when": {
+                "urlMatches": "/function-collection"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": { "values": "~object~create-object()" }
             }
         },
 

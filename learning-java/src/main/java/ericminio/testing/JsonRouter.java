@@ -45,7 +45,7 @@ public class JsonRouter {
         return functions;
     }
 
-    class Incoming {
+    public class Incoming {
         private String uri;
         private String method;
         private String body;
@@ -144,7 +144,7 @@ public class JsonRouter {
             return true;
         }
     }
-    class Answer {
+    public class Answer {
         Map<String, Object> definition;
         private String evaluatedBody;
 
@@ -178,12 +178,18 @@ public class JsonRouter {
             }
             for (String key :functions.keySet()) {
                 JsonRouter.Function function = functions.get(key);
-                this.evaluatedBody = this.evaluatedBody.replaceAll("~"+key+"\\(\\)", function.execute(incoming, variables));
+                Object value = function.execute(incoming, variables);
+                if (value instanceof String) {
+                    this.evaluatedBody = this.evaluatedBody.replaceAll("~string~" + key + "\\(\\)", (String) value);
+                }
+                else {
+                    this.evaluatedBody = this.evaluatedBody.replaceAll("\"~object~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
+                }
             }
         }
     }
 
-    interface Function {
-        String execute(Incoming incoming, Map<String, Object> variables);
+    public interface Function {
+        Object execute(Incoming incoming, Map<String, Object> variables);
     }
 }

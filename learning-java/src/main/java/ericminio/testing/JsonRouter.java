@@ -145,19 +145,23 @@ public class JsonRouter {
         }
     }
     public class Answer {
-        Map<String, Object> definition;
+        private Map<String, Object> definition;
         private String evaluatedBody;
+        private Integer statusCode;
+        private String contentType;
 
         public Answer(Map<String, Object> definition) {
             this.definition = definition;
+            this.contentType = (String) this.definition.get("contentType");
+            this.statusCode = (Integer) this.definition.get("statusCode");
         }
 
         public String getContentType() {
-            return (String) this.definition.get("contentType");
+            return contentType;
         }
 
         public Integer getStatusCode() {
-            return (Integer) this.definition.get("statusCode");
+            return statusCode;
         }
 
         public String getBody() {
@@ -176,14 +180,24 @@ public class JsonRouter {
             for (String key :variables.keySet()) {
                 this.evaluatedBody = this.evaluatedBody.replaceAll("#"+key, variables.get(key).toString());
             }
-            for (String key :functions.keySet()) {
-                JsonRouter.Function function = functions.get(key);
-                Object value = function.execute(incoming, variables);
-                if (value instanceof String) {
-                    this.evaluatedBody = this.evaluatedBody.replaceAll("~string~" + key + "\\(\\)", (String) value);
-                }
-                else {
-                    this.evaluatedBody = this.evaluatedBody.replaceAll("\"~object~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
+            if (this.evaluatedBody.contains("~string~") || this.evaluatedBody.contains("~object~")) {
+                for (String key : functions.keySet()) {
+                    JsonRouter.Function function = functions.get(key);
+                    try {
+                        if (this.evaluatedBody.contains("~string~" + key + "()")) {
+                            String value = (String) function.execute(incoming, variables);
+                            this.evaluatedBody = this.evaluatedBody.replaceAll("~string~" + key + "\\(\\)", value);
+                        }
+                        if (this.evaluatedBody.contains("~object~" + key + "()")) {
+                            Object value = function.execute(incoming, variables);
+                            this.evaluatedBody = this.evaluatedBody.replaceAll("\"~object~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
+                        }
+                    }
+                    catch(Exception e) {
+                        this.statusCode = 500;
+                        this.contentType = "text/plain";
+                        this.evaluatedBody = e.getMessage();
+                    }
                 }
             }
         }

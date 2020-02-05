@@ -29,7 +29,6 @@ public class ServerStub {
         server = HttpServer.create( new InetSocketAddress( port ), 0 );
         server.createContext( "/", exchange -> {
             JsonRouter.Answer answer = router.digest(exchange);
-
             exchange.getResponseHeaders().add( "Content-Type", answer.getContentType());
             exchange.sendResponseHeaders(answer.getStatusCode(), answer.getEvaluateBody().length() );
             exchange.getResponseBody().write(answer.getEvaluateBody().getBytes());

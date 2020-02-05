@@ -84,6 +84,26 @@
                 "body": { "values": "~object~create-object()" }
             }
         },
+        {
+            "when": {
+                "urlStartsWith": "/no-function"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": { "all": "good" }
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/exception-in-function"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": { "all": "~string~any()" }
+            }
+        },
 
         {
             "answer": {

@@ -115,4 +115,28 @@ public class ServerStubTest {
         assertThat( response.getContentType(), equalTo( "application/json" ) );
         assertThat( response.getBody(), equalTo( "{\"values\":[{\"value\":\"one\"},{\"value\":\"two\"}]}" ) );
     }
+
+    @Test
+    public void doNotRunFunctionWhenYouDoNotNeed() throws Exception {
+        server.getFunctions().put("any", (incoming, variables) -> {
+            throw new RuntimeException("should not call me");
+        });
+        HttpResponse response = get("http://localhost:"+port+"/no-function");
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "application/json" ) );
+        assertThat( response.getBody(), equalTo( "{\"all\":\"good\"}" ) );
+    }
+
+    @Test
+    public void resistsExceptionInFunctionCalls() throws Exception {
+        server.getFunctions().put("any", (incoming, variables) -> {
+            throw new RuntimeException("resist me");
+        });
+        HttpResponse response = get("http://localhost:"+port+"/exception-in-function");
+
+        assertThat( response.getStatusCode(), equalTo( 500 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "resist me" ) );
+    }
 }

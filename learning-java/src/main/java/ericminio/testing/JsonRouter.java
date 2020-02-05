@@ -180,28 +180,22 @@ public class JsonRouter {
             for (String key :variables.keySet()) {
                 this.evaluatedBody = this.evaluatedBody.replaceAll("#"+key, variables.get(key).toString());
             }
-            if (this.evaluatedBody.contains("~string~") || this.evaluatedBody.contains("~object~")) {
+            if (this.evaluatedBody.contains("~call~")) {
                 for (String key : functions.keySet()) {
-                    JsonRouter.Function function = functions.get(key);
-                    try {
-                        if (this.evaluatedBody.contains("~string~" + key + "()")) {
-                            String value = (String) function.execute(incoming, variables);
-                            this.evaluatedBody = this.evaluatedBody.replaceAll("~string~" + key + "\\(\\)", value);
-                        }
-                        if (this.evaluatedBody.contains("~object~" + key + "()")) {
+                    if (this.evaluatedBody.contains("~call~" + key + "()")) {
+                        try {
+                            JsonRouter.Function function = functions.get(key);
                             Object value = function.execute(incoming, variables);
                             if (value instanceof String) {
-                                this.evaluatedBody = this.evaluatedBody.replaceAll("~object~" + key + "\\(\\)", (String) value);
+                                this.evaluatedBody = this.evaluatedBody.replaceAll("~call~" + key + "\\(\\)", (String) value);
+                            } else {
+                                this.evaluatedBody = this.evaluatedBody.replaceAll("\"~call~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
                             }
-                            else {
-                                this.evaluatedBody = this.evaluatedBody.replaceAll("\"~object~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
-                            }
+                        } catch (Exception e) {
+                            this.statusCode = 500;
+                            this.contentType = "text/plain";
+                            this.evaluatedBody = e.getMessage();
                         }
-                    }
-                    catch(Exception e) {
-                        this.statusCode = 500;
-                        this.contentType = "text/plain";
-                        this.evaluatedBody = e.getMessage();
                     }
                 }
             }

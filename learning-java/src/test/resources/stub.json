@@ -71,7 +71,7 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",
-                "body": { "message": "~string~combine()" }
+                "body": { "message": "~call~combine()" }
             }
         },
         {
@@ -81,7 +81,7 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",
-                "body": { "values": "~object~create-object()" }
+                "body": { "values": "~call~create-object()" }
             }
         },
         {
@@ -101,7 +101,7 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",
-                "body": { "all": "~string~any()" }
+                "body": { "all": "~call~any()" }
             }
         },
         {
@@ -111,7 +111,7 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "text/plain",
-                "body": "~object~plain-text()"
+                "body": "~call~plain-text()"
             }
         },
 

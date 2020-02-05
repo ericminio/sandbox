@@ -190,7 +190,12 @@ public class JsonRouter {
                         }
                         if (this.evaluatedBody.contains("~object~" + key + "()")) {
                             Object value = function.execute(incoming, variables);
-                            this.evaluatedBody = this.evaluatedBody.replaceAll("\"~object~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
+                            if (value instanceof String) {
+                                this.evaluatedBody = this.evaluatedBody.replaceAll("~object~" + key + "\\(\\)", (String) value);
+                            }
+                            else {
+                                this.evaluatedBody = this.evaluatedBody.replaceAll("\"~object~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
+                            }
                         }
                     }
                     catch(Exception e) {

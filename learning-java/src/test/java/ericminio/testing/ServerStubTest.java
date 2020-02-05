@@ -139,4 +139,16 @@ public class ServerStubTest {
         assertThat( response.getContentType(), equalTo( "text/plain" ) );
         assertThat( response.getBody(), equalTo( "resist me" ) );
     }
+
+    @Test
+    public void generatedObjectCanBeString() throws Exception {
+        server.getFunctions().put("plain-text", (incoming, variables) ->
+                "hello world"
+        );
+        HttpResponse response = get("http://localhost:"+port+"/function-plain-text");
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "hello world" ) );
+    }
 }

@@ -104,6 +104,16 @@
                 "body": { "all": "~string~any()" }
             }
         },
+        {
+            "when": {
+                "urlStartsWith": "/function-plain-text"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "~object~plain-text()"
+            }
+        },
 
         {
             "answer": {

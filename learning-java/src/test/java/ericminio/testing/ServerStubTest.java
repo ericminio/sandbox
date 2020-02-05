@@ -149,6 +149,28 @@ public class ServerStubTest {
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "text/plain" ) );
-        assertThat( response.getBody(), equalTo( "hello world" ) );
+        assertThat( response.getBody(), equalTo( "hello world :)" ) );
+    }
+
+    @Test
+    public void generatedObjectCanBeObject() throws Exception {
+        server.getFunctions().put("simple-object", (incoming, variables) ->
+                new HashMap<String, Object>() {{ put("field", "value"); }}
+        );
+        HttpResponse response = get("http://localhost:"+port+"/simple-object");
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "{\"field\":\"value\"}" ) );
+    }
+
+    @Test
+    public void answeredStatusCodeCanBeDynamic() throws Exception {
+        server.getFunctions().put("dynamic-status-code", (incoming, variables) ->
+                222
+        );
+        HttpResponse response = get("http://localhost:"+port+"/status-code");
+
+        assertThat( response.getStatusCode(), equalTo( 222 ) );
     }
 }

@@ -27,7 +27,9 @@ public class JsonRouter {
 
     public Answer digest(HttpExchange exchange) {
         Incoming incoming = new Incoming(exchange, variables);
-        JsonRouter.Answer answer = this.route(incoming).getAnswer();
+        Route route = this.route(incoming);
+        Answer answer = route.getAnswer();
+        answer.evaluateStatusCode(incoming);
         answer.evaluateBody(incoming);
 
         return answer;
@@ -146,14 +148,15 @@ public class JsonRouter {
     }
     public class Answer {
         private Map<String, Object> definition;
-        private String evaluatedBody;
+        private Object statusCodeDefinition;
         private Integer statusCode;
         private String contentType;
+        private String evaluatedBody;
 
         public Answer(Map<String, Object> definition) {
             this.definition = definition;
             this.contentType = (String) this.definition.get("contentType");
-            this.statusCode = (Integer) this.definition.get("statusCode");
+            this.statusCodeDefinition = this.definition.get("statusCode");
         }
 
         public String getContentType() {
@@ -181,24 +184,53 @@ public class JsonRouter {
                 this.evaluatedBody = this.evaluatedBody.replaceAll("#"+key, variables.get(key).toString());
             }
             if (this.evaluatedBody.contains("~call~")) {
-                for (String key : functions.keySet()) {
-                    if (this.evaluatedBody.contains("~call~" + key + "()")) {
-                        try {
-                            JsonRouter.Function function = functions.get(key);
-                            Object value = function.execute(incoming, variables);
-                            if (value instanceof String) {
-                                this.evaluatedBody = this.evaluatedBody.replaceAll("~call~" + key + "\\(\\)", (String) value);
-                            } else {
-                                this.evaluatedBody = this.evaluatedBody.replaceAll("\"~call~" + key + "\\(\\)\"", MapsToJsonParser.stringify(value));
-                            }
-                        } catch (Exception e) {
-                            this.statusCode = 500;
-                            this.contentType = "text/plain";
-                            this.evaluatedBody = e.getMessage();
+                String name = extractFunctionName(this.evaluatedBody);
+                Function function = functions.get(name);
+                try {
+                    String token = "~call~" + name + "\\(\\)";
+                    Object value = function.execute(incoming, variables);
+                    if (value instanceof String) {
+                        this.evaluatedBody = this.evaluatedBody.replaceAll(token, (String) value);
+                    } else {
+                        String valueAsString = MapsToJsonParser.stringify(value);
+                        if (this.evaluatedBody.contains("\"~call~" + name + "()\"")) {
+                            this.evaluatedBody = this.evaluatedBody.replaceAll("\"" + token + "\"", valueAsString);
+                        }
+                        else {
+                            this.evaluatedBody = this.evaluatedBody.replaceAll(token, valueAsString);
                         }
                     }
                 }
+                catch (Exception e) {
+                    this.statusCode = 500;
+                    this.contentType = "text/plain";
+                    this.evaluatedBody = e.getMessage();
+                }
             }
+        }
+
+        public void evaluateStatusCode(Incoming incoming) {
+            if (statusCodeDefinition instanceof Integer) {
+                this.statusCode = (Integer) statusCodeDefinition;
+            }
+            else {
+                String stringDefinition = (String) statusCodeDefinition;
+                if (stringDefinition.contains("~call~")) {
+                    String name = extractFunctionName(stringDefinition);
+                    Function function = functions.get(name);
+                    this.statusCode = (Integer) function.execute(incoming, variables);
+                }
+            }
+        }
+
+        protected String extractFunctionName(String call) {
+            Pattern pattern = Pattern.compile(".*~call~(.*)\\(\\).*");
+            Matcher matcher = pattern.matcher(call);
+            if (matcher.matches()) {
+                String name = matcher.group(1);
+                return name;
+            }
+            return null;
         }
     }
 

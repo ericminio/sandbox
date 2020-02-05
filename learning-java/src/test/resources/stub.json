@@ -111,7 +111,27 @@
             "answer": {
                 "statusCode": 200,
                 "contentType": "text/plain",
-                "body": "~call~plain-text()"
+                "body": "~call~plain-text() :)"
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/simple-object"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "~call~simple-object()"
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/status-code"
+            },
+            "answer": {
+                "statusCode": "~call~dynamic-status-code()",
+                "contentType": "text/plain",
+                "body": "anything"
             }
         },
 

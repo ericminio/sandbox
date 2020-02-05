@@ -129,11 +129,11 @@ public class JsonToMapsParserTest {
     }
     @Test
     public void preservesSpaceData() {
-        String json = "{  \"obsolete\" :  \"of course not!\"  }";
+        String json = "{  \"obsolete\" :  \"of course not :)\"  }";
         Map<String, Object> tree = parse(json);
 
         assertThat(tree.size(), equalTo(1));
-        assertThat(tree.get("obsolete"), equalTo("of course not!"));
+        assertThat(tree.get("obsolete"), equalTo("of course not :)"));
     }
     @Test
     public void resistsBigDecimals() {

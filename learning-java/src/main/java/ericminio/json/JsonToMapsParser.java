@@ -16,7 +16,7 @@ public class JsonToMapsParser {
                     .replaceAll("\\{\\s*", "{")
                     .replaceAll("\\[\\s*", "[")
                     .replaceAll(":\\s*", ":")
-                    .replaceAll("\\s*:", ":")
+                    .replaceAll("\"\\s*:", "\":")
                     .replaceAll(",\\s*", ",")
                     .replaceAll("\\s*\\]", "]")
                     .replaceAll("\\s*\\}", "}")

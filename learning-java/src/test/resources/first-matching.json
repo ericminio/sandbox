@@ -1,0 +1,25 @@
+{
+    "routes": [
+        {
+            "when": {
+                "urlStartsWith": "/ping"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "first"
+            }
+        },
+
+        {
+            "when": {
+                "urlStartsWith": "/ping"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "second"
+            }
+        }
+    ]
+}

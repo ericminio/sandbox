@@ -1,0 +1,11 @@
+{
+    "routes": [
+        {
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": "~call~greetings()"
+            }
+        }
+    ]
+}

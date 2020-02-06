@@ -1,0 +1,27 @@
+{
+    "routes": [
+        {
+            "when": {
+                "urlStartsWith": "/ping",
+                "methodIs": "GET"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "first"
+            }
+        },
+
+        {
+            "when": {
+                "urlStartsWith": "/ping",
+                "methodIs": "POST"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "second"
+            }
+        }
+    ]
+}

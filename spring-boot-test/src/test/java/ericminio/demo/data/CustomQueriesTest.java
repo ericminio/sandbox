@@ -1,5 +1,6 @@
 package ericminio.demo.data;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,15 @@ import static org.junit.Assert.assertThat;
         }
 )
 @RunWith(SpringRunner.class)
-public class CustomQueries {
+public class CustomQueriesTest {
 
     @Autowired
     AnyEntityRepository repository;
+
+    @Before
+    public void truncateTable() {
+        repository.deleteAll();
+    }
 
     @Test
     public void canDigestParameters() {

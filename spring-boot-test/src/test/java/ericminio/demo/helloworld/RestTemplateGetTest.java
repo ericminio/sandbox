@@ -14,11 +14,17 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -34,17 +40,14 @@ public class RestTemplateGetTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     private String greeting;
-    private TestRestTemplate restTemplate;
 
     @Before
     public void buildEndpoint() {
         greeting = "http://localhost:"+ port +"/greeting";
-    }
-
-    @Before
-    public void withValidCredentials() {
-        restTemplate = new TestRestTemplate("user", "correct-password");
     }
 
     @Test
@@ -56,7 +59,7 @@ public class RestTemplateGetTest {
 
     @Test
     public void resistsInvalidCredentials() {
-        restTemplate = new TestRestTemplate("user", "wrong-password");
+        TestRestTemplate restTemplate = new TestRestTemplate("user", "wrong-password");
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
 
         assertThat( response.getStatusCode(), equalTo( HttpStatus.UNAUTHORIZED ) );
@@ -91,12 +94,9 @@ public class RestTemplateGetTest {
         assertThat( actual, equalTo( new BuildGreeting().from("Joe").please() ) );
     }
 
-    @Autowired
-    RestTemplateBuilder restTemplateBuilder;
-
     @Test
     public void canHandleErrors() {
-        restTemplateBuilder.errorHandler(new ResponseErrorHandler() {
+        restTemplate.setErrorHandler(new ResponseErrorHandler() {
             @Override
             public boolean hasError(ClientHttpResponse clientHttpResponse) {
                 return false;
@@ -105,7 +105,6 @@ public class RestTemplateGetTest {
             public void handleError(ClientHttpResponse clientHttpResponse) {
             }
         });
-        restTemplate = new TestRestTemplate(restTemplateBuilder,"user", "correct-password");
         ResponseEntity<String> response = restTemplate.exchange(greeting + "?name=XXX", GET, null, String.class);
 
         assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));

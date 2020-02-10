@@ -10,12 +10,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -32,6 +32,9 @@ public class ExclusionServiceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     private String apply;
 
     @Before
@@ -47,7 +50,6 @@ public class ExclusionServiceTest {
 
         HttpEntity<Data> request = new HttpEntity<>(data, csrf.headers());
 
-        TestRestTemplate restTemplate = new TestRestTemplate("user", "correct-password");
         ResponseEntity<Group> response = restTemplate.exchange(apply, POST, request, Group.class);
         Group expected = new Group(new Person("Diana"), new Person("Joe"));
 

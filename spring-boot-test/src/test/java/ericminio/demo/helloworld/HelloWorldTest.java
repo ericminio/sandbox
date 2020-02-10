@@ -6,13 +6,14 @@ import ericminio.demo.helloworld.domain.Greeting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
@@ -28,17 +29,14 @@ public class HelloWorldTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     private String greeting;
-    private TestRestTemplate restTemplate;
 
     @Before
     public void buildEndpoint() {
         greeting = "http://localhost:"+ port +"/greeting";
-    }
-
-    @Before
-    public void withValidCredentials() {
-        restTemplate = new TestRestTemplate("user", "correct-password");
     }
 
     @Test

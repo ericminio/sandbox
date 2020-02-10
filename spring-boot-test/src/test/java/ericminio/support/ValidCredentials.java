@@ -1,5 +1,6 @@
 package ericminio.support;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -13,6 +14,12 @@ import java.util.List;
 @Configuration
 public class ValidCredentials {
 
+    @Value("${custom.security.username}")
+    private String username;
+
+    @Value("${custom.security.password}")
+    private String password;
+
     @Bean
     public RestTemplate getRestTemplateWithValidCredentials() {
         RestTemplate restTemplate = new RestTemplate();
@@ -25,7 +32,7 @@ public class ValidCredentials {
         interceptors = new ArrayList(interceptors);
         BasicAuthenticationInterceptor.class.getClass();
         interceptors.removeIf(BasicAuthenticationInterceptor.class::isInstance);
-        interceptors.add(new BasicAuthenticationInterceptor("user", "correct-password"));
+        interceptors.add(new BasicAuthenticationInterceptor(username, password));
         restTemplate.setInterceptors(interceptors);
 
         return restTemplate;

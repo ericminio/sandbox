@@ -1,5 +1,6 @@
 package ericminio;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,13 +16,19 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @EnableWebSecurity
 public class BasicSecurity extends WebSecurityConfigurerAdapter {
 
+    @Value("${custom.security.username}")
+    private String username;
+
+    @Value("${custom.security.password}")
+    private String password;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         auth
                 .inMemoryAuthentication()
-                .withUser("user")
-                .password(encoder.encode("correct-password"))
+                .withUser(username)
+                .password(encoder.encode(password))
                 .roles("USER");
     }
 

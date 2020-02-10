@@ -77,9 +77,23 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestStringInsideJson() {
         JsonRouter router = from("dynamic-body-string-inside-json.json");
+        router.getFunctions().put("greetings", (incoming, variables) -> "hello world");
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/string-inside-json");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("application/json"));
+        assertThat(answer.getEvaluateBody(), equalTo("{\"message\":\"hello world\"}"));
+    }
+
+    @Test
+    public void dynamicBodyCanDigestCombinedStringInsideJson() {
+        JsonRouter router = from("dynamic-body-string-inside-json.json");
         router.getFunctions().put("greetings", (incoming, variables) -> "world");
         FakeHttpExchange exchange = new FakeHttpExchange() {{
-            setAttribute("uri", "/anything");
+            setAttribute("uri", "/combined-string-inside-json");
         }};
         JsonRouter.Answer answer = router.digest(exchange);
 

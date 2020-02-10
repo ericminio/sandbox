@@ -1,6 +1,19 @@
 {
     "routes": [
         {
+            "when": {
+                "urlStartsWith": "/string-inside-json"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "application/json",
+                "body": { "message": "~call~greetings()" }
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/combined-string-inside-json"
+            },
             "answer": {
                 "statusCode": 200,
                 "contentType": "application/json",

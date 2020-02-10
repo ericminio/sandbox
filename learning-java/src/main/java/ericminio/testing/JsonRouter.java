@@ -17,6 +17,7 @@ public class JsonRouter {
     private List<Route> routes;
     private final Map<String, Object> variables;
     private final Map<String, Function> functions;
+    private static String STATEMENT_PREFIX = "~call~";
 
     public JsonRouter(String config, Map<String, Object> variables, Map<String, Function> functions) {
         this.variables = variables;
@@ -181,25 +182,22 @@ public class JsonRouter {
         public void evaluateBody(Incoming incoming) {
             this.evaluatedBody = this.getBody();
             for (String key :variables.keySet()) {
-                this.evaluatedBody = this.evaluatedBody.replaceAll("#"+key, variables.get(key).toString());
+                this.evaluatedBody = this.evaluatedBody.replace("#"+key, variables.get(key).toString());
             }
-            if (this.evaluatedBody.contains("~call~")) {
+            if (this.evaluatedBody.contains(STATEMENT_PREFIX)) {
                 String name = extractFunctionName(this.evaluatedBody);
                 Function function = functions.get(name);
                 try {
-                    String token = "~call~" + name + "\\(\\)";
+                    String token = statement(name);
                     Object value = function.execute(incoming, variables);
-                    if (value instanceof String) {
-                        this.evaluatedBody = this.evaluatedBody.replaceAll(token, (String) value);
-                    } else {
-                        String valueAsString = MapsToJsonParser.stringify(value);
-                        if (this.evaluatedBody.contains("\"~call~" + name + "()\"")) {
-                            this.evaluatedBody = this.evaluatedBody.replaceAll("\"" + token + "\"", valueAsString);
-                        }
-                        else {
-                            this.evaluatedBody = this.evaluatedBody.replaceAll(token, valueAsString);
+                    String valueAsString = value.toString();
+                    if (! (value instanceof String)) {
+                        valueAsString = MapsToJsonParser.stringify(value);
+                        if (this.evaluatedBody.contains("\"" + token + "\"")) {
+                            token = "\"" + token + "\"";
                         }
                     }
+                    this.evaluatedBody = this.evaluatedBody.replace(token, valueAsString);
                 }
                 catch (Exception e) {
                     this.statusCode = 500;
@@ -207,6 +205,10 @@ public class JsonRouter {
                     this.evaluatedBody = e.getMessage();
                 }
             }
+        }
+
+        private String statement(String name) {
+            return STATEMENT_PREFIX + name + "()";
         }
 
         public void evaluateStatusCode(Incoming incoming) {

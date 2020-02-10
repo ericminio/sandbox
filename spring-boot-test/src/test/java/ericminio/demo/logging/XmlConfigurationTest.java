@@ -1,6 +1,5 @@
 package ericminio.demo.logging;
 
-import ericminio.support.ClearFile;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

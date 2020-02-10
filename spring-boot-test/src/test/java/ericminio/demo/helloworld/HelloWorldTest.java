@@ -7,12 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
@@ -29,15 +29,20 @@ public class HelloWorldTest {
     int port;
 
     private String greeting;
+    private TestRestTemplate restTemplate;
 
     @Before
     public void buildEndpoint() {
         greeting = "http://localhost:"+ port +"/greeting";
     }
 
+    @Before
+    public void withValidCredentials() {
+        restTemplate = new TestRestTemplate("user", "correct-password");
+    }
+
     @Test
     public void canAccessEndpoint() {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
 
         assertThat( response.getStatusCode(), equalTo( HttpStatus.OK ) );
@@ -45,7 +50,6 @@ public class HelloWorldTest {
 
     @Test
     public void canReadHeadersViaEntityRequest() {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
 
         assertThat( response.getHeaders().getContentType(), equalTo(APPLICATION_JSON_UTF8 ) );
@@ -53,7 +57,6 @@ public class HelloWorldTest {
 
     @Test
     public void hasSpecialApiForHeaders() {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = restTemplate.headForHeaders(greeting);
 
         assertThat( headers.getContentType(), equalTo(APPLICATION_JSON_UTF8 ) );
@@ -61,7 +64,6 @@ public class HelloWorldTest {
 
     @Test
     public void canReadBodyAsEntity() {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting + "?name=Joe", Greeting.class);
 
         assertThat( response.getBody(), equalTo( new BuildGreeting().from("Joe").please() ) );
@@ -69,7 +71,6 @@ public class HelloWorldTest {
 
     @Test
     public void canReadBodyAsString() throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(greeting + "?name=Joe", String.class);
         Greeting actual = new ObjectMapper().readValue(response.getBody(), Greeting.class);
 

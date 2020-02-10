@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
@@ -35,23 +35,35 @@ public class RestTemplateGetTest {
     int port;
 
     private String greeting;
+    private TestRestTemplate restTemplate;
 
     @Before
     public void buildEndpoint() {
         greeting = "http://localhost:"+ port +"/greeting";
     }
 
+    @Before
+    public void withValidCredentials() {
+        restTemplate = new TestRestTemplate("user", "correct-password");
+    }
+
     @Test
     public void canAccessEndpoint() {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
 
         assertThat( response.getStatusCode(), equalTo( HttpStatus.OK ) );
     }
 
     @Test
+    public void resistsInvalidCredentials() {
+        restTemplate = new TestRestTemplate("user", "wrong-password");
+        ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
+
+        assertThat( response.getStatusCode(), equalTo( HttpStatus.UNAUTHORIZED ) );
+    }
+
+    @Test
     public void canReadHeadersViaEntityRequest() {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
 
         assertThat( response.getHeaders().getContentType(), equalTo(APPLICATION_JSON_UTF8 ) );
@@ -59,7 +71,6 @@ public class RestTemplateGetTest {
 
     @Test
     public void hasSpecialApiForHeaders() {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = restTemplate.headForHeaders(greeting);
 
         assertThat( headers.getContentType(), equalTo(APPLICATION_JSON_UTF8 ) );
@@ -67,7 +78,6 @@ public class RestTemplateGetTest {
 
     @Test
     public void canReadBodyAsEntity() {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting + "?name=Joe", Greeting.class);
 
         assertThat( response.getBody(), equalTo( new BuildGreeting().from("Joe").please() ) );
@@ -75,7 +85,6 @@ public class RestTemplateGetTest {
 
     @Test
     public void canReadBodyAsString() throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(greeting + "?name=Joe", String.class);
         Greeting actual = new ObjectMapper().readValue(response.getBody(), Greeting.class);
 
@@ -87,7 +96,7 @@ public class RestTemplateGetTest {
 
     @Test
     public void canHandleErrors() {
-        RestTemplate restTemplate = restTemplateBuilder.errorHandler(new ResponseErrorHandler() {
+        restTemplateBuilder.errorHandler(new ResponseErrorHandler() {
             @Override
             public boolean hasError(ClientHttpResponse clientHttpResponse) {
                 return false;
@@ -95,7 +104,8 @@ public class RestTemplateGetTest {
             @Override
             public void handleError(ClientHttpResponse clientHttpResponse) {
             }
-        }).build();
+        });
+        restTemplate = new TestRestTemplate(restTemplateBuilder,"user", "correct-password");
         ResponseEntity<String> response = restTemplate.exchange(greeting + "?name=XXX", GET, null, String.class);
 
         assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));

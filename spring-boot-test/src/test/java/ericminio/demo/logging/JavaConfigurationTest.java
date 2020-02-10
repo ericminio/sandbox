@@ -2,16 +2,12 @@ package ericminio.demo.logging;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.spi.LoggerContextListener;
-import ericminio.support.ClearFile;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 import static ericminio.support.ClearFile.clearFile;
 import static ericminio.support.FileContent.contentOf;

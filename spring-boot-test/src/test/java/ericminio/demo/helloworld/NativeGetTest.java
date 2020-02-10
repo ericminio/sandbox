@@ -2,19 +2,18 @@ package ericminio.demo.helloworld;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ericminio.demo.helloworld.domain.Greeting;
+import ericminio.support.BasicHeaders;
 import ericminio.support.HttpResponse;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import static ericminio.support.GetRequest.get;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -27,6 +26,9 @@ public class NativeGetTest {
 
     @LocalServerPort
     int port;
+
+    @Autowired
+    BasicHeaders basic;
 
     private String greeting;
 
@@ -45,36 +47,28 @@ public class NativeGetTest {
 
     @Test
     public void canAuthenticate() throws Exception {
-        HttpResponse response = get(greeting, headers());
+        HttpResponse response = get(greeting, basic.headers());
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
     }
 
-    private Map<String, String> headers() {
-        Map<String, String> values = new HashMap<>();
-
-        values.put("Authorization", "Basic " + Base64.encodeBase64String("user:correct-password".getBytes()));
-
-        return values;
-    }
-
     @Test
     public void canReadBodyAsJson() throws Exception {
-        HttpResponse response = get( greeting + "?name=Joe", headers() );
+        HttpResponse response = get( greeting + "?name=Joe", basic.headers() );
 
         assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, Joe!\"}" ) );
     }
 
     @Test
     public void btwEndpointResistsNoParameter() throws Exception {
-        HttpResponse response = get(greeting, headers());
+        HttpResponse response = get(greeting, basic.headers());
 
         assertThat( response.getBody(), equalTo( "{\"content\":\"Hello, World!\"}" ) );
     }
 
     @Test
     public void jsonSupportOfferedByJackson() throws Exception {
-        HttpResponse response = get(greeting, headers());
+        HttpResponse response = get(greeting, basic.headers());
         Greeting value = new ObjectMapper().readValue(response.getBody(), Greeting.class);
 
         assertThat( value.content, equalTo( "Hello, World!" ) );

@@ -56,8 +56,8 @@ public class JsonToMapsParser {
     }
 
     private static Object digest(String value) {
-        if (value.indexOf("{") == -1) { return clean(value); }
         if (value.indexOf("[") == 0) { return parseCollection(value); }
+        if (value.indexOf("{") == -1) { return clean(value); }
         return parseObject(value);
     }
 
@@ -158,6 +158,6 @@ public class JsonToMapsParser {
     }
 
     private static void debug(String message) {
-        //System.out.println(message);
+//        System.out.println(message);
     }
 }

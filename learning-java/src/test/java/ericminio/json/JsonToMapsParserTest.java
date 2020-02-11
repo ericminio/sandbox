@@ -151,4 +151,15 @@ public class JsonToMapsParserTest {
         assertThat(tree.size(), equalTo(1));
         assertThat(tree.get("answer"), equalTo("(42)"));
     }
+    @Test
+    public void resistsEmptyCollection() {
+        String json = "{ \"attributes\": [ ] }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("attributes"), instanceOf(List.class));
+
+        List<Map<String, Object>> values = (List<Map<String, Object>>) tree.get("attributes");
+        assertThat(values.size(), equalTo(0));
+    }
 }

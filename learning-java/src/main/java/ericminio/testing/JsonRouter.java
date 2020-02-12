@@ -190,12 +190,15 @@ public class JsonRouter {
                 try {
                     String token = statement(name);
                     Object value = function.execute(incoming, variables);
-                    String valueAsString = value.toString();
-                    if (! (value instanceof String)) {
+                    String valueAsString = value == null? "null" : value.toString();
+                    if ( value != null && ! (value instanceof String)) {
                         valueAsString = MapsToJsonParser.stringify(value);
                         if (this.evaluatedBody.contains("\"" + token + "\"")) {
                             token = "\"" + token + "\"";
                         }
+                    }
+                    if (value == null && this.evaluatedBody.contains("\"" + token + "\"")) {
+                        token = "\"" + token + "\"";
                     }
                     this.evaluatedBody = this.evaluatedBody.replace(token, valueAsString);
                 }

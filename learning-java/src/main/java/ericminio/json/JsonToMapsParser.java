@@ -62,6 +62,7 @@ public class JsonToMapsParser {
     }
 
     private static Object clean(String input) {
+        if ("null".equalsIgnoreCase(input)) { return null; }
         if ("true".equalsIgnoreCase(input)) { return Boolean.TRUE; }
         if ("false".equalsIgnoreCase(input)) { return Boolean.FALSE; }
         if (input.startsWith("\"") && input.endsWith("\"")) {

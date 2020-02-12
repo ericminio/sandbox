@@ -129,4 +129,18 @@ public class JsonRouterTest {
         assertThat(answer.getContentType(), equalTo("application/json"));
         assertThat(answer.getEvaluateBody(), equalTo("{\"greetings\":{\"message\":\"welcome\"}}"));
     }
+
+    @Test
+    public void dynamicBodyCanDigestNull() {
+        JsonRouter router = from("dynamic-body-null.json");
+        router.getFunctions().put("nullify", (incoming, variables) -> null);
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/anything");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("application/json"));
+        assertThat(answer.getEvaluateBody(), equalTo("{\"message\":null}"));
+    }
 }

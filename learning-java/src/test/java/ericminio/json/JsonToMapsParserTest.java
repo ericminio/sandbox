@@ -162,4 +162,12 @@ public class JsonToMapsParserTest {
         List<Map<String, Object>> values = (List<Map<String, Object>>) tree.get("attributes");
         assertThat(values.size(), equalTo(0));
     }
+    @Test
+    public void resistsNull() {
+        String json = "{ \"attributes\": null }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("attributes"), equalTo(null));
+    }
 }

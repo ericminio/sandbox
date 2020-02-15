@@ -143,4 +143,34 @@ public class JsonRouterTest {
         assertThat(answer.getContentType(), equalTo("application/json"));
         assertThat(answer.getEvaluateBody(), equalTo("{\"message\":null}"));
     }
+
+    @Test
+    public void dynamicBodyOffersSpyingMechanism() {
+        class Spy {
+            private JsonRouter.Incoming incoming;
+            public void record(JsonRouter.Incoming incoming) {
+                this.incoming = incoming;
+            }
+            public boolean wasCalled() {
+                return this.incoming != null;
+            }
+        }
+        Spy spy = new Spy();
+        JsonRouter router = from("dynamic-body-spy.json");
+        router.getFunctions().put("spy", (incoming, variables) -> {
+            spy.record(incoming);
+            return "anything";
+        });
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/brag-about-spying");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("application/json"));
+        assertThat(answer.getEvaluateBody(), equalTo("{\"message\":\"anything\"}"));
+
+        assertThat(spy.wasCalled(), equalTo(true));
+        assertThat(spy.incoming.getUri(), equalTo("/brag-about-spying"));
+    }
 }

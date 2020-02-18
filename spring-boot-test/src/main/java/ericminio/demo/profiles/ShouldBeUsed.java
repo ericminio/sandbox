@@ -9,6 +9,6 @@ public class ShouldBeUsed implements Stuff {
 
     @Override
     public String getName() {
-        return "good";
+        return "visible name";
     }
 }

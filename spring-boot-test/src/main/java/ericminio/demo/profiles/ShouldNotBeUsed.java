@@ -9,6 +9,6 @@ public class ShouldNotBeUsed implements Stuff {
 
     @Override
     public String getName() {
-        return "not good";
+        return "hidden name";
     }
 }

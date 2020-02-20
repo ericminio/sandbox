@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -49,14 +48,6 @@ public class RestTemplateGetTest {
         ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
 
         assertThat( response.getStatusCode(), equalTo( HttpStatus.OK ) );
-    }
-
-    @Test
-    public void resistsInvalidCredentials() {
-        TestRestTemplate restTemplate = new TestRestTemplate("user", "wrong-password");
-        ResponseEntity<Greeting> response = restTemplate.getForEntity(greeting, Greeting.class);
-
-        assertThat( response.getStatusCode(), equalTo( HttpStatus.UNAUTHORIZED ) );
     }
 
     @Test

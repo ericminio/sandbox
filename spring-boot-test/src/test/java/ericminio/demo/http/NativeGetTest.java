@@ -12,9 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import static ericminio.support.GetRequest.get;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -39,14 +36,6 @@ public class NativeGetTest {
 
     @Test
     public void canAccessEndpoint() throws Exception {
-        URL url = new URL(greeting);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        assertThat( connection.getResponseCode(), equalTo( 401 ) );
-    }
-
-    @Test
-    public void canAuthenticate() throws Exception {
         HttpResponse response = get(greeting, basic.headers());
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );

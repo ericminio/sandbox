@@ -3,6 +3,8 @@ package ericminio.katas.mastermind;
 import org.junit.Test;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -77,7 +79,10 @@ public class MastermindTest {
         public Feedback evaluate(Color... guesses) {
             Feedback feedback = new Feedback();
             feedback.blackCount = evaluateCorrectPositions(guesses);
-            feedback.whiteCount = evaluateIncorrectPositions(guesses);
+
+            ArrayList<Color> intersection = new ArrayList<>(Arrays.asList(code));
+            intersection.retainAll(new ArrayList<>(Arrays.asList(guesses)));
+            feedback.whiteCount = intersection.size() - feedback.blackCount;
 
             return feedback;
         }
@@ -88,29 +93,11 @@ public class MastermindTest {
                 Color guess = guesses[i];
                 if (code[i] == guess) {
                     black += 1;
-                    code[i] = null;
-                    guesses[i] = null;
                 }
             }
             return black;
         }
 
-        private Integer evaluateIncorrectPositions(Color[] guesses) {
-            Integer white = 0;
-            for (int i=0; i<guesses.length; i++) {
-                Color guess = guesses[i];
-                if (guess != null) {
-                    for (int j = 0; j < code.length; j++) {
-                        if (guess == code[j]) {
-                            white += 1;
-                            code[j] = null;
-                            break;
-                        }
-                    }
-                }
-            }
-            return white;
-        }
     }
 
     class Feedback {

@@ -1,8 +1,10 @@
 package ericminio;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +18,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Profile("!unsecure")
 public class BasicSecurity extends WebSecurityConfigurerAdapter {
 
     @Value("${custom.security.username}")
@@ -29,6 +32,9 @@ public class BasicSecurity extends WebSecurityConfigurerAdapter {
 
     @Value("${custom.security.adminPassword}")
     private String adminPassword;
+
+    @Autowired
+    CsrfTokenRepository csrfTokenRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -49,17 +55,15 @@ public class BasicSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .anyRequest()
-                .authenticated()
+                    .anyRequest()
+                    .authenticated()
                 .and()
-                .httpBasic()
+                    .httpBasic()
                 .and()
-                .csrf()
-                .csrfTokenRepository(csrfTokenRepository());
+                    .csrf()
+                    .csrfTokenRepository(csrfTokenRepository);
     }
 
-    @Bean
-    public CsrfTokenRepository csrfTokenRepository() {
-        return CookieCsrfTokenRepository.withHttpOnlyFalse();
-    }
 }
+
+

@@ -18,7 +18,7 @@ public class JaxRsTest {
 
     @Before
     public void startServer() throws Exception {
-        server = HttpServer.create( new InetSocketAddress( 8003 ), 0 );
+        server = HttpServer.create( new InetSocketAddress( 8004 ), 0 );
         HttpHandler handler = RuntimeDelegate.getInstance().createEndpoint(new GreetingsApplication(), HttpHandler.class);
         server.createContext("/", handler);
         server.start();
@@ -30,7 +30,7 @@ public class JaxRsTest {
 
     @Test
     public void exposesEndpoint() throws Exception {
-        HttpResponse response = get( "http://localhost:8003/api/greetings" );
+        HttpResponse response = get( "http://localhost:8004/api/greetings" );
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
     }

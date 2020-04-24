@@ -26,6 +26,7 @@
         <module>grizzly</module>
         <module>firebase</module>
         <module>spring-boot-test</module>
+        <module>opensaml</module>
     </modules>
 
 </project>

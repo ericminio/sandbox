@@ -4,22 +4,21 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import java.security.InvalidKeyException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.Key;
 
 public class RSA {
 
-    public static byte[] decript(byte[] encrypted, RSAPrivateKey privateKey, Cipher cipher) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+    public static byte[] decrypt(byte[] encrypted, Key key, Cipher cipher) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        cipher.init(Cipher.DECRYPT_MODE, key);
         return doIt(cipher, 128, encrypted);
     }
 
-    public static byte[] encrypt(String input, RSAPublicKey publicKey, Cipher cipher) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+    public static byte[] encrypt(String input, Key key, Cipher cipher) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        cipher.init(Cipher.ENCRYPT_MODE, key);
         return doIt(cipher, 117, input.getBytes());
     }
 
-    private static byte[] doIt(Cipher c, int chunkSize, byte[] source) throws IllegalBlockSizeException, BadPaddingException {
+    public static byte[] doIt(Cipher c, int chunkSize, byte[] source) throws IllegalBlockSizeException, BadPaddingException {
         int position;
         byte[] output = new byte[0];
         position = 0;

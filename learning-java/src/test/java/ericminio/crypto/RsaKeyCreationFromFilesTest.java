@@ -4,20 +4,13 @@ import ericminio.crypto.support.RSA;
 import org.junit.Test;
 
 import javax.crypto.Cipher;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import static ericminio.crypto.support.Keys.privateKey;
+import static ericminio.crypto.support.Keys.publicKey;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -45,47 +38,23 @@ public class RsaKeyCreationFromFilesTest {
 
     @Test
     public void publicKeyCreation() throws Exception {
-        PublicKey publicKey = publicKey();
+        PublicKey publicKey = publicKey(this.getClass());
 
         assertThat(publicKey.getAlgorithm(), equalTo("RSA"));
     }
 
-    private RSAPublicKey publicKey() throws IOException, URISyntaxException, NoSuchAlgorithmException, InvalidKeySpecException {
-        List<String> lines = Files.readAllLines(Paths.get(this.getClass().getClassLoader().getResource("rsa/public.key").toURI()));
-        String encodedKey = lines.stream().filter(line ->
-                !line.startsWith("-----BEGIN") && !line.startsWith("-----END"))
-                .collect(Collectors.joining());
-        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec publicSpec = new X509EncodedKeySpec(decodedKey);
-
-        return (RSAPublicKey) keyFactory.generatePublic(publicSpec);
-    }
-
     @Test
     public void privateKeyCreation() throws Exception {
-        PrivateKey privateKey = privateKey();
+        PrivateKey privateKey = privateKey(this.getClass());
 
         assertThat(privateKey.getAlgorithm(), equalTo("RSA"));
-    }
-
-    private RSAPrivateKey privateKey() throws IOException, URISyntaxException, NoSuchAlgorithmException, InvalidKeySpecException {
-        List<String> lines = Files.readAllLines(Paths.get(this.getClass().getClassLoader().getResource("rsa/private.key").toURI()));
-        String encodedKey = lines.stream().filter(line ->
-                !line.startsWith("-----BEGIN") && !line.startsWith("-----END"))
-                .collect(Collectors.joining());
-        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(decodedKey);
-
-        return (RSAPrivateKey) keyFactory.generatePrivate(privateSpec);
     }
 
     @Test
     public void roundTrip() throws Exception {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1PADDING");
-        byte[] encrypted = RSA.encrypt("hello world", publicKey(), cipher);
-        byte[] decrypted = RSA.decript(encrypted, privateKey(), cipher);
+        byte[] encrypted = RSA.encrypt("hello world", publicKey(this.getClass()), cipher);
+        byte[] decrypted = RSA.decrypt(encrypted, privateKey(this.getClass()), cipher);
 
         assertThat(new String(decrypted).trim(), equalTo("hello world"));
     }

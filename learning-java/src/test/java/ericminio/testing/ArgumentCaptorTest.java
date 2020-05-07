@@ -38,4 +38,17 @@ public class ArgumentCaptorTest {
 
         assertThat(values, equalList(asList("wake-up", "do-this")));
     }
+
+    @Test
+    public void canCaptureSeveralParameters() {
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        class DoIt {
+            public void please(String first, String second) {}
+        }
+        DoIt doIt = mock(DoIt.class);
+        doIt.please("one", "two");
+        verify(doIt).please(captor.capture(), captor.capture());
+        List<String> values = captor.getAllValues();
+        assertThat(values, equalList(asList("one", "two")));
+    }
 }

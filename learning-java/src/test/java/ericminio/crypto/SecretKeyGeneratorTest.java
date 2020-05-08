@@ -7,6 +7,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import static ericminio.crypto.support.RSA.decrypt;
 import static ericminio.crypto.support.RSA.encrypt;
@@ -21,6 +22,7 @@ public class SecretKeyGeneratorTest {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(256, new SecureRandom());
         SecretKey key = keyGenerator.generateKey();
+        System.out.println(Base64.getEncoder().encodeToString(key.getEncoded()));
 
         assertThat(key.getAlgorithm(), equalTo("AES"));
         assertThat(key, instanceOf(SecretKey.class));

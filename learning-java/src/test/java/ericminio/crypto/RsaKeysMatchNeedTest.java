@@ -16,6 +16,7 @@ import java.util.Map;
 import static ericminio.crypto.support.RSA.decrypt;
 import static ericminio.crypto.support.RSA.encrypt;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -60,8 +61,8 @@ public class RsaKeysMatchNeedTest {
             decrypt(encrypted, keys.get(second), cipher);
             fail();
         }
-        catch (BadPaddingException e) {
-            assertThat(e.getMessage(), equalTo("Decryption error"));
+        catch (Exception e) {
+            assertThat(e, instanceOf(BadPaddingException.class));
         }
     }
 

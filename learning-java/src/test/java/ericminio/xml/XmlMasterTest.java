@@ -11,7 +11,11 @@ public class XmlMasterTest {
 
     @Test
     public void canExtractContentByAttributeValue() {
-        String input = "<a name=\"hello\" ignore=\"this\"><b>world</b></a>";
+        String input = "" +
+                "<ignore name=\"hello\" role=\"trap\"></ignore>" +
+                "<a other=\"ignored\" name=\"hello\" ignore=\"this\">" +
+                "   <b>world</b>" +
+                "</a>";
 
         assertThat(extract.contentByTagAndAttribute(input, "a", "name", "hello"),
                 equalTo("<b>world</b>"));

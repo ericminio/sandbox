@@ -7,7 +7,7 @@ public class XmlMaster {
 
     public String contentByTagAndAttribute(String input, String tag, String name, String value) {
         Selection selection = new Selection(input);
-        selection = selection.split(attribute(name, value));
+        selection = selection.split(attribute(tag, name, value));
         selection = selection.split(closing(tag));
 
         return selection.before;
@@ -29,8 +29,8 @@ public class XmlMaster {
         return "</[^>]*:?" + tag + ">";
     }
 
-    public String attribute(String name, String value) {
-        return name + "=\"" + value + "\"" + "[^<]*>";
+    public String attribute(String tag, String name, String value) {
+        return "<[^/]*:?" + tag + "[^>]*" + name+"=\""+value+"\"" + "[^<]*>";
     }
 
     class Selection {

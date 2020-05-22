@@ -3,7 +3,7 @@ package ericminio.xml;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class XmlMaster {
+public class XmlUtils {
 
     public String contentByTagAndAttribute(String input, String tag, String name, String value) {
         Selection selection = new Selection(input);
@@ -21,16 +21,28 @@ public class XmlMaster {
         return selection.before;
     }
 
-    public String opening(String tag) {
-        return "<[^/]*:?" + tag + "[^<]*>";
+    public String attributeValueByTag(String input, String tag, String name) {
+        Selection selection = new Selection(input);
+        selection = selection.extract(opening(tag));
+        selection = selection.extract(attributeValue(name));
+
+        return selection.input;
     }
 
-    public String closing(String tag) {
-        return "</[^>]*:?" + tag + ">";
+    private String opening(String tag) {
+        return "<[^/^<^\\s]*:?" + tag + "[^<]*>";
     }
 
-    public String attribute(String tag, String name, String value) {
+    private String closing(String tag) {
+        return "</[^>^\\s]*:?" + tag + ">";
+    }
+
+    private String attribute(String tag, String name, String value) {
         return "<[^/]*:?" + tag + "[^>]*" + name+"=\""+value+"\"" + "[^<]*>";
+    }
+
+    private String attributeValue(String name) {
+        return name + "=\"([^\"]*)\"";
     }
 
     class Selection {
@@ -56,6 +68,20 @@ public class XmlMaster {
                 return new Selection(before, tail);
             }
             return new Selection("", "");
+        }
+
+        public Selection extract(String token) {
+            Pattern p = Pattern.compile(token);
+            Matcher matcher = p.matcher(this.input);
+            if (matcher.find()) {
+                if (matcher.groupCount() > 0) {
+                    return new Selection(matcher.group(1));
+                }
+                else {
+                    return new Selection(matcher.group());
+                }
+            }
+            return new Selection("");
         }
     }
 }

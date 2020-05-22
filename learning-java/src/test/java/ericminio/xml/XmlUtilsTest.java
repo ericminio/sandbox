@@ -5,9 +5,9 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class XmlMasterTest {
+public class XmlUtilsTest {
 
-    private XmlMaster extract = new XmlMaster();
+    private XmlUtils extract = new XmlUtils();
 
     @Test
     public void canExtractContentByAttributeValue() {
@@ -79,5 +79,38 @@ public class XmlMasterTest {
         String value = extract.contentByTag(content, "Value");
 
         assertThat(value, equalTo("hello world"));
+    }
+    @Test
+    public void canExtractAttributeValueByTag() {
+        String input = "" +
+                "<a>" +
+                "   <b key=\"found\" ignore=\"this\">anything</b>" +
+                "   <c key=\"not-me\">anything</c>" +
+                "</a>";
+        String value = extract.attributeValueByTag(input,"b", "key");
+
+        assertThat(value, equalTo("found"));
+    }
+    @Test
+    public void resistNonExistingAttribute() {
+        String input = "" +
+                "<a>" +
+                "   <b key=\"found\" ignore=\"this\">anything</b>" +
+                "   <c key=\"not-me\">anything</c>" +
+                "</a>";
+        String value = extract.attributeValueByTag(input,"a", "key");
+
+        assertThat(value, equalTo(""));
+    }
+    @Test
+    public void resistNonExistingTag() {
+        String input = "" +
+                "<a>" +
+                "   <b key=\"found\" ignore=\"this\">anything</b>" +
+                "   <c key=\"not-me\">anything</c>" +
+                "</a>";
+        String value = extract.attributeValueByTag(input,"d", "key");
+
+        assertThat(value, equalTo(""));
     }
 }

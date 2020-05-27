@@ -31,8 +31,8 @@ public class PaginationTest {
 
     @Test
     public void works() {
-        repository.save(entityWithField("a"));
-        repository.save(entityWithField("b"));
+        repository.save(entity("a"));
+        repository.save(entity("b"));
 
         int pageSize = 10;
         int page = 0;
@@ -53,23 +53,19 @@ public class PaginationTest {
 
     @Test
     public void rerunsQueryForEachPage() {
-        repository.save(entityWithField("b"));
-        repository.save(entityWithField("c"));
+        repository.save(entity("b"));
+        repository.save(entity("c"));
 
-        int pageSize = 1;
-
-        int page = 0;
-        List<AnyEntity> entities = repository.findByFieldIsNotNullOrderByField(PageRequest.of(page, pageSize));
+        List<AnyEntity> entities = repository.findByFieldIsNotNullOrderByField(PageRequest.of(0, 1));
         assertThat(entities.get(0).getField(), equalTo("b"));
 
-        repository.save(entityWithField("a"));
+        repository.save(entity("a"));
 
-        page = 1;
-        entities = repository.findByFieldIsNotNullOrderByField(PageRequest.of(page, pageSize));
+        entities = repository.findByFieldIsNotNullOrderByField(PageRequest.of(1, 1));
         assertThat(entities.get(0).getField(), equalTo("b"));
     }
 
-    private AnyEntity entityWithField(final String field) {
+    private AnyEntity entity(final String field) {
         AnyEntity entity = new AnyEntity();
         entity.setField(field);
 

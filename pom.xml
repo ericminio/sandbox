@@ -27,6 +27,7 @@
         <module>firebase</module>
         <module>spring-boot-test</module>
         <module>opensaml</module>
+        <module>apache-pluto</module>
     </modules>
 
 </project>

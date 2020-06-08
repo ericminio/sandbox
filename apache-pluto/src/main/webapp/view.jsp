@@ -3,5 +3,5 @@
 <portlet:defineObjects/>
 
 <div id="HelloWorldDiv">
-    Hello World!
+    ${greetings}
 </div>

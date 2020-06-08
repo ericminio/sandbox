@@ -38,7 +38,7 @@ public class HelloWorldTest {
     @Test
     public void testDoView() {
         beginAt("/portal/index.jsp");
-        assertTextPresent("Hello World!");
+        assertTextPresent("Hello World :)");
         assertElementPresent("HelloWorldDiv");
     }
 }

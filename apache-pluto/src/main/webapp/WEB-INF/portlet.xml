@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" version="2.0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+             id="MyPortlet">
+    <portlet>
+        <portlet-name>HelloWorldPortlet</portlet-name>
+        <display-name xml:lang="en">HelloWorldPortlet</display-name>
+        <display-name>HelloWorldPortlet</display-name>
+        <portlet-class>ericminio.portlet.HelloWorldPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>HelloWorldPortletResource</resource-bundle>
+        <portlet-info>
+            <title>HelloWorldPortlet</title>
+            <short-title>HelloWorldPortlet</short-title>
+            <keywords>HelloWorldPortlet</keywords>
+        </portlet-info>
+    </portlet>
+    <default-namespace>http://HelloWorldPortlet/</default-namespace>
+</portlet-app>

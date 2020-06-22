@@ -1,5 +1,6 @@
-package ericminio;
+package ericminio.workflow;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
@@ -10,9 +11,18 @@ import static org.junit.Assert.assertThat;
 
 public class SynchronizationTest {
 
-    Step one = new Spy();
-    Step two = new Spy();
-    Workflow workflow = new Workflow(one, two);
+    private Step one;
+    private Step two;
+    private Workflow workflow;
+
+    @Before
+    public void given() {
+        one = new Spy();
+        two = new Spy();
+        workflow = new Workflow();
+        workflow.add(one);
+        workflow.add(two);
+    }
 
     @Test
     public void isNeeded() throws Exception {
@@ -55,10 +65,15 @@ public class SynchronizationTest {
                 }
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(150);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public void cancel() {
+
         }
     }
 }

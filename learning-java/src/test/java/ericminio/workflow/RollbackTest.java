@@ -48,15 +48,6 @@ public class RollbackTest {
     @Test
     public void stopsAtFirstCancellationError() {
         Workflow workflow = new Workflow();
-        Step one = mock(Step.class);
-        Step two = new Step() {
-            @Override
-            public void execute() {}
-            @Override
-            public void cancel() {
-                throw new RuntimeException("say cancel #2 fails");
-            }
-        };
         Step three = new Step() {
             @Override
             public void execute() {
@@ -65,6 +56,15 @@ public class RollbackTest {
             @Override
             public void cancel() {}
         };
+        Step two = new Step() {
+            @Override
+            public void execute() {}
+            @Override
+            public void cancel() {
+                throw new RuntimeException("say cancel #2 fails");
+            }
+        };
+        Step one = mock(Step.class);
         workflow.add(one);
         workflow.add(two);
         workflow.add(three);

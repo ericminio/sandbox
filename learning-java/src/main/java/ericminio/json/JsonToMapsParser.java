@@ -98,6 +98,7 @@ public class JsonToMapsParser {
                         .replace(")", "\\)")
                         .replace(".", "\\.")
                         .replace("*", "\\*")
+                        .replace("?", "\\?")
                 , "");
     }
 

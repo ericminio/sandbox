@@ -23,6 +23,14 @@ public class JsonToMapsParserTest {
         assertThat(tree.get("alive"), equalTo(Boolean.TRUE));
     }
     @Test
+    public void canParseSingleStringAttribute() {
+        String json = "{ \"alive\": \"true\" }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("alive"), equalTo("true"));
+    }
+    @Test
     public void canParseTwoAttributes() {
         String json = "{ \"old\": true, \"obsolete\": false }";
         Map<String, Object> tree = parse(json);
@@ -169,5 +177,13 @@ public class JsonToMapsParserTest {
 
         assertThat(tree.size(), equalTo(1));
         assertThat(tree.get("attributes"), equalTo(null));
+    }
+    @Test
+    public void resistQueryString() {
+       String json ="{\"url\":\"/any?field1=this&field2=that\"}";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("url"), equalTo("/any?field1=this&field2=that"));
     }
 }

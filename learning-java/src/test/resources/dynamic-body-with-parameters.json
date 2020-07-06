@@ -1,0 +1,11 @@
+{
+    "routes": [
+        {
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "~call~greetings(200, true, 'hello world')"
+            }
+        }
+    ]
+}

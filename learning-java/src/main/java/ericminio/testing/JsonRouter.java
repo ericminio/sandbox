@@ -6,6 +6,8 @@ import ericminio.json.MapsToJsonParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -133,7 +135,14 @@ public class JsonRouter {
             if (this.definition == null) { return true; }
 
             String expectedUrlPrefix = (String) this.definition.get("urlStartsWith");
-            if (expectedUrlPrefix != null && !incoming.hasUriStartingWith(expectedUrlPrefix)) { return false; }
+            if (expectedUrlPrefix != null) {
+                if (expectedUrlPrefix.contains(STATEMENT_PREFIX)) {
+                    String statement = extractStatement(expectedUrlPrefix);
+                    String value = evaluate(statement, incoming).toString();
+                    expectedUrlPrefix = expectedUrlPrefix.replace(statement, value);
+                }
+                if (!incoming.hasUriStartingWith(expectedUrlPrefix)) { return false; }
+            }
 
             String expectedMethod = (String) this.definition.get("methodIs");
             if (expectedMethod != null && !incoming.hasMethod(expectedMethod)) { return false; }
@@ -148,6 +157,7 @@ public class JsonRouter {
         }
     }
     public class Answer {
+
         private Map<String, Object> definition;
         private Object statusCodeDefinition;
         private Integer statusCode;
@@ -185,22 +195,18 @@ public class JsonRouter {
                 this.evaluatedBody = this.evaluatedBody.replace("#"+key, variables.get(key).toString());
             }
             if (this.evaluatedBody.contains(STATEMENT_PREFIX)) {
-                String name = extractFunctionName(this.evaluatedBody);
-                Function function = functions.get(name);
                 try {
-                    String token = statement(name);
-                    Object value = function.execute(incoming, variables);
+                    String statement = extractStatement(this.evaluatedBody);
+                    Object value = evaluate(statement, incoming);
                     String valueAsString = value == null? "null" : value.toString();
                     if ( value != null && ! (value instanceof String)) {
                         valueAsString = MapsToJsonParser.stringify(value);
-                        if (this.evaluatedBody.contains("\"" + token + "\"")) {
-                            token = "\"" + token + "\"";
-                        }
                     }
-                    if (value == null && this.evaluatedBody.contains("\"" + token + "\"")) {
-                        token = "\"" + token + "\"";
+                    if ((value != null && !(value instanceof String) || value == null)
+                            && this.evaluatedBody.contains("\"" + statement + "\"")) {
+                        statement = "\"" + statement + "\"";
                     }
-                    this.evaluatedBody = this.evaluatedBody.replace(token, valueAsString);
+                    this.evaluatedBody = this.evaluatedBody.replace(statement, valueAsString);
                 }
                 catch (Exception e) {
                     this.statusCode = 500;
@@ -210,36 +216,83 @@ public class JsonRouter {
             }
         }
 
-        private String statement(String name) {
-            return STATEMENT_PREFIX + name + "()";
-        }
-
         public void evaluateStatusCode(Incoming incoming) {
             if (statusCodeDefinition instanceof Integer) {
                 this.statusCode = (Integer) statusCodeDefinition;
             }
             else {
                 String stringDefinition = (String) statusCodeDefinition;
-                if (stringDefinition.contains("~call~")) {
+                if (stringDefinition.contains(STATEMENT_PREFIX)) {
                     String name = extractFunctionName(stringDefinition);
                     Function function = functions.get(name);
-                    this.statusCode = (Integer) function.execute(incoming, variables);
+                    this.statusCode = (Integer) function.execute(incoming, variables, new ArrayList<>());
                 }
             }
         }
 
-        protected String extractFunctionName(String call) {
-            Pattern pattern = Pattern.compile(".*~call~(.*)\\(\\).*");
-            Matcher matcher = pattern.matcher(call);
-            if (matcher.matches()) {
-                String name = matcher.group(1);
-                return name;
-            }
-            return null;
-        }
     }
 
     public interface Function {
-        Object execute(Incoming incoming, Map<String, Object> variables);
+        Object execute(Incoming incoming, Map<String, Object> variables, List<Object> parameters);
+    }
+
+    protected static String extractStatement(String expression) {
+        String call = "";
+        if (expression.contains(STATEMENT_PREFIX)) {
+            int index = expression.indexOf(STATEMENT_PREFIX);
+            String trailing = expression.substring(index);
+            index = trailing.indexOf(")");
+            call = trailing.substring(0, index+1);
+        }
+        return call;
+    }
+
+    protected Object evaluate(String call, Incoming incoming) {
+        String name = extractFunctionName(call);
+        List<Object> parameters = extractParameters(call);
+        Function function = functions.get(name);
+
+        return function.execute(incoming, variables, parameters);
+    }
+
+    protected static String extractFunctionName(String call) {
+        Pattern pattern = Pattern.compile(".*~call~(.*)\\(.*");
+        Matcher matcher = pattern.matcher(call);
+        if (matcher.matches()) {
+            String name = matcher.group(1);
+            return name;
+        }
+        return null;
+    }
+
+    public static List<Object> extractParameters(String call) {
+        Pattern pattern = Pattern.compile(".*~call~(.*)\\(([^\\)]*)\\).*");
+        Matcher matcher = pattern.matcher(call);
+        if (matcher.matches()) {
+            String parameters = matcher.group(2);
+            if (parameters.length() == 0) { return new ArrayList<>(); }
+
+            return Arrays.asList(parameters.split(",")).stream()
+                    .map(e -> {
+                        String candidate = e.trim();
+                        if (candidate.startsWith("'") && candidate.endsWith("'")) {
+                            return candidate.substring(1, candidate.length() -1 );
+                        }
+                        if ("false".equalsIgnoreCase(candidate)) {
+                            return Boolean.FALSE;
+                        }
+                        if ("true".equalsIgnoreCase(candidate)) {
+                            return Boolean.TRUE;
+                        }
+                        try {
+                            return new Integer(candidate);
+                        }
+                        catch(NumberFormatException notAnInteger) {
+                            return candidate;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 }

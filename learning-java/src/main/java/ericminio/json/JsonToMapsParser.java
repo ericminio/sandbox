@@ -17,7 +17,8 @@ public class JsonToMapsParser {
                     .replaceAll("\\[\\s*", "[")
                     .replaceAll(":\\s*", ":")
                     .replaceAll("\"\\s*:", "\":")
-                    .replaceAll(",\\s*", ",")
+                    .replaceAll(",\\s*\"", ",\"")
+                    .replaceAll(",\\s*\\{", ",{")
                     .replaceAll("\\s*\\]", "]")
                     .replaceAll("\\s*\\}", "}")
             ;
@@ -122,6 +123,9 @@ public class JsonToMapsParser {
         else if (json.charAt(candidate) == '[') {
             return extractItem(json, candidate, '[', ']');
         }
+        else if (json.charAt(candidate) == '"') {
+            return extractItem(json, candidate, '"', '"');
+        }
         else {
             if (json.indexOf(",") != -1) {
                 return json.substring(candidate, json.indexOf(","));
@@ -135,17 +139,19 @@ public class JsonToMapsParser {
     private static String extractItem(String json, int start, char opening, char closing) {
         int nestedCount = 0;
         int cursor = start;
+        int openingCursor = -1;
         boolean found = false;
         while (!found) {
             char current = json.charAt(cursor);
-            if (current == opening) {
-                nestedCount++;
-            }
-            if (current == closing) {
+            if (current == closing && cursor != openingCursor && nestedCount > 0) {
                 nestedCount--;
                 if (nestedCount == 0) {
                     found = true;
                 }
+            }
+            if (current == opening && !found) {
+                nestedCount++;
+                openingCursor = cursor;
             }
             if (!found) {
                 cursor++;

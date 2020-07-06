@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -63,7 +64,7 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestString() {
         JsonRouter router = from("dynamic-body-string.json");
-        router.getFunctions().put("greetings", (incoming, variables) -> "world");
+        router.getFunctions().put("greetings", (incoming, variables, parameters) -> "world");
         FakeHttpExchange exchange = new FakeHttpExchange() {{
             setAttribute("uri", "/anything");
         }};
@@ -77,7 +78,7 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestStringInsideJson() {
         JsonRouter router = from("dynamic-body-string-inside-json.json");
-        router.getFunctions().put("greetings", (incoming, variables) -> "hello world");
+        router.getFunctions().put("greetings", (incoming, variables, parameters) -> "hello world");
         FakeHttpExchange exchange = new FakeHttpExchange() {{
             setAttribute("uri", "/string-inside-json");
         }};
@@ -91,7 +92,7 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestCombinedStringInsideJson() {
         JsonRouter router = from("dynamic-body-string-inside-json.json");
-        router.getFunctions().put("greetings", (incoming, variables) -> "world");
+        router.getFunctions().put("greetings", (incoming, variables, parameters) -> "world");
         FakeHttpExchange exchange = new FakeHttpExchange() {{
             setAttribute("uri", "/combined-string-inside-json");
         }};
@@ -105,7 +106,7 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestObject() {
         JsonRouter router = from("dynamic-body-object.json");
-        router.getFunctions().put("greetings", (incoming, variables) -> new HashMap<String, Object>() {{ put("message", "hello"); }} );
+        router.getFunctions().put("greetings", (incoming, variables, parameters) -> new HashMap<String, Object>() {{ put("message", "hello"); }} );
         FakeHttpExchange exchange = new FakeHttpExchange() {{
             setAttribute("uri", "/anything");
         }};
@@ -119,7 +120,7 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestObjectInsideJson() {
         JsonRouter router = from("dynamic-body-object-inside-json.json");
-        router.getFunctions().put("greetings", (incoming, variables) -> new HashMap<String, Object>() {{ put("message", "welcome"); }} );
+        router.getFunctions().put("greetings", (incoming, variables, parameters) -> new HashMap<String, Object>() {{ put("message", "welcome"); }} );
         FakeHttpExchange exchange = new FakeHttpExchange() {{
             setAttribute("uri", "/anything");
         }};
@@ -133,7 +134,7 @@ public class JsonRouterTest {
     @Test
     public void dynamicBodyCanDigestNull() {
         JsonRouter router = from("dynamic-body-null.json");
-        router.getFunctions().put("nullify", (incoming, variables) -> null);
+        router.getFunctions().put("nullify", (incoming, variables, parameters) -> null);
         FakeHttpExchange exchange = new FakeHttpExchange() {{
             setAttribute("uri", "/anything");
         }};
@@ -157,7 +158,7 @@ public class JsonRouterTest {
         }
         Spy spy = new Spy();
         JsonRouter router = from("dynamic-body-spy.json");
-        router.getFunctions().put("spy", (incoming, variables) -> {
+        router.getFunctions().put("spy", (incoming, variables, parameters) -> {
             spy.record(incoming);
             return "anything";
         });
@@ -172,5 +173,80 @@ public class JsonRouterTest {
 
         assertThat(spy.wasCalled(), equalTo(true));
         assertThat(spy.incoming.getUri(), equalTo("/brag-about-spying"));
+    }
+
+    @Test
+    public void dynamicBodyCanTakeParameters() {
+        JsonRouter router = from("dynamic-body-with-parameters.json");
+        router.getFunctions().put("greetings", (incoming, variables, parameters) ->
+                parameters.get(0).toString()
+                        + " times "
+                        + parameters.get(1).toString() + " "
+                        + parameters.get(2).toString() + " :)"
+        );
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/anything");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("text/plain"));
+        assertThat(answer.getEvaluateBody(), equalTo("200 times true hello world :)"));
+    }
+
+    @Test
+    public void selectionCanBeOnDynamicUrl() {
+        JsonRouter router = from("dynamic-url.json");
+        router.getFunctions().put("hidden", (incoming, variables, parameters) -> parameters.get(0));
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/select/42");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("text/plain"));
+        assertThat(answer.getEvaluateBody(), equalTo("found"));
+    }
+
+    @Test
+    public void canExtractFunctionNameWithoutParameters() {
+        assertThat(JsonRouter.extractFunctionName("~call~greetings()"), equalTo("greetings"));
+    }
+
+    @Test
+    public void canExtractFunctionNameWithParameters() {
+        assertThat(JsonRouter.extractFunctionName("~call~greetings(200, 'hello world')"), equalTo("greetings"));
+    }
+
+    @Test
+    public void canExtractParameters() {
+        List<Object> parameters = JsonRouter.extractParameters(
+                "anything before ~call~greetings(200, false, 'hello world') anything after even parenthesis )");
+
+        assertThat(parameters.size(), equalTo(3));
+        assertThat(parameters.get(0), equalTo(new Integer(200)));
+        assertThat(parameters.get(1), equalTo(Boolean.FALSE));
+        assertThat(parameters.get(2), equalTo("hello world"));
+    }
+
+    @Test
+    public void defaultParameterListIsEmpty() {
+        List<Object> parameters = JsonRouter.extractParameters("~call~greetings()");
+
+        assertThat(parameters.size(), equalTo(0));
+    }
+
+    @Test
+    public void canExtractCall() {
+        String call = JsonRouter.extractStatement(
+                "anything before ~call~greetings(200, false, 'hello world') anything after even parenthesis )");
+
+        assertThat(call, equalTo("~call~greetings(200, false, 'hello world')"));
+    }
+    @Test
+    public void canExtractStandaloneCall() {
+        String call = JsonRouter.extractStatement("~call~greetings()");
+
+        assertThat(call, equalTo("~call~greetings()"));
     }
 }

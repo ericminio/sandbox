@@ -1,0 +1,32 @@
+{
+    "routes": [
+        {
+            "when": {
+                "urlStartsWith": "/select/~call~hidden(41)"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "not me"
+            }
+        },
+        {
+            "when": {
+                "urlStartsWith": "/select/~call~hidden(42)"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "found"
+            }
+        },
+
+        {
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "not me neither"
+            }
+        }
+    ]
+}

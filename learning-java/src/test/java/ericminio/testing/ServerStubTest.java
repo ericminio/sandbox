@@ -94,7 +94,7 @@ public class ServerStubTest {
 
     @Test
     public void offersFunctionCallInAnsweredBody() throws Exception {
-        server.getFunctions().put("combine", (incoming, variables) ->
+        server.getFunctions().put("combine", (incoming, variables, parameters) ->
                 variables.get("groupCount") + ": " + incoming.getBody() + " " + variables.get("group-1")
         );
         HttpResponse response = post( "http://localhost:"+port+"/modify/world", "hello" );
@@ -106,7 +106,7 @@ public class ServerStubTest {
 
     @Test
     public void functionCanGenerateObject() throws Exception {
-        server.getFunctions().put("create-object", (incoming, variables) ->
+        server.getFunctions().put("create-object", (incoming, variables, parameters) ->
                 Arrays.asList("one", "two").stream().map(v ->new HashMap<String, Object>() {{ put("value", v); }}).collect(Collectors.toList())
         );
         HttpResponse response = get("http://localhost:"+port+"/function-collection");
@@ -118,7 +118,7 @@ public class ServerStubTest {
 
     @Test
     public void doNotRunFunctionWhenYouDoNotNeed() throws Exception {
-        server.getFunctions().put("any", (incoming, variables) -> {
+        server.getFunctions().put("any", (incoming, variables, parameters) -> {
             throw new RuntimeException("should not call me");
         });
         HttpResponse response = get("http://localhost:"+port+"/no-function");
@@ -130,7 +130,7 @@ public class ServerStubTest {
 
     @Test
     public void resistsExceptionInFunctionCalls() throws Exception {
-        server.getFunctions().put("any", (incoming, variables) -> {
+        server.getFunctions().put("any", (incoming, variables, parameters) -> {
             throw new RuntimeException("resist me");
         });
         HttpResponse response = get("http://localhost:"+port+"/exception-in-function");
@@ -142,7 +142,7 @@ public class ServerStubTest {
 
     @Test
     public void generatedObjectCanBeString() throws Exception {
-        server.getFunctions().put("plain-text", (incoming, variables) ->
+        server.getFunctions().put("plain-text", (incoming, variables, parameters) ->
                 "hello world"
         );
         HttpResponse response = get("http://localhost:"+port+"/function-plain-text");
@@ -154,7 +154,7 @@ public class ServerStubTest {
 
     @Test
     public void generatedObjectCanBeObject() throws Exception {
-        server.getFunctions().put("simple-object", (incoming, variables) ->
+        server.getFunctions().put("simple-object", (incoming, variables, parameters) ->
                 new HashMap<String, Object>() {{ put("field", "value"); }}
         );
         HttpResponse response = get("http://localhost:"+port+"/simple-object");
@@ -166,7 +166,7 @@ public class ServerStubTest {
 
     @Test
     public void answeredStatusCodeCanBeDynamic() throws Exception {
-        server.getFunctions().put("dynamic-status-code", (incoming, variables) ->
+        server.getFunctions().put("dynamic-status-code", (incoming, variables, parameters) ->
                 222
         );
         HttpResponse response = get("http://localhost:"+port+"/status-code");

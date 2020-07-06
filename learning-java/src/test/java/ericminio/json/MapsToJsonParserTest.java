@@ -60,4 +60,10 @@ public class MapsToJsonParserTest {
 
         assertThat(MapsToJsonParser.stringify(tree), equalTo("{\"old\":\"yes\",\"obsolete\":\"no\"}"));
     }
+    @Test
+    public void canHandleEmptyMap() {
+        Map<String, Object> tree = new HashMap<>();
+
+        assertThat(MapsToJsonParser.stringify(tree), equalTo("{}"));
+    }
 }

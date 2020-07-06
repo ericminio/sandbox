@@ -186,4 +186,12 @@ public class JsonToMapsParserTest {
         assertThat(tree.size(), equalTo(1));
         assertThat(tree.get("url"), equalTo("/any?field1=this&field2=that"));
     }
+    @Test
+    public void resistsComma() {
+        String json = "{ \"attributes\": \"one, two\" }";
+        Map<String, Object> tree = parse(json);
+
+        assertThat(tree.size(), equalTo(1));
+        assertThat(tree.get("attributes"), equalTo("one, two"));
+    }
 }

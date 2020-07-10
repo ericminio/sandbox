@@ -107,9 +107,11 @@ public class JsonRouter {
     }
     class Route {
         Map<String, Object> definition;
+        int answerIndex;
 
         public Route(Map<String, Object> definition) {
             this.definition = definition;
+            this.answerIndex = -1;
         }
 
         public boolean isOpen(Incoming incoming) {
@@ -121,6 +123,13 @@ public class JsonRouter {
         }
 
         public Answer getAnswer() {
+            if (this.definition.get("answers") != null) {
+                List answers = (List) this.definition.get("answers");
+                if (answerIndex < answers.size()-1) {
+                    answerIndex++;
+                }
+                return new Answer((Map<String, Object>) answers.get(answerIndex));
+            }
             return new Answer((Map<String, Object>) this.definition.get("answer"));
         }
     }

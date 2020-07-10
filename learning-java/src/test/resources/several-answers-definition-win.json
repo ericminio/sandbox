@@ -1,0 +1,21 @@
+{
+    "routes": [
+        {
+            "when": {
+                "urlStartsWith": "/ping"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "Ignored"
+            },
+            "answers": [
+                {
+                    "statusCode": 200,
+                    "contentType": "text/plain",
+                    "body": "I win"
+                }
+            ]
+        }
+    ]
+}

@@ -249,4 +249,48 @@ public class JsonRouterTest {
 
         assertThat(call, equalTo("~call~greetings()"));
     }
+    @Test
+    public void offersSeveralAnswersForConsecutiveCalls() {
+        JsonRouter router = from("one-url-several-answers.json");
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/ping");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("text/plain"));
+        assertThat(answer.getEvaluateBody(), equalTo("first"));
+
+        answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("text/plain"));
+        assertThat(answer.getEvaluateBody(), equalTo("second"));
+    }
+    @Test
+    public void lastAnswerIsForever() {
+        JsonRouter router = from("one-url-several-answers.json");
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/ping");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+        answer = router.digest(exchange);
+        answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("text/plain"));
+        assertThat(answer.getEvaluateBody(), equalTo("second"));
+    }
+    @Test
+    public void severalAnswersDefinitionWinsAgainstSingleAnswerDefinition() {
+        JsonRouter router = from("several-answers-definition-win.json");
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/ping");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("text/plain"));
+        assertThat(answer.getEvaluateBody(), equalTo("I win"));
+    }
 }

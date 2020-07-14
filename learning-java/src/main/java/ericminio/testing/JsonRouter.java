@@ -172,11 +172,13 @@ public class JsonRouter {
         private Integer statusCode;
         private String contentType;
         private String evaluatedBody;
+        private Integer millisecondsDelay;
 
         public Answer(Map<String, Object> definition) {
             this.definition = definition;
             this.contentType = (String) this.definition.get("contentType");
             this.statusCodeDefinition = this.definition.get("statusCode");
+            this.millisecondsDelay = (Integer) this.definition.get("millisecondsDelay");
         }
 
         public String getContentType() {
@@ -239,6 +241,13 @@ public class JsonRouter {
             }
         }
 
+        public boolean isDelayed() {
+            return millisecondsDelay != null;
+        }
+
+        public long getDelay() {
+            return millisecondsDelay;
+        }
     }
 
     public interface Function {

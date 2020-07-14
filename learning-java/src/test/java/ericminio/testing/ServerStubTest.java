@@ -6,7 +6,9 @@ import org.junit.Test;
 import support.HttpResponse;
 
 import java.io.IOException;
-import java.util.*;
+import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -172,5 +174,17 @@ public class ServerStubTest {
         HttpResponse response = get("http://localhost:"+port+"/status-code");
 
         assertThat( response.getStatusCode(), equalTo( 222 ) );
+    }
+    @Test(expected = SocketTimeoutException.class)
+    public void offersDelayedAnswerConfiguration() throws Exception {
+        get( "http://localhost:"+port+"/delayed", 100 );
+    }
+    @Test
+    public void delayedAnswerCanStillBeSuccessful() throws Exception {
+        HttpResponse response = get("http://localhost:" + port + "/delayed", 200);
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "delayed" ) );
     }
 }

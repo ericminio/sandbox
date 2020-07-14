@@ -134,6 +134,17 @@
                 "body": "anything"
             }
         },
+        {
+            "when": {
+                "urlStartsWith": "/delayed"
+            },
+            "answer": {
+                "millisecondsDelay": 150,
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": "delayed"
+            }
+        },
 
         {
             "answer": {

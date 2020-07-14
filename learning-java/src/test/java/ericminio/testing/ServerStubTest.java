@@ -175,16 +175,33 @@ public class ServerStubTest {
 
         assertThat( response.getStatusCode(), equalTo( 222 ) );
     }
+
     @Test(expected = SocketTimeoutException.class)
     public void offersDelayedAnswerConfiguration() throws Exception {
         get( "http://localhost:"+port+"/delayed", 100 );
     }
     @Test
     public void delayedAnswerCanStillBeSuccessful() throws Exception {
-        HttpResponse response = get("http://localhost:" + port + "/delayed", 200);
+        HttpResponse response = get("http://localhost:" + port + "/delayed", 300);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "text/plain" ) );
         assertThat( response.getBody(), equalTo( "delayed" ) );
+    }
+
+    @Test
+    public void routesDefinitionCanBeChanged() throws Exception {
+        HttpResponse response = get( "http://localhost:"+port+"/default" );
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "application/json" ) );
+        assertThat( response.getBody(), equalTo( "{\"old\":true,\"obsolete\":\"no\"}" ) );
+
+        server.setRoutes("stub-changed.json");
+        response = get( "http://localhost:"+port+"/default" );
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "application/json" ) );
+        assertThat( response.getBody(), equalTo( "{\"status\":\"operational\"}" ) );
     }
 }

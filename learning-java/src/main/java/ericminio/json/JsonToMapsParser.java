@@ -7,14 +7,21 @@ import java.util.Map;
 
 public class JsonToMapsParser {
 
+    private void debug(String json) {
+//        System.out.println(json);
+    }
+
     public Map<String, Object> parse(String input) {
         try {
             String json = input.replaceAll("\\n|\\t", "");
             Map<String, Object> o = new HashMap();
+            debug("-> " + json);
 
             while (json.indexOf('\"') != -1) {
                 String key = extractKey(json);
                 String value = extractValue(key, json);
+                debug("key: " + key);
+                debug("value: " + value);
                 o.put(key, parseValue(value));
 
                 json = json.substring(json.indexOf(key) + key.length() + 1);
@@ -65,18 +72,9 @@ public class JsonToMapsParser {
 
     private String extractValue(String key, String json) {
         json = json.substring(json.indexOf(key) + key.length() + 1).trim();
-        json = json.substring(json.indexOf(":") + ":".length()).trim();
+        json = json.substring(json.indexOf(":") + 1).trim();
         if (json.startsWith("\"")) {
-            boolean found = false;
-            int index = 0;
-            while (!found) {
-                index += 1;
-                if (isQuoteNotEscaped(index, json)) {
-                    found = true;
-                }
-            }
-
-            return '"' + json.substring(1, index) + '"';
+            return extractFirstString(json);
         }
         else if (json.startsWith("{")) {
             return extractBetween('{', '}', json);
@@ -84,22 +82,37 @@ public class JsonToMapsParser {
         else if (json.startsWith("[")) {
             return extractBetween('[', ']', json);
         }
-        int nextSpace = json.indexOf(" ");
-        if (nextSpace == -1) { nextSpace = Integer.MAX_VALUE; }
-        int nextComma = json.indexOf(",");
-        if (nextComma == -1) { nextComma = Integer.MAX_VALUE; }
-        int theEnd = json.indexOf("}");
-        if (theEnd == -1) { theEnd = Integer.MAX_VALUE; }
-        int end = Math.min(nextComma, nextSpace);
-        end = Math.min(end, theEnd);
-        return json.substring(0, end);
+        else {
+            return extractNumberOrBoolean(json);
+        }
+    }
+
+    private String extractNumberOrBoolean(String json) {
+        int nextSpace = json.indexOf(" ") != -1 ? json.indexOf(" "): Integer.MAX_VALUE;
+        int nextComma = json.indexOf(",") != -1 ? json.indexOf(","): Integer.MAX_VALUE;
+        int theEnd = json.indexOf("}") != -1 ? json.indexOf("}"): Integer.MAX_VALUE;
+
+        return json.substring(0, Math.min(Math.min(nextComma, nextSpace), theEnd));
+    }
+
+    private String extractFirstString(String input) {
+        boolean found = false;
+        int index = 0;
+        while (!found) {
+            index += 1;
+            if (isQuoteNotEscaped(index, input)) {
+                found = true;
+            }
+        }
+
+        return '"' + input.substring(1, index) + '"';
     }
 
     private String extractBetween(char opening, char closing, String input) {
         boolean found = false;
         int index = 0;
         int notEscapedQuoteCount = 0;
-        int curlyBraketsCount = 1;
+        int openingAndClosingCount = 1;
         while (!found) {
             index += 1;
             if (isQuoteNotEscaped(index, input)) {
@@ -108,14 +121,14 @@ public class JsonToMapsParser {
             char current = input.charAt(index);
             if (opening == current) {
                 if (notEscapedQuoteCount == 0) {
-                    curlyBraketsCount++;
+                    openingAndClosingCount++;
                 }
             }
             if (closing == current) {
                 if (notEscapedQuoteCount == 0) {
-                    curlyBraketsCount--;
+                    openingAndClosingCount--;
                 }
-                if (curlyBraketsCount == 0) {
+                if (openingAndClosingCount == 0) {
                     found = true;
                 }
             }

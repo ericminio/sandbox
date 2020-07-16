@@ -1,6 +1,5 @@
 package ericminio.json;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,164 +7,128 @@ import java.util.Map;
 
 public class JsonToMapsParser {
 
-    public static Map<String, Object> parse(String json) {
+    public Map<String, Object> parse(String input) {
         try {
-            json = json
-                    .replaceAll("\\n", "")
-                    .replaceAll("\\t", "")
-                    .replaceAll("\\{\\s*", "{")
-                    .replaceAll("\\[\\s*", "[")
-                    .replaceAll(":\\s*", ":")
-                    .replaceAll("\"\\s*:", "\":")
-                    .replaceAll(",\\s*\"", ",\"")
-                    .replaceAll(",\\s*\\{", ",{")
-                    .replaceAll("\\s*\\]", "]")
-                    .replaceAll("\\s*\\}", "}")
-            ;
-            return parseObject(json);
+            String json = input.replaceAll("\\n|\\t", "");
+            Map<String, Object> o = new HashMap();
+
+            while (json.indexOf('\"') != -1) {
+                String key = extractKey(json);
+                String value = extractValue(key, json);
+                o.put(key, parseValue(value));
+
+                json = json.substring(json.indexOf(key) + key.length() + 1);
+                json = json.substring(json.indexOf(value) + value.length() + 1);
+            }
+            return o;
         }
-        catch (Exception any) {
-            throw new RuntimeException("Malformed json?", any);
+        catch (Exception e) {
+            throw new RuntimeException("Malformed json? Input was: " + input);
         }
     }
 
-    private static Map<String, Object> parseObject(String json) {
-        debug("->" + json);
-        Map<String, Object> tree = new HashMap<>();
-        while (!"{}".equalsIgnoreCase(json)) {
-            String key = extractFirstKey(json);
-            String value = extractFirstValue(json);
-            debug(key);
-            debug(value);
-            tree.put(key, digest(value));
-
-            json = removeFirstAttribute(json, key, value);
-            debug("-->" + json);
-        }
-
-        return tree;
-    }
-
-    private static List<Map<String, Object>> parseCollection(String value) {
+    private List<Map<String, Object>> parseCollection(String input) {
         List<Map<String, Object>> collection = new ArrayList<>();
-        while (! "[]".equalsIgnoreCase(value)) {
-            String item = extractItem(value, 1, '{', '}');
-            collection.add(parseObject(item));
-            value = removeFirstItem(value, item);
+
+        while (input.indexOf('{') != -1) {
+            String json = extractBetween('{', '}', input.substring(input.indexOf("{")));
+            collection.add(parse(json));
+
+            input = input.substring(input.indexOf(json) + json.length() + 1);
         }
         return collection;
     }
 
-    private static Object digest(String value) {
-        if (value.indexOf("[") == 0) { return parseCollection(value); }
-        if (value.indexOf("{") == -1) { return clean(value); }
-        return parseObject(value);
-    }
+    private Object parseValue(String value) {
+        if ("null".equalsIgnoreCase(value)) { return null; }
+        if ("true".equalsIgnoreCase(value)) { return Boolean.TRUE; }
+        if ("false".equalsIgnoreCase(value)) { return Boolean.FALSE; }
+        if (value.startsWith("{")) { return parse(value); }
+        if (value.startsWith("[")) { return parseCollection(value); }
+        if (value.startsWith("\"")) { return value.substring(1, value.length()-1).replace("\\\"", "\""); }
 
-    private static Object clean(String input) {
-        if ("null".equalsIgnoreCase(input)) { return null; }
-        if ("true".equalsIgnoreCase(input)) { return Boolean.TRUE; }
-        if ("false".equalsIgnoreCase(input)) { return Boolean.FALSE; }
-        if (input.startsWith("\"") && input.endsWith("\"")) {
-            return input.substring(1, input.length()-1);
-        }
         try {
-            return new Integer(input);
+            return new Integer(value);
         }
-        catch (NumberFormatException e) {}
-        try {
-            return new BigDecimal(input);
-        }
-        catch (NumberFormatException e) {}
-
-        throw new RuntimeException("teach me what to do with:" + input);
-    }
-
-    private static String removeFirstAttribute(String json, String key, String value) {
-        json = removeKey(json, key);
-        json = json.replaceFirst(":", "");
-        json = removeFirstItem(json, value);
-
-        return json;
-    }
-
-    private static String removeValue(String json, String value) {
-        return json.replaceFirst(value
-                        .replace("{", "\\{")
-                        .replace("}", "\\}")
-                        .replace("[", "\\[")
-                        .replace("]", "\\]")
-                        .replace("(", "\\(")
-                        .replace(")", "\\)")
-                        .replace(".", "\\.")
-                        .replace("*", "\\*")
-                        .replace("?", "\\?")
-                , "");
-    }
-
-    private static String removeFirstItem(String value, String item) {
-        value = removeValue(value, item);
-        value = value.replaceFirst(",", "");
-
-        return value;
-    }
-
-    private static String removeKey(String json, String key) {
-        return json.replaceFirst("\""+key+"\"", "");
-    }
-
-    private static String extractFirstValue(String json) {
-        int candidate = json.indexOf(":")+1;
-
-        if (json.charAt(candidate) == '{') {
-            return extractItem(json, candidate, '{', '}');
-        }
-        else if (json.charAt(candidate) == '[') {
-            return extractItem(json, candidate, '[', ']');
-        }
-        else if (json.charAt(candidate) == '"') {
-            return extractItem(json, candidate, '"', '"');
-        }
-        else {
-            if (json.indexOf(",") != -1) {
-                return json.substring(candidate, json.indexOf(","));
-            }
-            else {
-                return json.substring(candidate, json.indexOf("}"));
-            }
+        catch (NumberFormatException e) {
+            return new Double(value);
         }
     }
 
-    private static String extractItem(String json, int start, char opening, char closing) {
-        int nestedCount = 0;
-        int cursor = start;
-        int openingCursor = -1;
-        boolean found = false;
-        while (!found) {
-            char current = json.charAt(cursor);
-            if (current == closing && cursor != openingCursor && nestedCount > 0) {
-                nestedCount--;
-                if (nestedCount == 0) {
+    private String extractKey(String json) {
+        int start = json.indexOf("\"");
+        String tail = json.substring(start + 1);
+        int end = tail.indexOf("\"");
+
+        return tail.substring(0, end);
+    }
+
+    private String extractValue(String key, String json) {
+        json = json.substring(json.indexOf(key) + key.length() + 1).trim();
+        json = json.substring(json.indexOf(":") + ":".length()).trim();
+        if (json.startsWith("\"")) {
+            boolean found = false;
+            int index = 0;
+            while (!found) {
+                index += 1;
+                if (isQuoteNotEscaped(index, json)) {
                     found = true;
                 }
             }
-            if (current == opening && !found) {
-                nestedCount++;
-                openingCursor = cursor;
+
+            return '"' + json.substring(1, index) + '"';
+        }
+        else if (json.startsWith("{")) {
+            return extractBetween('{', '}', json);
+        }
+        else if (json.startsWith("[")) {
+            return extractBetween('[', ']', json);
+        }
+        int nextSpace = json.indexOf(" ");
+        if (nextSpace == -1) { nextSpace = Integer.MAX_VALUE; }
+        int nextComma = json.indexOf(",");
+        if (nextComma == -1) { nextComma = Integer.MAX_VALUE; }
+        int theEnd = json.indexOf("}");
+        if (theEnd == -1) { theEnd = Integer.MAX_VALUE; }
+        int end = Math.min(nextComma, nextSpace);
+        end = Math.min(end, theEnd);
+        return json.substring(0, end);
+    }
+
+    private String extractBetween(char opening, char closing, String input) {
+        boolean found = false;
+        int index = 0;
+        int notEscapedQuoteCount = 0;
+        int curlyBraketsCount = 1;
+        while (!found) {
+            index += 1;
+            if (isQuoteNotEscaped(index, input)) {
+                notEscapedQuoteCount = 1 - notEscapedQuoteCount;
             }
-            if (!found) {
-                cursor++;
+            char current = input.charAt(index);
+            if (opening == current) {
+                if (notEscapedQuoteCount == 0) {
+                    curlyBraketsCount++;
+                }
+            }
+            if (closing == current) {
+                if (notEscapedQuoteCount == 0) {
+                    curlyBraketsCount--;
+                }
+                if (curlyBraketsCount == 0) {
+                    found = true;
+                }
             }
         }
-        return json.substring(start, cursor + 1);
+        return input.substring(0, index+1);
     }
 
-    private static String extractFirstKey(String json) {
-        String before = json.substring(1, json.indexOf(":"));
-        return (String) clean(before);
-    }
-
-    private static void debug(String message) {
-//        System.out.println(message);
+    private boolean isQuoteNotEscaped(int index, String input) {
+        char current = input.charAt(index);
+        char previous = input.charAt(index-1);
+        if ('\"' == current && !('\\' == previous)) {
+            return true;
+        }
+        return false;
     }
 }

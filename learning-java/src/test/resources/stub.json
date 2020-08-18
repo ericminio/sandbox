@@ -145,6 +145,18 @@
                 "body": "delayed"
             }
         },
+        {
+            "when": {
+                "urlStartsWith": "/generate-number"
+            },
+            "answer": {
+                "statusCode": 200,
+                "contentType": "text/plain",
+                "body": {
+                    "number": "~call~generate-number()"
+                }
+            }
+        },
 
         {
             "answer": {

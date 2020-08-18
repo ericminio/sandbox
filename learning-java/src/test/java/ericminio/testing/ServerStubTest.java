@@ -7,9 +7,9 @@ import support.HttpResponse;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -20,7 +20,7 @@ import static support.PutRequest.put;
 public class ServerStubTest {
 
     ServerStub server;
-    private int port = 5018;
+    private final int port = 5018;
 
     @Before
     public void startServer() throws IOException {
@@ -109,7 +109,7 @@ public class ServerStubTest {
     @Test
     public void functionCanGenerateObject() throws Exception {
         server.getFunctions().put("create-object", (incoming, variables, parameters) ->
-                Arrays.asList("one", "two").stream().map(v ->new HashMap<String, Object>() {{ put("value", v); }}).collect(Collectors.toList())
+                Stream.of("one", "two").map(v ->new HashMap<String, Object>() {{ put("value", v); }}).collect(Collectors.toList())
         );
         HttpResponse response = get("http://localhost:"+port+"/function-collection");
 
@@ -164,6 +164,21 @@ public class ServerStubTest {
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "text/plain" ) );
         assertThat( response.getBody(), equalTo( "{\"field\":\"value\"}" ) );
+    }
+
+    @Test
+    public void generatedObjectCanBeNumber() throws Exception {
+        server.getFunctions().put("generate-number", (incoming, variables, parameters) -> {
+            String uri = incoming.getUri();
+            String token = "/generate-number/";
+            String value = uri.substring(uri.indexOf(token) + token.length());
+            return Integer.parseInt(value) + 1;
+        });
+        HttpResponse response = get("http://localhost:"+port+"/generate-number/41");
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "{\"number\":42}" ) );
     }
 
     @Test

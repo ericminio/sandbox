@@ -24,7 +24,7 @@ public class JsonRouter {
     public JsonRouter(String config, Map<String, Object> variables, Map<String, Function> functions) {
         this.variables = variables;
         this.functions = functions;
-        routes = ((List<Map<String, Object>>) new JsonToMapsParser().parse(config).get("routes"))
+        routes = ((List<Map<String, Object>>) new JsonToMapsParser().parseObject(config).get("routes"))
                 .stream().map(e -> new JsonRouter.Route(e)).collect(Collectors.toList());
     }
 

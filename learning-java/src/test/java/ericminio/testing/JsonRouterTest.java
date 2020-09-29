@@ -6,8 +6,10 @@ import support.FakeHttpExchange;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -129,6 +131,46 @@ public class JsonRouterTest {
         assertThat(answer.getStatusCode(), equalTo(200));
         assertThat(answer.getContentType(), equalTo("application/json"));
         assertThat(answer.getEvaluateBody(), equalTo("{\"greetings\":{\"message\":\"welcome\"}}"));
+    }
+
+    @Test
+    public void dynamicBodyCanDigestEmptyList() {
+        JsonRouter router = from("dynamic-body-list.json");
+        router.getFunctions().put("list", (incoming, variables, parameters) -> new ArrayList() );
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/anything");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("application/json"));
+        assertThat(answer.getEvaluateBody(), equalTo("[]"));
+    }
+
+    @Test
+    public void dynamicBodyCanDigestListOfObjects() {
+        JsonRouter router = from("dynamic-body-list.json");
+        router.getFunctions().put("list", (incoming, variables, parameters) -> {
+            List<Map> attributes = new ArrayList<>();
+
+            Map<String, Object> first = new HashMap<>();
+            first.put("old", Boolean.TRUE);
+            attributes.add(first);
+
+            Map<String, Object> second = new HashMap<>();
+            second.put("obsolete", Boolean.FALSE);
+            attributes.add(second);
+
+            return attributes;
+        });
+        FakeHttpExchange exchange = new FakeHttpExchange() {{
+            setAttribute("uri", "/anything");
+        }};
+        JsonRouter.Answer answer = router.digest(exchange);
+
+        assertThat(answer.getStatusCode(), equalTo(200));
+        assertThat(answer.getContentType(), equalTo("application/json"));
+        assertThat(answer.getEvaluateBody(), equalTo("[{\"old\":true},{\"obsolete\":false}]"));
     }
 
     @Test

@@ -1,17 +1,30 @@
 package ericminio.json;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JsonToMapsParser {
 
     private void debug(String json) {
-//        System.out.println(json);
+        System.out.println(json);
     }
 
-    public Map<String, Object> parse(String input) {
+    public Object parse(String value) {
+        if ("null".equalsIgnoreCase(value)) { return null; }
+        if ("true".equalsIgnoreCase(value)) { return Boolean.TRUE; }
+        if ("false".equalsIgnoreCase(value)) { return Boolean.FALSE; }
+        if (value.startsWith("{")) { return parseObject(value); }
+        if (value.startsWith("[")) { return parseCollection(value); }
+        if (value.startsWith("\"")) { return value.substring(1, value.length()-1).replace("\\\"", "\""); }
+
+        try {
+            return Integer.valueOf(value);
+        }
+        catch (NumberFormatException e) {
+            return Double.valueOf(value);
+        }
+    }
+
+    public Map<String, Object> parseObject(String input) {
         try {
             String json = input.replaceAll("\\n|\\t", "");
             Map<String, Object> o = new HashMap();
@@ -22,7 +35,7 @@ public class JsonToMapsParser {
                 String value = extractValue(key, json);
                 debug("key: " + key);
                 debug("value: " + value);
-                o.put(key, parseValue(value));
+                o.put(key, parse(value));
 
                 json = json.substring(json.indexOf(key) + key.length() + 1);
                 json = json.substring(json.indexOf(value) + value.length() + 1);
@@ -34,32 +47,26 @@ public class JsonToMapsParser {
         }
     }
 
-    private List<Map<String, Object>> parseCollection(String input) {
-        List<Map<String, Object>> collection = new ArrayList<>();
+    public List<Object> parseCollection(String input) {
+        List<Object> collection = new ArrayList<>();
+        input = input.substring(1, input.length()-1);
 
         while (input.indexOf('{') != -1) {
             String json = extractBetween('{', '}', input.substring(input.indexOf("{")));
             collection.add(parse(json));
 
-            input = input.substring(input.indexOf(json) + json.length() + 1);
+            input = input.substring(input.indexOf(json) + json.length());
         }
+
+        String[] splited = input.split(",");
+        for (String item: splited) {
+            item = item.trim();
+            if (item.length() > 0) {
+                collection.add(parse(item));
+            }
+        }
+
         return collection;
-    }
-
-    private Object parseValue(String value) {
-        if ("null".equalsIgnoreCase(value)) { return null; }
-        if ("true".equalsIgnoreCase(value)) { return Boolean.TRUE; }
-        if ("false".equalsIgnoreCase(value)) { return Boolean.FALSE; }
-        if (value.startsWith("{")) { return parse(value); }
-        if (value.startsWith("[")) { return parseCollection(value); }
-        if (value.startsWith("\"")) { return value.substring(1, value.length()-1).replace("\\\"", "\""); }
-
-        try {
-            return new Integer(value);
-        }
-        catch (NumberFormatException e) {
-            return new Double(value);
-        }
     }
 
     private String extractKey(String json) {

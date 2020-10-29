@@ -9,15 +9,15 @@ public class TrafficVanishingEntry implements Runnable {
     private Object key;
     private long inactivityDelay;
     private TimeUnit unit;
-    TrafficLimiter trafficLimiter;
+    TrafficLimiterUsing2nThreads trafficLimiterUsing2nThreads;
     private SemaphoreWithReplenishment semaphore;
     private ScheduledExecutorService executor;
     private long lastAccessTime;
 
-    public TrafficVanishingEntry(Object key, TrafficLimiter trafficLimiter) {
+    public TrafficVanishingEntry(Object key, TrafficLimiterUsing2nThreads trafficLimiterUsing2nThreads) {
         this.key = key;
-        this.trafficLimiter = trafficLimiter;
-        TrafficLimiterConfiguration configuration = trafficLimiter.getConfiguration();
+        this.trafficLimiterUsing2nThreads = trafficLimiterUsing2nThreads;
+        TrafficLimiterConfiguration configuration = trafficLimiterUsing2nThreads.getConfiguration();
         this.inactivityDelay = configuration.getInactivityDelay();
         this.unit = configuration.getUnit();
         this.semaphore = new SemaphoreWithReplenishment(configuration.getPermits(), configuration.getDelay(), configuration.getUnit());
@@ -39,7 +39,7 @@ public class TrafficVanishingEntry implements Runnable {
     }
 
     public void clean() {
-        this.trafficLimiter.remove(this);
+        this.trafficLimiterUsing2nThreads.remove(this);
         this.semaphore.stop();
         this.executor.shutdown();
     }

@@ -26,6 +26,7 @@ public class DelayQueueTest {
         long before = System.currentTimeMillis();
         queue.put(new DelayedByGivenMilliseconds( 150, "unique"));
         queue.take();
+        Thread.sleep(50);
         long after = System.currentTimeMillis();
 
         assertThat((int)(after - before), greaterThan(150));

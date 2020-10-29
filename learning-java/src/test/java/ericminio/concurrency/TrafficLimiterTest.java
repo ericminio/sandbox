@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class TrafficLimiterTest {
+public abstract class TrafficLimiterTest {
 
     TrafficLimiter trafficLimiter;
 
@@ -21,14 +21,15 @@ public class TrafficLimiterTest {
         configuration.setInactivityDelay(450);
         configuration.setUnit(TimeUnit.MILLISECONDS);
 
-        trafficLimiter = new TrafficLimiter();
-        trafficLimiter.setConfiguration(configuration);
+        trafficLimiter = getTrafficLimiter(configuration);
     }
     @After
     public void clean() throws InterruptedException {
-        trafficLimiter.getTraffic().values().forEach(cleaner -> cleaner.clean());
+        trafficLimiter.stop();
         Thread.sleep(150);
     }
+
+    protected abstract TrafficLimiter getTrafficLimiter(TrafficLimiterConfiguration configuration);
 
     @Test
     public void doesNotLimitsRateWhenInputIsDifferent() {
@@ -42,7 +43,7 @@ public class TrafficLimiterTest {
         assertThat(trafficLimiter.isLimitReachedFor(15), equalTo(false));
         assertThat(trafficLimiter.isLimitReachedFor(15), equalTo(true));
 
-        Thread.sleep(200);
+        Thread.sleep(150 + 50);
         assertThat(trafficLimiter.isLimitReachedFor(15), equalTo(false));
     }
 
@@ -53,17 +54,6 @@ public class TrafficLimiterTest {
 
         Thread.sleep(450 + 200);
         assertThat(trafficLimiter.trafficSize(), equalTo(0));
-    }
-
-    @Test
-    public void cleanupStopsAssociatedThreads() throws InterruptedException {
-        ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
-        int initialCount = threadGroup.activeCount();
-        trafficLimiter.isLimitReachedFor(3);
-        assertThat(threadGroup.activeCount(), equalTo(initialCount + 2));
-
-        Thread.sleep(450 + 200);
-        assertThat(threadGroup.activeCount(), equalTo(initialCount));
     }
 
     @Test

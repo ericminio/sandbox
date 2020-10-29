@@ -45,7 +45,7 @@ public class SemaphoreWithReplenishmentTest {
         int initialCount = threadGroup.activeCount();
         SemaphoreWithReplenishment semaphore = new SemaphoreWithReplenishment(3, 150, TimeUnit.MILLISECONDS);
         semaphore.stop();
-        Thread.sleep(100);
+        Thread.sleep(300);
 
         assertThat(threadGroup.activeCount(), equalTo(initialCount));
     }

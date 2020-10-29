@@ -3,7 +3,7 @@ package ericminio.demo.primefactors.http;
 import ericminio.demo.primefactors.domain.Decomposition;
 import ericminio.demo.primefactors.domain.Mathematician;
 import ericminio.demo.primefactors.security.TooManyRequestException;
-import ericminio.demo.primefactors.security.RateLimiter;
+import ericminio.demo.primefactors.security.TrafficLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +19,11 @@ public class MathController {
     Mathematician einstein;
 
     @Autowired
-    RateLimiter rateLimiter;
+    TrafficLimiter trafficLimiter;
 
     @RequestMapping("/primeFactorsOf")
     public Decomposition primeFactorsOf(@RequestParam Integer number) {
-        if (rateLimiter.limitIsReachedFor(number)) {
+        if (trafficLimiter.isLimitReachedFor(number)) {
             throw new TooManyRequestException();
         }
         return einstein.decompose(number);

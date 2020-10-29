@@ -26,6 +26,7 @@ public class ScheduledFutureTest {
 
         }, 2, TimeUnit.SECONDS);
         future.get();
+        Thread.sleep(15);
         int delay = tops.delay();
 
         assertThat(delay, greaterThan(2000));

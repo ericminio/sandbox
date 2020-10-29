@@ -3,50 +3,53 @@ package ericminio.demo.primefactors.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
-public class TrafficLimiter {
+public class TrafficLimiter implements Runnable {
+
+    private TrafficLimiterConfiguration configuration;
+    private ConcurrentHashMap<Object, StampedSemaphore> traffic;
+    private ScheduledExecutorService executor;
 
     @Autowired
-    TrafficLimiterConfiguration configuration;
-
-    private ConcurrentHashMap<Object, TrafficVanishingEntry> traffic;
-
-    public TrafficLimiter() {
+    public TrafficLimiter(TrafficLimiterConfiguration configuration) {
+        this.configuration = configuration;
         traffic = new ConcurrentHashMap<>();
+        this.executor = Executors.newScheduledThreadPool(1);
+        this.executor.scheduleWithFixedDelay(this, configuration.getDelay(), configuration.getDelay(), configuration.getUnit());
     }
 
     public boolean isLimitReachedFor(Object key) {
         return !vanishingEntryFor(key).isStillVisible();
     }
 
-    private TrafficVanishingEntry vanishingEntryFor(Object key) {
-        TrafficVanishingEntry trafficVanishingEntry = traffic.get(key);
-        if (trafficVanishingEntry == null) {
-            trafficVanishingEntry = new TrafficVanishingEntry(key, this);
-            traffic.put(key, trafficVanishingEntry);
+    private StampedSemaphore vanishingEntryFor(Object key) {
+        StampedSemaphore stampedSemaphore = traffic.get(key);
+        if (stampedSemaphore == null) {
+            stampedSemaphore = new StampedSemaphore(key, configuration.getPermits());
+            traffic.put(key, stampedSemaphore);
         }
-        return trafficVanishingEntry;
+        return stampedSemaphore;
     }
 
-    public void remove(TrafficVanishingEntry vanished) {
-        this.traffic.remove(vanished.getKey());
-    }
+    @Override
+    public void run() {
+        traffic.values().forEach(stampedSemaphore -> stampedSemaphore.replenish() );
 
-    public void setConfiguration(TrafficLimiterConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    public TrafficLimiterConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    public ConcurrentHashMap<Object, TrafficVanishingEntry> getTraffic() {
-        return traffic;
-    }
-
-    public int trafficSize() {
-        return traffic.size();
+        long now = System.currentTimeMillis();
+        List<StampedSemaphore> toBeRemoved = new ArrayList<>();
+        traffic.values().forEach(stampedSemaphore -> {
+            long delay = configuration.getUnit().convert(now - stampedSemaphore.getLastAccessTime(), TimeUnit.MILLISECONDS);
+            if (delay > configuration.getInactivityDelay()) {
+                toBeRemoved.add(stampedSemaphore);
+            }
+        });
+        toBeRemoved.forEach(stampedSemaphore -> traffic.remove(stampedSemaphore.getKey()));
     }
 }

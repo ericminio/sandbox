@@ -1,4 +1,4 @@
-package ericminio.concurrency;
+package ericminio.security;
 
 import org.junit.Test;
 

@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 public class TrafficLimiterUsing2nThreads implements TrafficLimiter {
 
     private TrafficLimiterConfiguration configuration;
-    private ConcurrentHashMap<Object, TrafficVanishingEntry> traffic;
+    private ConcurrentHashMap<Object, TrafficEntryVanishing> traffic;
 
     public TrafficLimiterUsing2nThreads(TrafficLimiterConfiguration configuration) {
         this.configuration = configuration;
@@ -23,20 +23,20 @@ public class TrafficLimiterUsing2nThreads implements TrafficLimiter {
     }
 
     @Override
-    public boolean isLimitReachedFor(Object key) {
-        return !vanishingEntryFor(key).isStillVisible();
+    public boolean isOpen(Object key) {
+        return !getTrafficEntry(key).isStillVisible();
     }
 
-    private TrafficVanishingEntry vanishingEntryFor(Object key) {
-        TrafficVanishingEntry trafficVanishingEntry = traffic.get(key);
-        if (trafficVanishingEntry == null) {
-            trafficVanishingEntry = new TrafficVanishingEntry(key, this);
-            traffic.put(key, trafficVanishingEntry);
+    private TrafficEntryVanishing getTrafficEntry(Object key) {
+        TrafficEntryVanishing trafficEntryVanishing = traffic.get(key);
+        if (trafficEntryVanishing == null) {
+            trafficEntryVanishing = new TrafficEntryVanishing(key, this);
+            traffic.put(key, trafficEntryVanishing);
         }
-        return trafficVanishingEntry;
+        return trafficEntryVanishing;
     }
 
-    public void remove(TrafficVanishingEntry vanished) {
+    public void remove(TrafficEntryVanishing vanished) {
         this.traffic.remove(vanished.getKey());
     }
 

@@ -2,7 +2,7 @@ package ericminio.concurrency;
 
 public interface TrafficLimiter {
 
-    boolean isLimitReachedFor(Object key);
+    boolean isOpen(Object key);
 
     int trafficSize();
 

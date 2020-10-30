@@ -16,7 +16,7 @@ public class TrafficLimiterUsing2nThreadsTest extends TrafficLimiterTest {
     public void cleanupStopsAssociatedThreads() throws InterruptedException {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
         int initialCount = threadGroup.activeCount();
-        trafficLimiter.isLimitReachedFor(3);
+        trafficLimiter.isOpen(3);
         assertThat(threadGroup.activeCount(), equalTo(initialCount + 2));
 
         Thread.sleep(450 + 200);

@@ -2,21 +2,22 @@ package ericminio.concurrency;
 
 import java.util.concurrent.Semaphore;
 
-public class StampedSemaphore extends Semaphore {
+public class TrafficEntry extends Semaphore {
 
     private long lastAccessTime;
     private Object key;
     private int permits;
 
-    public StampedSemaphore(Object key, int permits) {
+    public TrafficEntry(Object key, int permits) {
         super(permits);
         this.key = key;
         this.permits = permits;
     }
 
-    public boolean isStillVisible() {
+    public TrafficState tryAccess() {
         this.lastAccessTime = System.currentTimeMillis();
-        return this.tryAcquire();
+
+        return new TrafficState(this.tryAcquire());
     }
 
     public void replenish() {

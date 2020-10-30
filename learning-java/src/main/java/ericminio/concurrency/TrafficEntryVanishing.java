@@ -4,7 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TrafficVanishingEntry implements Runnable {
+public class TrafficEntryVanishing implements Runnable {
 
     private Object key;
     private long inactivityDelay;
@@ -14,7 +14,7 @@ public class TrafficVanishingEntry implements Runnable {
     private ScheduledExecutorService executor;
     private long lastAccessTime;
 
-    public TrafficVanishingEntry(Object key, TrafficLimiterUsing2nThreads trafficLimiterUsing2nThreads) {
+    public TrafficEntryVanishing(Object key, TrafficLimiterUsing2nThreads trafficLimiterUsing2nThreads) {
         this.key = key;
         this.trafficLimiterUsing2nThreads = trafficLimiterUsing2nThreads;
         TrafficLimiterConfiguration configuration = trafficLimiterUsing2nThreads.getConfiguration();

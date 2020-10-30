@@ -74,8 +74,8 @@ public class PrimeFactorsTest {
                 e.printStackTrace();
             }
 
-        }, 2, TimeUnit.SECONDS);
-        scheduledExecutorService.awaitTermination(3, TimeUnit.SECONDS);
+        }, 5, TimeUnit.SECONDS);
+        scheduledExecutorService.awaitTermination(7, TimeUnit.SECONDS);
         scheduledExecutorService.shutdown();
 
         assertThat(statusTracker.getStatusCode(), equalTo(200));

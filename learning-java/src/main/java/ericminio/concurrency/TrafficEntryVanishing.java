@@ -4,47 +4,32 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TrafficEntryVanishing implements Runnable {
+public class TrafficEntryVanishing extends TrafficEntryReplenishing {
 
-    private Object key;
     private long inactivityDelay;
     private TimeUnit unit;
-    TrafficLimiterUsing2nThreads trafficLimiterUsing2nThreads;
-    private SemaphoreWithReplenishment semaphore;
+    TrafficLimiter trafficLimiter;
     private ScheduledExecutorService executor;
-    private long lastAccessTime;
 
-    public TrafficEntryVanishing(Object key, TrafficLimiterUsing2nThreads trafficLimiterUsing2nThreads) {
-        this.key = key;
-        this.trafficLimiterUsing2nThreads = trafficLimiterUsing2nThreads;
-        TrafficLimiterConfiguration configuration = trafficLimiterUsing2nThreads.getConfiguration();
+    public TrafficEntryVanishing(Object key, TrafficLimiterConfiguration configuration, TrafficLimiter trafficLimiter) {
+        super(key, configuration);
+        this.trafficLimiter = trafficLimiter;
         this.inactivityDelay = configuration.getInactivityDelay();
         this.unit = configuration.getUnit();
-        this.semaphore = new SemaphoreWithReplenishment(configuration.getPermits(), configuration.getDelay(), configuration.getUnit());
         this.executor = Executors.newScheduledThreadPool(1);
-        this.executor.scheduleWithFixedDelay(this, configuration.getInactivityDelay(), configuration.getDelay(), configuration.getUnit());
+        this.executor.scheduleWithFixedDelay(() -> vanish(), configuration.getInactivityDelay(), configuration.getDelay(), configuration.getUnit());
     }
 
-    public boolean isStillVisible() {
-        this.lastAccessTime = System.currentTimeMillis();
-        return semaphore.tryAcquire();
-    }
-
-    @Override
-    public void run() {
-        long delay = this.unit.convert(System.currentTimeMillis() - this.lastAccessTime, TimeUnit.MILLISECONDS);
+    public void vanish() {
+        long delay = this.unit.convert(System.currentTimeMillis() - this.getLastAccessTime(), TimeUnit.MILLISECONDS);
         if (delay > this.inactivityDelay) {
-            clean();
+            stop();
         }
     }
 
-    public void clean() {
-        this.trafficLimiterUsing2nThreads.remove(this);
-        this.semaphore.stop();
+    public void stop() {
+        this.trafficLimiter.remove(this);
+        this.stopReplenishing();
         this.executor.shutdown();
-    }
-
-    public Object getKey() {
-        return key;
     }
 }

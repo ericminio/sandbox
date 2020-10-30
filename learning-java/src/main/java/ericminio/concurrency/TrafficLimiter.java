@@ -7,4 +7,6 @@ public interface TrafficLimiter {
     int trafficSize();
 
     void stop();
+
+    void remove(TrafficEntry trafficEntry);
 }

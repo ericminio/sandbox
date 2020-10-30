@@ -32,16 +32,21 @@ public class TrafficLimiterUsing1Thread implements TrafficLimiter, Runnable {
 
     @Override
     public boolean isOpen(Object key) {
-        return !getTrafficEntry(key).tryAccess().isOpen();
+        return getTrafficEntry(key).tryAccess().isOpen();
     }
 
     private TrafficEntry getTrafficEntry(Object key) {
         TrafficEntry trafficEntry = traffic.get(key);
         if (trafficEntry == null) {
-            trafficEntry = new TrafficEntry(key, configuration.getPermits());
+            trafficEntry = new TrafficEntry(key, configuration);
             traffic.put(key, trafficEntry);
         }
         return trafficEntry;
+    }
+
+    @Override
+    public void remove(TrafficEntry trafficEntry) {
+        traffic.remove(trafficEntry.getKey());
     }
 
     @Override
@@ -56,6 +61,6 @@ public class TrafficLimiterUsing1Thread implements TrafficLimiter, Runnable {
                 toBeRemoved.add(trafficEntry);
             }
         });
-        toBeRemoved.forEach(trafficEntry -> traffic.remove(trafficEntry.getKey()));
+        toBeRemoved.forEach(trafficEntry -> remove(trafficEntry));
     }
 }

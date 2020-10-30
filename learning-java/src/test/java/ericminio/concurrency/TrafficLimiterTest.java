@@ -33,18 +33,18 @@ public abstract class TrafficLimiterTest {
 
     @Test
     public void doesNotLimitsRateWhenInputIsDifferent() {
-        assertThat(trafficLimiter.isOpen(3), equalTo(false));
-        assertThat(trafficLimiter.isOpen(5), equalTo(false));
-        assertThat(trafficLimiter.isOpen(7), equalTo(false));
+        assertThat(trafficLimiter.isOpen(3), equalTo(true));
+        assertThat(trafficLimiter.isOpen(5), equalTo(true));
+        assertThat(trafficLimiter.isOpen(7), equalTo(true));
     }
 
     @Test
     public void limitsRateForSameInput() throws InterruptedException {
-        assertThat(trafficLimiter.isOpen(15), equalTo(false));
         assertThat(trafficLimiter.isOpen(15), equalTo(true));
+        assertThat(trafficLimiter.isOpen(15), equalTo(false));
 
         Thread.sleep(150 + 50);
-        assertThat(trafficLimiter.isOpen(15), equalTo(false));
+        assertThat(trafficLimiter.isOpen(15), equalTo(true));
     }
 
     @Test

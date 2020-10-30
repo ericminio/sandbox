@@ -8,10 +8,10 @@ public class TrafficEntry extends Semaphore {
     private Object key;
     private int permits;
 
-    public TrafficEntry(Object key, int permits) {
-        super(permits);
+    public TrafficEntry(Object key, TrafficLimiterConfiguration configuration) {
+        super(configuration.getPermits());
         this.key = key;
-        this.permits = permits;
+        this.permits = configuration.getPermits();
     }
 
     public TrafficState tryAccess() {

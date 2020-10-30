@@ -14,7 +14,7 @@ public class TrafficLimiterUsing2nThreads implements TrafficLimiter {
 
     @Override
     public void stop() {
-        traffic.values().forEach(cleaner -> cleaner.clean());
+        traffic.values().forEach(trafficEntryVanishing -> trafficEntryVanishing.stop());
     }
 
     @Override
@@ -24,23 +24,20 @@ public class TrafficLimiterUsing2nThreads implements TrafficLimiter {
 
     @Override
     public boolean isOpen(Object key) {
-        return !getTrafficEntry(key).isStillVisible();
+        return getTrafficEntry(key).tryAccess().isOpen();
     }
 
     private TrafficEntryVanishing getTrafficEntry(Object key) {
         TrafficEntryVanishing trafficEntryVanishing = traffic.get(key);
         if (trafficEntryVanishing == null) {
-            trafficEntryVanishing = new TrafficEntryVanishing(key, this);
+            trafficEntryVanishing = new TrafficEntryVanishing(key, configuration, this);
             traffic.put(key, trafficEntryVanishing);
         }
         return trafficEntryVanishing;
     }
 
-    public void remove(TrafficEntryVanishing vanished) {
-        this.traffic.remove(vanished.getKey());
-    }
-
-    public TrafficLimiterConfiguration getConfiguration() {
-        return configuration;
+    @Override
+    public void remove(TrafficEntry trafficEntry) {
+        this.traffic.remove(trafficEntry.getKey());
     }
 }

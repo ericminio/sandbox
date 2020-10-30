@@ -7,12 +7,15 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class SemaphoreWithReplenishmentTest {
+public class TrafficEntryReplenishingTest {
 
     @Test
     public void works() throws InterruptedException {
-        SemaphoreWithReplenishment semaphore =
-                new SemaphoreWithReplenishment(3, 150, TimeUnit.MILLISECONDS);
+        TrafficLimiterConfiguration configuration = new TrafficLimiterConfiguration();
+        configuration.setPermits(3);
+        configuration.setDelay(150);
+        configuration.setUnit(TimeUnit.MILLISECONDS);
+        TrafficEntryReplenishing semaphore = new TrafficEntryReplenishing("any", configuration);
         assertThat(semaphore.tryAcquire(), equalTo(true));
         assertThat(semaphore.tryAcquire(), equalTo(true));
         assertThat(semaphore.tryAcquire(), equalTo(true));
@@ -31,20 +34,28 @@ public class SemaphoreWithReplenishmentTest {
     public void createsOneThreadPerSemaphore() {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
         int initialCount = threadGroup.activeCount();
+        TrafficLimiterConfiguration configuration = new TrafficLimiterConfiguration();
+        configuration.setPermits(3);
+        configuration.setDelay(150);
+        configuration.setUnit(TimeUnit.MILLISECONDS);
 
-        new SemaphoreWithReplenishment(3, 150, TimeUnit.MILLISECONDS);
+        new TrafficEntryReplenishing("any", configuration);
         assertThat(threadGroup.activeCount(), equalTo(initialCount + 1));
-        new SemaphoreWithReplenishment(3, 150, TimeUnit.MILLISECONDS);
+        new TrafficEntryReplenishing("any", configuration);
         assertThat(threadGroup.activeCount(), equalTo(initialCount + 2));
-        new SemaphoreWithReplenishment(3, 150, TimeUnit.MILLISECONDS);
+        new TrafficEntryReplenishing("any", configuration);
         assertThat(threadGroup.activeCount(), equalTo(initialCount + 3));
     }
     @Test
     public void offersOneWayToStopTheThread() throws InterruptedException {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
         int initialCount = threadGroup.activeCount();
-        SemaphoreWithReplenishment semaphore = new SemaphoreWithReplenishment(3, 150, TimeUnit.MILLISECONDS);
-        semaphore.stop();
+        TrafficLimiterConfiguration configuration = new TrafficLimiterConfiguration();
+        configuration.setPermits(3);
+        configuration.setDelay(150);
+        configuration.setUnit(TimeUnit.MILLISECONDS);
+        TrafficEntryReplenishing semaphore = new TrafficEntryReplenishing("any", configuration);
+        semaphore.stopReplenishing();
         Thread.sleep(300);
 
         assertThat(threadGroup.activeCount(), equalTo(initialCount));

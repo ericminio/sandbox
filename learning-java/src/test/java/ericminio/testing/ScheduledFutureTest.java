@@ -6,8 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -20,16 +19,14 @@ public class ScheduledFutureTest {
             try {
                 tops.tic();
             } catch (Exception e) {
-                e.printStackTrace();
                 fail(e.getMessage());
             }
 
         }, 2, TimeUnit.SECONDS);
         future.get();
-        Thread.sleep(15);
         int delay = tops.delay();
 
-        assertThat(delay, greaterThan(2000));
+        assertThat(delay, greaterThanOrEqualTo(2000));
         assertThat(delay, lessThan(3000));
     }
     class Tops {

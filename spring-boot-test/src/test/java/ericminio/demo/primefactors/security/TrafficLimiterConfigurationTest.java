@@ -25,7 +25,7 @@ public class TrafficLimiterConfigurationTest {
 
     @Test
     public void providesDelay() {
-        assertThat(configuration.getDelay(), equalTo(2L));
+        assertThat(configuration.getDelay(), equalTo(5L));
     }
 
     @Test

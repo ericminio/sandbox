@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class TrafficLimiter implements Runnable {
 
     private TrafficLimiterConfiguration configuration;
-    private ConcurrentHashMap<Object, StampedSemaphore> traffic;
+    private ConcurrentHashMap<Object, TrafficEntry> traffic;
     private ScheduledExecutorService executor;
 
     @Autowired
@@ -25,31 +25,35 @@ public class TrafficLimiter implements Runnable {
         this.executor.scheduleWithFixedDelay(this, configuration.getDelay(), configuration.getDelay(), configuration.getUnit());
     }
 
-    public boolean isLimitReachedFor(Object key) {
-        return !vanishingEntryFor(key).isStillVisible();
+    public boolean isOpen(Object key) {
+        return getTrafficEntry(key).tryAccess().isOpen();
     }
 
-    private StampedSemaphore vanishingEntryFor(Object key) {
-        StampedSemaphore stampedSemaphore = traffic.get(key);
-        if (stampedSemaphore == null) {
-            stampedSemaphore = new StampedSemaphore(key, configuration.getPermits());
-            traffic.put(key, stampedSemaphore);
+    private TrafficEntry getTrafficEntry(Object key) {
+        TrafficEntry trafficEntry = traffic.get(key);
+        if (trafficEntry == null) {
+            trafficEntry = new TrafficEntry(key, configuration);
+            traffic.put(key, trafficEntry);
         }
-        return stampedSemaphore;
+        return trafficEntry;
+    }
+
+    public void remove(TrafficEntry trafficEntry) {
+        traffic.remove(trafficEntry.getKey());
     }
 
     @Override
     public void run() {
-        traffic.values().forEach(stampedSemaphore -> stampedSemaphore.replenish() );
-
         long now = System.currentTimeMillis();
-        List<StampedSemaphore> toBeRemoved = new ArrayList<>();
-        traffic.values().forEach(stampedSemaphore -> {
-            long delay = configuration.getUnit().convert(now - stampedSemaphore.getLastAccessTime(), TimeUnit.MILLISECONDS);
+
+        List<TrafficEntry> toBeRemoved = new ArrayList<>();
+        traffic.values().forEach(trafficEntry -> {
+            trafficEntry.replenish();
+            long delay = configuration.getUnit().convert(now - trafficEntry.getLastAccessTime(), TimeUnit.MILLISECONDS);
             if (delay > configuration.getInactivityDelay()) {
-                toBeRemoved.add(stampedSemaphore);
+                toBeRemoved.add(trafficEntry);
             }
         });
-        toBeRemoved.forEach(stampedSemaphore -> traffic.remove(stampedSemaphore.getKey()));
+        toBeRemoved.forEach(trafficEntry -> remove(trafficEntry));
     }
 }

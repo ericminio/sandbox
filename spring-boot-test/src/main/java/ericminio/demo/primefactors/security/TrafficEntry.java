@@ -2,21 +2,22 @@ package ericminio.demo.primefactors.security;
 
 import java.util.concurrent.Semaphore;
 
-public class StampedSemaphore extends Semaphore {
+public class TrafficEntry extends Semaphore {
 
     private long lastAccessTime;
     private Object key;
     private int permits;
 
-    public StampedSemaphore(Object key, int permits) {
-        super(permits);
+    public TrafficEntry(Object key, TrafficLimiterConfiguration configuration) {
+        super(configuration.getPermits());
         this.key = key;
-        this.permits = permits;
+        this.permits = configuration.getPermits();
     }
 
-    public boolean isStillVisible() {
+    public TrafficState tryAccess() {
         this.lastAccessTime = System.currentTimeMillis();
-        return this.tryAcquire();
+
+        return new TrafficState(this.tryAcquire());
     }
 
     public void replenish() {

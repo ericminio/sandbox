@@ -23,7 +23,7 @@ public class MathController {
 
     @RequestMapping("/primeFactorsOf")
     public Decomposition primeFactorsOf(@RequestParam Integer number) {
-        if (trafficLimiter.isLimitReachedFor(number)) {
+        if (!trafficLimiter.isOpen(number)) {
             throw new TooManyRequestException();
         }
         return einstein.decompose(number);

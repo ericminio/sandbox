@@ -51,11 +51,11 @@ public class TrafficLimiterUsing1Thread implements TrafficLimiter, Runnable {
 
     @Override
     public void run() {
-        traffic.values().forEach(trafficEntry -> trafficEntry.replenish() );
-
         long now = System.currentTimeMillis();
+
         List<TrafficEntry> toBeRemoved = new ArrayList<>();
         traffic.values().forEach(trafficEntry -> {
+            trafficEntry.replenish();
             long delay = configuration.getUnit().convert(now - trafficEntry.getLastAccessTime(), TimeUnit.MILLISECONDS);
             if (delay > configuration.getInactivityDelay()) {
                 toBeRemoved.add(trafficEntry);

@@ -14,10 +14,10 @@ public class TrafficEntry extends Semaphore {
         this.permits = configuration.getPermits();
     }
 
-    public TrafficState tryAccess() {
+    public TrafficEntryState tryAccess() {
         this.lastAccessTime = System.currentTimeMillis();
 
-        return new TrafficState(this.tryAcquire());
+        return new TrafficEntryState(this.tryAcquire());
     }
 
     public void replenish() {

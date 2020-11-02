@@ -1,10 +1,10 @@
 package ericminio.demo.primefactors.security;
 
-public class TrafficState {
+public class TrafficEntryState {
 
     private boolean isOpen;
 
-    public TrafficState(boolean isOpen) {
+    public TrafficEntryState(boolean isOpen) {
         this.isOpen = isOpen;
     }
 

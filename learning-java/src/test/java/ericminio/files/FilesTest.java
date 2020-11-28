@@ -1,4 +1,4 @@
-package ericminio;
+package ericminio.files;
 
 import org.junit.Test;
 
@@ -25,5 +25,18 @@ public class FilesTest {
         String line = Files.readAllLines(path).get(0);
 
         assertThat(line, equalTo("2015-01-15 19:15:00 [FLASH] Beauty"));
+    }
+
+    @Test
+    public void readLines() throws IOException {
+        Path path = Paths.get("./src/test/java/ericminio/katas/mastermind/mastermind.yop");
+        String line = Files.readAllLines(path).get(0);
+
+        assertThat(line, equalTo("The mastermind..."));
+    }
+
+    @Test
+    public void currentPackage() {
+        assertThat(this.getClass().getPackage().getName(), equalTo("ericminio.files"));
     }
 }

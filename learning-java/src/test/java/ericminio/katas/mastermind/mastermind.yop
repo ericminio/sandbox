@@ -1,0 +1,23 @@
+The mastermind...
+
+In this game, player 1 chooses an ordered set of colors and player 2 tries to guess the set.
+Player 1 provides feedback to each try in the form of
+black tokens for colors in correct position and
+white tokens for colors in incorrect position.
+Player 2 wins when feedback is zero white token and as much black tokens as the hidden set size.
+Player 1 wins after a given unsuccessful tries.
+
+For example
+    Say the hidden colors are blue, white, red
+    When the guess is         blue, white, red
+    Then the feedback is 3 black, 0 white
+
+Other examples
+    Hidden: blue, white, red
+
+    green, green, green -> 0 black, 0 white
+    blue, green, green  -> 1 black, 0 white
+    blue, white, green  -> 2 black, 0 white
+    green, green, red   -> 1 black, 0 white
+    white, red, blue    -> 0 black, 3 white
+    blue, blue, blue    -> 1 black, 0 white

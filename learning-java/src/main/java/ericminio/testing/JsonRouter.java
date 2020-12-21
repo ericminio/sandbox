@@ -6,10 +6,7 @@ import ericminio.json.MapsToJsonParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,6 +45,17 @@ public class JsonRouter {
 
     public Map<String, Function> getFunctions() {
         return functions;
+    }
+
+    public void insertRoute(String url, int statusCode, String contentType, String body) {
+        Map<String, Object> definition = new HashMap<>();
+        definition.put("when", new HashMap<String, Object>());
+        definition.put("answer", new HashMap<String, Object>());
+        ((Map<String, Object>) definition.get("when")).put("urlStartsWith", url);
+        ((Map<String, Object>) definition.get("answer")).put("statusCode", new Integer(statusCode));
+        ((Map<String, Object>) definition.get("answer")).put("contentType", contentType);
+        ((Map<String, Object>) definition.get("answer")).put("body", body);
+        routes.add(0, new Route(definition));
     }
 
     public class Incoming {

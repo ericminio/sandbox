@@ -1,6 +1,5 @@
-package support;
+package ericminio.http;
 
-import ericminio.http.HttpResponse;
 import ericminio.support.Stringify;
 
 import java.net.HttpURLConnection;
@@ -8,27 +7,26 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PutRequest {
+public class GetRequest {
 
-    public static HttpResponse put(String url, String data) throws Exception {
-        return put(url, new HashMap<>(), data.getBytes());
+    public static HttpResponse get(String url) throws Exception {
+        return get(url, new HashMap<>());
     }
 
-    public static HttpResponse put(String url, byte[] data) throws Exception {
-        return put(url, new HashMap<>(), data);
+    public static HttpResponse get(String url, int readTimeout) throws Exception {
+        return get(url, new HashMap<>(), readTimeout);
     }
 
-    public static HttpResponse put(String url, Map<String, String> headers, byte[] data) throws Exception {
+    public static HttpResponse get(String url, Map<String, String> headers) throws Exception {
+        return get(url, headers, 0);
+    }
+
+    public static HttpResponse get(String url, Map<String, String> headers, int readTimeout) throws Exception {
         HttpURLConnection request = (HttpURLConnection) new URL( url ).openConnection();
-        request.setDoOutput(true);
-        request.setRequestMethod("PUT");
-        request.setRequestProperty( "Content-Type", "application/json");
-        request.setRequestProperty( "Content-Length", Integer.toString(data.length));
+        request.setReadTimeout(readTimeout);
         for (String header: headers.keySet()) {
             request.setRequestProperty( header, headers.get(header));
         }
-        request.getOutputStream().write(data);
-
         HttpResponse response = new HttpResponse();
         response.setStatusCode(request.getResponseCode());
         response.setContentType(request.getContentType());

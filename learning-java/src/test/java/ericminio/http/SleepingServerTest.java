@@ -5,8 +5,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import support.HttpResponse;
-import support.Stringify;
+import ericminio.support.Stringify;
 
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;

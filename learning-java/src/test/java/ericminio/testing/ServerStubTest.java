@@ -3,7 +3,7 @@ package ericminio.testing;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import support.HttpResponse;
+import ericminio.http.HttpResponse;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -11,9 +11,12 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static support.GetRequest.get;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static ericminio.http.GetRequest.get;
 import static support.PostRequest.post;
 import static support.PutRequest.put;
 
@@ -218,5 +221,33 @@ public class ServerStubTest {
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getContentType(), equalTo( "application/json" ) );
         assertThat( response.getBody(), equalTo( "{\"status\":\"operational\"}" ) );
+    }
+
+    @Test
+    public void addsIsReadyRoute() throws Exception {
+        HttpResponse response = get( "http://localhost:"+port+"/is-ready" );
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getContentType(), equalTo( "text/plain" ) );
+        assertThat( response.getBody(), equalTo( "yep" ) );
+    }
+    @Test
+    public void hasWaitingStrategy() {
+        assertThat(server.getWaitStrategy(), instanceOf(WaitStrategyUsingGetEndpoint.class));
+    }
+    @Test
+    public void waitAfterStart() throws IOException {
+        server.stop();
+        server.setWaitStrategy(mock(WaitStrategy.class));
+        server.start(port);
+
+        verify(server.getWaitStrategy()).waitForStarted(port);
+    }
+    @Test
+    public void waitAfterStop() {
+        server.setWaitStrategy(mock(WaitStrategy.class));
+        server.stop();
+
+        verify(server.getWaitStrategy()).waitForStopped(port);
     }
 }

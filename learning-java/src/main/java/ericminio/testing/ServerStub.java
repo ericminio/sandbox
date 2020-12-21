@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 
 public class ServerStub {
     private HttpServer server;
+    private int port;
     private JsonRouter router;
     private Map<String, Object> variables;
     private Map<String, JsonRouter.Function> functions;
+    private WaitStrategy waitStrategy;
 
     public ServerStub(String configFile) {
         this(configFile, new HashMap<>(), new HashMap<>());
@@ -23,6 +25,7 @@ public class ServerStub {
 
     public ServerStub(String configFile, Map<String, Object> variables, Map<String, JsonRouter.Function> functions) {
         setRoutes(configFile, variables, functions);
+        setWaitStrategy(new WaitStrategyUsingGetEndpoint("/is-ready"));
     }
 
     public void setRoutes(String configFile) {
@@ -33,9 +36,11 @@ public class ServerStub {
         InputStream resource = this.getClass().getClassLoader().getResourceAsStream(configFile);
         String config = new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining());
         router = new JsonRouter(config, variables, functions);
+        router.insertRoute("/is-ready", 200, "text/plain", "yep");
     }
 
     public void start(int port) throws IOException {
+        this.port = port;
         server = HttpServer.create( new InetSocketAddress( port ), 0 );
         server.createContext( "/", exchange -> {
             try {
@@ -57,10 +62,14 @@ public class ServerStub {
             exchange.close();
         });
         server.start();
+        this.getWaitStrategy().waitForStarted(port);
     }
 
     public void stop() {
-        server.stop( 1 );
+        if (server != null) {
+            server.stop(0);
+            this.getWaitStrategy().waitForStopped(this.port);
+        }
     }
 
     public Map<String, Object> getVariables() {
@@ -69,6 +78,14 @@ public class ServerStub {
 
     public Map<String, JsonRouter.Function> getFunctions() {
         return router.getFunctions();
+    }
+
+    public WaitStrategy getWaitStrategy() {
+        return waitStrategy;
+    }
+
+    public void setWaitStrategy(WaitStrategy waitStrategy) {
+        this.waitStrategy = waitStrategy;
     }
 }
 

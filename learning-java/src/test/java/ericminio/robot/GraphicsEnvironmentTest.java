@@ -1,5 +1,6 @@
 package ericminio.robot;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.awt.*;
@@ -7,6 +8,7 @@ import java.awt.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 public class GraphicsEnvironmentTest {
 
     @Test

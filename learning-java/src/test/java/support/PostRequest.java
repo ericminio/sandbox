@@ -1,5 +1,8 @@
 package support;
 
+import ericminio.http.HttpResponse;
+import ericminio.support.Stringify;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;

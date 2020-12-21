@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import support.HttpResponse;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

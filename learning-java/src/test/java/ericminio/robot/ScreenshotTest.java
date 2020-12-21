@@ -1,6 +1,7 @@
 package ericminio.robot;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 public class ScreenshotTest {
 
     private Robot robot;

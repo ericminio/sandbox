@@ -81,17 +81,23 @@ public class RestTemplateGetTest {
 
     @Test
     public void canHandleErrors() {
-        restTemplate.setErrorHandler(new ResponseErrorHandler() {
+        restTemplate.setErrorHandler(willLetTheExceptionGoThrough());
+        ResponseEntity<String> response = restTemplate.exchange(greeting + "?name=XXX", GET, null, String.class);
+
+        assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));
+        assertThat(response.getBody(), equalTo("IllegalArgumentException"));
+    }
+
+    private ResponseErrorHandler willLetTheExceptionGoThrough() {
+        return new ResponseErrorHandler() {
             @Override
             public boolean hasError(ClientHttpResponse clientHttpResponse) {
                 return false;
             }
+
             @Override
             public void handleError(ClientHttpResponse clientHttpResponse) {
             }
-        });
-        ResponseEntity<String> response = restTemplate.exchange(greeting + "?name=XXX", GET, null, String.class);
-
-        assertThat(response.getStatusCode(), equalTo(NOT_IMPLEMENTED));
+        };
     }
 }

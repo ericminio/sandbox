@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -65,9 +67,29 @@ public class PaginationTest {
         assertThat(entities.get(0).getField(), equalTo("b"));
     }
 
+    @Test
+    public void explore() {
+        repository.save(entity("a"));
+        repository.save(entity("b"));
+        repository.save(entity("c"));
+        for (int i=0; i<100; i++) {
+            repository.save(entity("b"));
+            assertThat(entities(), equalTo("abc"));
+        }
+    }
+
+    private String entities() {
+        return repository.findByFieldIsNotNull().stream().map(e -> e.getField()).collect(Collectors.joining());
+    }
+
     private AnyEntity entity(final String field) {
-        AnyEntity entity = new AnyEntity();
+        AnyEntity entity = repository.findByField(field);
+        if (entity == null) {
+            entity = new AnyEntity();
+            entity.setCreationDate(LocalDateTime.now());
+        }
         entity.setField(field);
+        entity.setUpdateDate(LocalDateTime.now());
 
         return entity;
     }

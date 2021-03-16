@@ -15,4 +15,10 @@ public interface AnyEntityRepository extends CrudRepository<AnyEntity, Long> {
     Integer countWhereFieldIs(@Param("value") String value);
 
     List<AnyEntity> findByFieldIsNotNullOrderByField(Pageable pageable);
+
+    List<AnyEntity> findByFieldIsNotNull();
+
+    List<AnyEntity> findByFieldIsNotNullOrderByCreationDate();
+
+    AnyEntity findByField(String value);
 }

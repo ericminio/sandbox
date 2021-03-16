@@ -1,14 +1,11 @@
 package ericminio.demo.helloworld.http;
 
-import ericminio.demo.helloworld.domain.BuildGreeting;
-import ericminio.demo.helloworld.domain.ExtractName;
 import ericminio.demo.helloworld.domain.Greeting;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface DummyController {
 
@@ -19,6 +16,8 @@ public interface DummyController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     default ResponseEntity<String> guard(IllegalArgumentException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(
+                exception.getMessage() != null ? exception.getMessage() : exception.getClass().getSimpleName() ,
+                HttpStatus.NOT_IMPLEMENTED);
     }
 }

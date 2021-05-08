@@ -1,14 +1,11 @@
 package ericminio.http;
 
-import ericminio.http.HttpResponse;
 import ericminio.support.Stringify;
 
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UploadRequest {
 

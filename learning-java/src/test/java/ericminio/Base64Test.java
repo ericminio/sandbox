@@ -20,6 +20,7 @@ public class Base64Test {
         byte[] decoded = Base64.getDecoder().decode("aGVsbG8=");
 
         assertThat(new String(decoded), equalTo("hello"));
+        assertThat(new String(new String(decoded).getBytes()), equalTo("hello"));
     }
 
     @Test

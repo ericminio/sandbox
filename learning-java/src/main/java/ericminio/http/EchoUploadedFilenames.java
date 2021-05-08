@@ -11,7 +11,7 @@ public class EchoUploadedFilenames implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String incomingBody = new Stringify().inputStream(exchange.getRequestBody());
-        UploadPayload payload = new UploadPayloadParser().parse(incomingBody);
+        UploadPayload payload = new UploadProtocol().parse(incomingBody);
         String answer = "";
         for (int i=0; i<payload.size(); i++) {
             answer += payload.get(i).getFileName() + " ";

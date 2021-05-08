@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static support.PostRequest.post;
+import static ericminio.http.PostRequest.post;
 
 public class HttpPostTest {
 

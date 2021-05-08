@@ -1,11 +1,19 @@
 package ericminio.http;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UploadPayloadParserTest {
+
+    private UploadProtocol uploadProtocol;
+
+    @Before
+    public void sut() {
+        uploadProtocol = new UploadProtocol();
+    }
 
     @Test
     public void canExtractFilename() {
@@ -16,8 +24,7 @@ public class UploadPayloadParserTest {
                 "\n" +
                 "any content\n" +
                 "-----token--\n";
-        UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
-        UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
+        UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
 
         UploadedFile uploadedFile = uploadPayload.get(0);
@@ -33,8 +40,7 @@ public class UploadPayloadParserTest {
                 "\n" +
                 "any content\n" +
                 "-----token--\n";
-        UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
-        UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
+        UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
 
         UploadedFile uploadedFile = uploadPayload.get(0);
@@ -51,8 +57,7 @@ public class UploadPayloadParserTest {
                 "any multi line\n" +
                 "content\n" +
                 "-----token--\n";
-        UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
-        UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
+        UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
 
         UploadedFile uploadedFile = uploadPayload.get(0);
@@ -75,8 +80,7 @@ public class UploadPayloadParserTest {
                 "\n" +
                 "two content\n" +
                 "-----token--\n";
-        UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
-        UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
+        UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(2));
 
         assertThat(uploadPayload.get(0).getFileName(), equalTo("one.txt"));
@@ -101,8 +105,7 @@ public class UploadPayloadParserTest {
                 "\r\n" +
                 "two content\r\n" +
                 "-----token--\r\n";
-        UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
-        UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
+        UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(2));
 
         assertThat(uploadPayload.get(0).getFileName(), equalTo("one.txt"));

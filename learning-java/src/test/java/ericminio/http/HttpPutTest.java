@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static support.PutRequest.put;
+import static ericminio.http.PutRequest.put;
 
 public class HttpPutTest {
 

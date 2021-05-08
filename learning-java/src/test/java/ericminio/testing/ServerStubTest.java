@@ -17,8 +17,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static ericminio.http.GetRequest.get;
-import static support.PostRequest.post;
-import static support.PutRequest.put;
+import static ericminio.http.PostRequest.post;
+import static ericminio.http.PutRequest.put;
 
 public class ServerStubTest {
 

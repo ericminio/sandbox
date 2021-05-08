@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.net.InetSocketAddress;
 
+import static ericminio.http.UploadProtocol.boundary;
+import static ericminio.http.UploadProtocol.hyphens;
 import static ericminio.http.UploadRequest.upload;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -30,15 +32,15 @@ public class HttpUploadTest {
 
     @Test
     public void echoToken() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/token", "any content" );
+        HttpResponse response = upload("http://localhost:8001/token", "any", "any.txt", "any content" );
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
-        assertThat( response.getBody(), equalTo( "-----token" ) );
+        assertThat( response.getBody(), equalTo( hyphens + boundary ) );
     }
 
     @Test
     public void echoFilename() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/filename", "any content" );
+        HttpResponse response = upload("http://localhost:8001/filename", "any", "any.txt", "any content" );
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( "any.txt" ) );

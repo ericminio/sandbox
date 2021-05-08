@@ -15,7 +15,7 @@ public class UploadPayloadParserTest {
                 "Content-Type:application/octet-stream\n" +
                 "\n" +
                 "any content\n" +
-                "-----token--";
+                "-----token--\n";
         UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
         UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
@@ -32,7 +32,7 @@ public class UploadPayloadParserTest {
                 "Content-Type:application/octet-stream\n" +
                 "\n" +
                 "any content\n" +
-                "-----token--";
+                "-----token--\n";
         UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
         UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
@@ -50,7 +50,7 @@ public class UploadPayloadParserTest {
                 "\n" +
                 "any multi line\n" +
                 "content\n" +
-                "-----token--";
+                "-----token--\n";
         UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
         UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
@@ -74,7 +74,33 @@ public class UploadPayloadParserTest {
                 "Content-Type:application/octet-stream\n" +
                 "\n" +
                 "two content\n" +
-                "-----token--";
+                "-----token--\n";
+        UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
+        UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
+        assertThat(uploadPayload.size(), equalTo(2));
+
+        assertThat(uploadPayload.get(0).getName(), equalTo("one.txt"));
+        assertThat(uploadPayload.get(0).getFieldName(), equalTo("one"));
+        assertThat(uploadPayload.get(0).getContent(), equalTo("one content"));
+        assertThat(uploadPayload.get(1).getName(), equalTo("two.txt"));
+        assertThat(uploadPayload.get(1).getFieldName(), equalTo("two"));
+        assertThat(uploadPayload.get(1).getContent(), equalTo("two content"));
+    }
+
+    @Test
+    public void supportExtendedLineEndSeparator() {
+        String incomingBody = "" +
+                "-----token\r\n" +
+                "Content-Disposition:form-data;name=one;filename=one.txt\r\n" +
+                "Content-Type:application/octet-stream\r\n" +
+                "\r\n" +
+                "one content\r\n" +
+                "-----token\r\n" +
+                "Content-Disposition:form-data;name=two;filename=two.txt\r\n" +
+                "Content-Type:application/octet-stream\r\n" +
+                "\r\n" +
+                "two content\r\n" +
+                "-----token--\r\n";
         UploadPayloadParser uploadPayloadParser = new UploadPayloadParser();
         UploadPayload uploadPayload = uploadPayloadParser.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(2));

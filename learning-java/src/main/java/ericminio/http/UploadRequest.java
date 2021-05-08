@@ -1,5 +1,6 @@
 package ericminio.http;
 
+import ericminio.support.Bytify;
 import ericminio.support.Stringify;
 
 import java.net.HttpURLConnection;
@@ -19,7 +20,9 @@ public class UploadRequest {
         response.setStatusCode(request.getResponseCode());
         response.setContentType(request.getContentType());
         if (request.getResponseCode() < 400) {
-            response.setBody(new Stringify().inputStream(request.getInputStream()));
+            byte[] bytes = new Bytify().inputStream(request.getInputStream());
+            response.setBinaryBody(bytes);
+            response.setBody(new String(bytes));
         } else {
             response.setBody(new Stringify().inputStream(request.getErrorStream()));
         }

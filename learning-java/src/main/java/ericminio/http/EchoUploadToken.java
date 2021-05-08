@@ -11,7 +11,7 @@ public class EchoUploadToken implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String incomingBody = new Stringify().inputStream(exchange.getRequestBody());
-        String answer = incomingBody.substring(0, incomingBody.indexOf(UploadRequest.end));
+        String answer = incomingBody.substring(0, incomingBody.indexOf(UploadProtocol.end));
         exchange.sendResponseHeaders( 200, answer.length() );
         exchange.getResponseBody().write( answer.getBytes() );
         exchange.close();

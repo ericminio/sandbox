@@ -22,4 +22,14 @@ public class UploadPayload {
     public void add(UploadedFile uploadedFile) {
         this.files.add(uploadedFile);
     }
+
+    public UploadedFile getFileByFieldName(String field) {
+        for (int i=0; i<size(); i++) {
+            UploadedFile candidate = get(i);
+            if (candidate.getFieldName().equalsIgnoreCase(field)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
 }

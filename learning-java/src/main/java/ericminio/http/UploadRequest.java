@@ -7,12 +7,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UploadRequest {
+import static ericminio.http.UploadProtocol.*;
 
-    public static String boundary = "token";
-    public static String hyphens = "-----";
-    public static String twoHyphens = "--";
-    public static String end = "\n";
+public class UploadRequest {
 
     public static HttpResponse upload(String url, String data) throws Exception {
         HttpURLConnection request = (HttpURLConnection) new URL( url ).openConnection();

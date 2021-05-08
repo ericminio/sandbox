@@ -19,12 +19,14 @@ public class EchoZipPayload implements HttpHandler {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream, StandardCharsets.UTF_8);
-        FileInfo fileInfo = payload.getFileInfo(0);
-        ZipEntry zipEntry = new ZipEntry(fileInfo.getFileName());
-        zipOutputStream.putNextEntry(zipEntry);
-        zipOutputStream.write(fileInfo.getContent().getBytes(), 0, fileInfo.getContent().length());
-        zipOutputStream.flush();
-        zipOutputStream.closeEntry();
+        for (int i=0; i<payload.size(); i++) {
+            FileInfo fileInfo = payload.getFileInfo(i);
+            ZipEntry zipEntry = new ZipEntry(fileInfo.getFileName());
+            zipOutputStream.putNextEntry(zipEntry);
+            zipOutputStream.write(fileInfo.getContent().getBytes(), 0, fileInfo.getContent().length());
+            zipOutputStream.flush();
+            zipOutputStream.closeEntry();
+        }
         zipOutputStream.finish();
         zipOutputStream.close();
         byte[] bytes = byteArrayOutputStream.toByteArray();

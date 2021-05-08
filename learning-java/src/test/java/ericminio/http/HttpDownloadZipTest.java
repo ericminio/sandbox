@@ -46,4 +46,27 @@ public class HttpDownloadZipTest {
         String actual = new Stringify().inputStream(zipInputStream);
         assertThat(actual, equalTo("content #1"));
     }
+
+    @Test
+    public void worksWithTwoFiles() throws Exception {
+        UploadPayload uploadPayload = new UploadPayload();
+        uploadPayload.add(new FileInfo("one", "one.txt", "content #1"));
+        uploadPayload.add(new FileInfo("two", "two.txt", "content #2"));
+        HttpResponse response = upload("http://localhost:8001/zip", uploadPayload);
+        assertThat(response.getStatusCode(), equalTo(200));
+
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(response.getBinaryBody());
+        ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
+        ZipEntry entry = zipInputStream.getNextEntry();
+        assertThat(entry.getName(), equalTo("one.txt"));
+
+        String actual = new Stringify().inputStream(zipInputStream);
+        assertThat(actual, equalTo("content #1"));
+
+        entry = zipInputStream.getNextEntry();
+        assertThat(entry.getName(), equalTo("two.txt"));
+
+        actual = new Stringify().inputStream(zipInputStream);
+        assertThat(actual, equalTo("content #2"));
+    }
 }

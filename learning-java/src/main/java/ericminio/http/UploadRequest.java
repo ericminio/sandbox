@@ -20,6 +20,7 @@ public class UploadRequest {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(request.getResponseCode());
         response.setContentType(request.getContentType());
+        response.setContentDisposition(request.getHeaderField("content-disposition"));
         if (request.getResponseCode() < 400) {
             byte[] bytes = new Bytify().inputStream(request.getInputStream());
             response.setBinaryBody(bytes);

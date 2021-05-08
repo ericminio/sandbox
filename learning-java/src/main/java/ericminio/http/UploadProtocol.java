@@ -67,25 +67,37 @@ public class UploadProtocol {
 
             String contentDisposition = filePayload.substring(filePayload.indexOf("Content-Disposition"));
             contentDisposition = contentDisposition.substring(0, contentDisposition.indexOf("\n")).trim();
-            String filename = contentDisposition.substring(contentDisposition.indexOf(";filename="));
-            filename = filename.substring(";filename=".length());
-            String fieldname = contentDisposition.substring(contentDisposition.indexOf(";name="));
-            fieldname = fieldname.substring(";name=".length());
-            fieldname = fieldname.substring(0, fieldname.indexOf(";"));
+            if (contentDisposition.indexOf("filename=") != -1) {
+                String filename = contentDisposition.substring(contentDisposition.indexOf("filename="));
+                filename = unquote(filename.substring("filename=".length()).trim());
+                String fieldname = contentDisposition.substring(contentDisposition.indexOf("name="));
+                fieldname = fieldname.substring("name=".length());
+                fieldname = unquote(fieldname.substring(0, fieldname.indexOf(";")).trim());
 
-            while (filePayload.indexOf("\n") > 1) {
-                filePayload = filePayload.substring(filePayload.indexOf("\n") + 1);
+                while (filePayload.indexOf("\n") > 1) {
+                    filePayload = filePayload.substring(filePayload.indexOf("\n") + 1);
+                }
+
+                FileInfo fileInfo = new FileInfo();
+                fileInfo.setFileName(filename);
+                fileInfo.setFieldName(fieldname);
+                fileInfo.setContent(filePayload.trim());
+                fileSet.add(fileInfo);
             }
-
-            FileInfo fileInfo = new FileInfo();
-            fileInfo.setFileName(filename);
-            fileInfo.setFieldName(fieldname);
-            fileInfo.setContent(filePayload.trim());
-            fileSet.add(fileInfo);
-
             remaining = remaining.substring(remaining.indexOf(token) + token.length()).trim();
         }
 
         return fileSet;
+    }
+
+    private String unquote(String input) {
+        String unquoted = input;
+        if (unquoted.startsWith("\"")) {
+            unquoted = unquoted.substring(1);
+        }
+        if (unquoted.endsWith("\"")) {
+            unquoted = unquoted.substring(0, unquoted.length()-1);
+        }
+        return unquoted;
     }
 }

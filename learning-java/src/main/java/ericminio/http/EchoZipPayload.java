@@ -14,6 +14,8 @@ public class EchoZipPayload implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         FileSet fileSet = new UploadProtocol().parse(new Stringify().inputStream(exchange.getRequestBody()));
         byte[] bytes = new Zip().please(fileSet);
+        exchange.getResponseHeaders().add( "content-type", "application/zip" );
+        exchange.getResponseHeaders().add( "content-disposition", "attachment; filename=\"download.zip\"" );
         exchange.sendResponseHeaders(200, bytes.length);
         exchange.getResponseBody().write(bytes);
         exchange.close();

@@ -36,6 +36,8 @@ public class HttpDownloadZipTest {
         fileSet.add(new FileInfo("one", "one.txt", "content #1"));
         HttpResponse response = upload("http://localhost:8001/zip", fileSet);
         assertThat(response.getStatusCode(), equalTo(200));
+        assertThat(response.getContentType(), equalTo("application/zip"));
+        assertThat(response.getContentDisposition(), equalTo("attachment; filename=\"download.zip\""));
 
         FileSet output = new Unzip().please(response.getBinaryBody());
         assertThat(output.size(), equalTo(1));

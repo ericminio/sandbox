@@ -55,4 +55,33 @@ public class ZipTest {
 
         zipInputStream.close();
     }
+
+    @Test
+    public void roundTripInMemory() throws IOException {
+        String content = "hello world";
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream, StandardCharsets.UTF_8);
+        ZipEntry zipEntry = new ZipEntry("hello.txt");
+        zipOutputStream.putNextEntry(zipEntry);
+        zipOutputStream.write(content.getBytes(), 0, content.length());
+        zipOutputStream.flush();
+        zipOutputStream.closeEntry();
+        zipOutputStream.finish();
+        zipOutputStream.close();
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
+        ZipEntry entry = zipInputStream.getNextEntry();
+        assertThat(entry.getName(), equalTo("hello.txt"));
+
+        String actual = new Stringify().inputStream(zipInputStream);
+        assertThat(actual, equalTo("hello world"));
+        assertThat(zipInputStream.available(), equalTo(0));
+
+        zipInputStream.closeEntry();
+        assertThat(zipInputStream.getNextEntry(), equalTo(null));
+
+        zipInputStream.close();
+    }
 }

@@ -23,7 +23,7 @@ public class UploadPayloadParser {
             }
 
             UploadedFile uploadedFile = new UploadedFile();
-            uploadedFile.setName(filename);
+            uploadedFile.setFileName(filename);
             uploadedFile.setFieldName(fieldname);
             uploadedFile.setContent(filePayload.trim());
             uploadPayload.add(uploadedFile);

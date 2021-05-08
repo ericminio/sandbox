@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 
 import static ericminio.http.UploadProtocol.boundary;
 import static ericminio.http.UploadProtocol.hyphens;
@@ -22,6 +23,7 @@ public class HttpUploadTest {
         server = HttpServer.create( new InetSocketAddress( 8001 ), 0 );
         server.createContext( "/token", new EchoUploadToken());
         server.createContext( "/filename", new EchoUploadedFilename());
+        server.createContext( "/filenames", new EchoUploadedFilenames());
         server.start();
     }
 
@@ -32,7 +34,8 @@ public class HttpUploadTest {
 
     @Test
     public void echoToken() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/token", "any", "any.txt", "any content" );
+        HttpResponse response = upload("http://localhost:8001/token", Arrays.asList(
+                new UploadedFile("any", "any.txt", "any content")));
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( hyphens + boundary ) );
@@ -40,9 +43,20 @@ public class HttpUploadTest {
 
     @Test
     public void echoFilename() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/filename", "any", "any.txt", "any content" );
+        HttpResponse response = upload("http://localhost:8001/filename", Arrays.asList(
+                new UploadedFile("any", "any.txt", "any content")));
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( "any.txt" ) );
+    }
+
+    @Test
+    public void echoFilenames() throws Exception {
+        HttpResponse response = upload("http://localhost:8001/filenames", Arrays.asList(
+                new UploadedFile("any", "one.txt", "any content"),
+                new UploadedFile("any", "two.txt", "any content")));
+
+        assertThat( response.getStatusCode(), equalTo( 200 ) );
+        assertThat( response.getBody(), equalTo( "one.txt two.txt " ) );
     }
 }

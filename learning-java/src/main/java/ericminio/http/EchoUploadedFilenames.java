@@ -6,12 +6,16 @@ import ericminio.support.Stringify;
 
 import java.io.IOException;
 
-public class EchoUploadedFilename implements HttpHandler {
+public class EchoUploadedFilenames implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String incomingBody = new Stringify().inputStream(exchange.getRequestBody());
-        String answer = new UploadPayloadParser().parse(incomingBody).get(0).getFileName();
+        UploadPayload payload = new UploadPayloadParser().parse(incomingBody);
+        String answer = "";
+        for (int i=0; i<payload.size(); i++) {
+            answer += payload.get(i).getFileName() + " ";
+        }
         exchange.sendResponseHeaders( 200, answer.length() );
         exchange.getResponseBody().write( answer.getBytes() );
         exchange.close();

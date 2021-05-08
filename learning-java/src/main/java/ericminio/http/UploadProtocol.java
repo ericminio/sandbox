@@ -4,17 +4,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.List;
 
 public class UploadProtocol {
     public static String boundary = "token";
     public static String hyphens = "-----";
     public static String twoHyphens = "--";
     public static String end = "\n";
-    private HttpURLConnection request;
-
-    public UploadProtocol(HttpURLConnection request) {
-        this.request = request;
-    }
 
     public String getRequestContentType() {
         return "multipart/form-data;boundary=" + boundary;
@@ -40,17 +36,20 @@ public class UploadProtocol {
         return "Content-Disposition:form-data;name="+fieldName+";filename=" + fileName + end;
     }
 
-    public void send(String fieldName, String fileName, String content) throws IOException {
+    public void send(List<UploadedFile> uploadedFiles, HttpURLConnection request) throws IOException {
         request.setRequestProperty("Content-Type", getRequestContentType());
         OutputStream outputStream = request.getOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        dataOutputStream.writeBytes(fileStart());
-        dataOutputStream.writeBytes(getFileContentDisposition(fieldName, fileName));
-        dataOutputStream.writeBytes(getFileContentType());
-        dataOutputStream.writeBytes(end);
-        dataOutputStream.write(content.getBytes(), 0, content.getBytes().length);
-        dataOutputStream.writeBytes(fileEnd());
+        for (int i=0; i<uploadedFiles.size(); i++) {
+            UploadedFile uploadedFile = uploadedFiles.get(i);
+            dataOutputStream.writeBytes(fileStart());
+            dataOutputStream.writeBytes(getFileContentDisposition(uploadedFile.getFieldName(), uploadedFile.getFileName()));
+            dataOutputStream.writeBytes(getFileContentType());
+            dataOutputStream.writeBytes(end);
+            dataOutputStream.write(uploadedFile.getContent().getBytes(), 0, uploadedFile.getContent().getBytes().length);
+            dataOutputStream.writeBytes(fileEnd());
+        }
 
         dataOutputStream.writeBytes(payloadEnd());
         dataOutputStream.flush();

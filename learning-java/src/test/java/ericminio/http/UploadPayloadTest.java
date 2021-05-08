@@ -11,14 +11,14 @@ public class UploadPayloadTest {
     public void findByFieldName() {
         UploadedFile one = new UploadedFile();
         one.setFieldName("one-field");
-        one.setName("one-name");
+        one.setFileName("one-name");
         UploadedFile two = new UploadedFile();
         two.setFieldName("two-field");
-        two.setName("two-name");
+        two.setFileName("two-name");
         UploadPayload uploadPayload = new UploadPayload();
         uploadPayload.add(one);
         uploadPayload.add(two);
 
-        assertThat(uploadPayload.getFileByFieldName("one-field").getName(), equalTo("one-name"));
+        assertThat(uploadPayload.getFileByFieldName("one-field").getFileName(), equalTo("one-name"));
     }
 }

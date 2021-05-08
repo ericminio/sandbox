@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.List;
 
 public class UploadProtocol {
     public static String boundary = "token";
@@ -36,13 +35,13 @@ public class UploadProtocol {
         return "Content-Disposition:form-data;name="+fieldName+";filename=" + fileName + end;
     }
 
-    public void send(List<UploadedFile> uploadedFiles, HttpURLConnection request) throws IOException {
+    public void send(UploadPayload uploadPayload, HttpURLConnection request) throws IOException {
         request.setRequestProperty("Content-Type", getRequestContentType());
         OutputStream outputStream = request.getOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        for (int i=0; i<uploadedFiles.size(); i++) {
-            UploadedFile uploadedFile = uploadedFiles.get(i);
+        for (int i=0; i<uploadPayload.size(); i++) {
+            UploadedFile uploadedFile = uploadPayload.get(i);
             dataOutputStream.writeBytes(fileStart());
             dataOutputStream.writeBytes(getFileContentDisposition(uploadedFile.getFieldName(), uploadedFile.getFileName()));
             dataOutputStream.writeBytes(getFileContentType());

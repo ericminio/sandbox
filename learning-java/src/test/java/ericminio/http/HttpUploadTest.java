@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 import static ericminio.http.UploadProtocol.boundary;
 import static ericminio.http.UploadProtocol.hyphens;
@@ -34,8 +33,9 @@ public class HttpUploadTest {
 
     @Test
     public void echoToken() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/token", Arrays.asList(
-                new UploadedFile("any", "any.txt", "any content")));
+        UploadPayload uploadPayload = new UploadPayload();
+        uploadPayload.add(new UploadedFile("any", "any.txt", "any content"));
+        HttpResponse response = upload("http://localhost:8001/token", uploadPayload);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( hyphens + boundary ) );
@@ -43,8 +43,9 @@ public class HttpUploadTest {
 
     @Test
     public void echoFilename() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/filename", Arrays.asList(
-                new UploadedFile("any", "any.txt", "any content")));
+        UploadPayload uploadPayload = new UploadPayload();
+        uploadPayload.add(new UploadedFile("any", "any.txt", "any content"));
+        HttpResponse response = upload("http://localhost:8001/filename", uploadPayload);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( "any.txt" ) );
@@ -52,9 +53,10 @@ public class HttpUploadTest {
 
     @Test
     public void echoFilenames() throws Exception {
-        HttpResponse response = upload("http://localhost:8001/filenames", Arrays.asList(
-                new UploadedFile("any", "one.txt", "any content"),
-                new UploadedFile("any", "two.txt", "any content")));
+        UploadPayload uploadPayload = new UploadPayload();
+        uploadPayload.add(new UploadedFile("any", "one.txt", "any content"));
+        uploadPayload.add(new UploadedFile("any", "two.txt", "any content"));
+        HttpResponse response = upload("http://localhost:8001/filenames", uploadPayload);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( "one.txt two.txt " ) );

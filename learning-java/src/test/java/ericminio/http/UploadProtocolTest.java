@@ -1,5 +1,7 @@
 package ericminio.http;
 
+import ericminio.zip.FileInfo;
+import ericminio.zip.FileSet;
 import org.junit.Before;
 import org.junit.Test;
 

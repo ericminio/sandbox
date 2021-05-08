@@ -1,4 +1,4 @@
-package ericminio.http;
+package ericminio.zip;
 
 public class FileInfo {
     private String fileName;

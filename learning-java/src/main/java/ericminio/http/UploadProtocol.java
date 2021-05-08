@@ -1,5 +1,8 @@
 package ericminio.http;
 
+import ericminio.zip.FileInfo;
+import ericminio.zip.FileSet;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;

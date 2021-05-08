@@ -1,4 +1,4 @@
-package ericminio.http;
+package ericminio.zip;
 
 import java.util.ArrayList;
 import java.util.List;

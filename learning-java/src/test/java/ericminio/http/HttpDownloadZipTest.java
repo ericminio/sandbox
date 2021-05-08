@@ -1,15 +1,14 @@
 package ericminio.http;
 
 import com.sun.net.httpserver.HttpServer;
-import ericminio.support.Stringify;
+import ericminio.zip.FileInfo;
+import ericminio.zip.FileSet;
+import ericminio.zip.Unzip;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
 import java.net.InetSocketAddress;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static ericminio.http.UploadRequest.upload;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -38,35 +37,25 @@ public class HttpDownloadZipTest {
         HttpResponse response = upload("http://localhost:8001/zip", fileSet);
         assertThat(response.getStatusCode(), equalTo(200));
 
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(response.getBinaryBody());
-        ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
-        ZipEntry entry = zipInputStream.getNextEntry();
-        assertThat(entry.getName(), equalTo("one.txt"));
-
-        String actual = new Stringify().inputStream(zipInputStream);
-        assertThat(actual, equalTo("content #1"));
+        FileSet output = new Unzip().please(response.getBinaryBody());
+        assertThat(output.size(), equalTo(1));
+        assertThat(output.getFileInfo(0).getFileName(), equalTo("one.txt"));
+        assertThat(output.getFileInfo(0).getContent(), equalTo("content #1"));
     }
 
     @Test
     public void worksWithTwoFiles() throws Exception {
-        FileSet fileSet = new FileSet();
-        fileSet.add(new FileInfo("one", "one.txt", "content #1"));
-        fileSet.add(new FileInfo("two", "two.txt", "content #2"));
-        HttpResponse response = upload("http://localhost:8001/zip", fileSet);
+        FileSet input = new FileSet();
+        input.add(new FileInfo("one", "one.txt", "content #1"));
+        input.add(new FileInfo("two", "two.txt", "content #2"));
+        HttpResponse response = upload("http://localhost:8001/zip", input);
         assertThat(response.getStatusCode(), equalTo(200));
 
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(response.getBinaryBody());
-        ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
-        ZipEntry entry = zipInputStream.getNextEntry();
-        assertThat(entry.getName(), equalTo("one.txt"));
-
-        String actual = new Stringify().inputStream(zipInputStream);
-        assertThat(actual, equalTo("content #1"));
-
-        entry = zipInputStream.getNextEntry();
-        assertThat(entry.getName(), equalTo("two.txt"));
-
-        actual = new Stringify().inputStream(zipInputStream);
-        assertThat(actual, equalTo("content #2"));
+        FileSet output = new Unzip().please(response.getBinaryBody());
+        assertThat(output.size(), equalTo(2));
+        assertThat(output.getFileInfo(0).getFileName(), equalTo("one.txt"));
+        assertThat(output.getFileInfo(0).getContent(), equalTo("content #1"));
+        assertThat(output.getFileInfo(1).getFileName(), equalTo("two.txt"));
+        assertThat(output.getFileInfo(1).getContent(), equalTo("content #2"));
     }
 }

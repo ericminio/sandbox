@@ -2,6 +2,7 @@ package ericminio.http;
 
 import ericminio.support.Bytify;
 import ericminio.support.Stringify;
+import ericminio.zip.FileSet;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

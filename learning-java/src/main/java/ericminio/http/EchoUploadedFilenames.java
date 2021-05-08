@@ -3,6 +3,7 @@ package ericminio.http;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ericminio.support.Stringify;
+import ericminio.zip.FileSet;
 
 import java.io.IOException;
 

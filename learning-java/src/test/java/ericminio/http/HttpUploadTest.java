@@ -33,9 +33,9 @@ public class HttpUploadTest {
 
     @Test
     public void echoToken() throws Exception {
-        UploadPayload uploadPayload = new UploadPayload();
-        uploadPayload.add(new FileInfo("any", "any.txt", "any content"));
-        HttpResponse response = upload("http://localhost:8001/token", uploadPayload);
+        FileSet fileSet = new FileSet();
+        fileSet.add(new FileInfo("any", "any.txt", "any content"));
+        HttpResponse response = upload("http://localhost:8001/token", fileSet);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( hyphens + boundary ) );
@@ -43,9 +43,9 @@ public class HttpUploadTest {
 
     @Test
     public void echoFilename() throws Exception {
-        UploadPayload uploadPayload = new UploadPayload();
-        uploadPayload.add(new FileInfo("any", "any.txt", "any content"));
-        HttpResponse response = upload("http://localhost:8001/filename", uploadPayload);
+        FileSet fileSet = new FileSet();
+        fileSet.add(new FileInfo("any", "any.txt", "any content"));
+        HttpResponse response = upload("http://localhost:8001/filename", fileSet);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( "any.txt" ) );
@@ -53,10 +53,10 @@ public class HttpUploadTest {
 
     @Test
     public void echoFilenames() throws Exception {
-        UploadPayload uploadPayload = new UploadPayload();
-        uploadPayload.add(new FileInfo("any", "one.txt", "any content"));
-        uploadPayload.add(new FileInfo("any", "two.txt", "any content"));
-        HttpResponse response = upload("http://localhost:8001/filenames", uploadPayload);
+        FileSet fileSet = new FileSet();
+        fileSet.add(new FileInfo("any", "one.txt", "any content"));
+        fileSet.add(new FileInfo("any", "two.txt", "any content"));
+        HttpResponse response = upload("http://localhost:8001/filenames", fileSet);
 
         assertThat( response.getStatusCode(), equalTo( 200 ) );
         assertThat( response.getBody(), equalTo( "one.txt two.txt " ) );

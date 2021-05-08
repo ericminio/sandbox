@@ -35,13 +35,13 @@ public class UploadProtocol {
         return "Content-Disposition:form-data;name="+fieldName+";filename=" + fileName + end;
     }
 
-    public void send(UploadPayload uploadPayload, HttpURLConnection request) throws IOException {
+    public void send(FileSet fileSet, HttpURLConnection request) throws IOException {
         request.setRequestProperty("Content-Type", getRequestContentType());
         OutputStream outputStream = request.getOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        for (int i=0; i<uploadPayload.size(); i++) {
-            FileInfo fileInfo = uploadPayload.getFileInfo(i);
+        for (int i = 0; i< fileSet.size(); i++) {
+            FileInfo fileInfo = fileSet.getFileInfo(i);
             dataOutputStream.writeBytes(fileStart());
             dataOutputStream.writeBytes(getFileContentDisposition(fileInfo.getFieldName(), fileInfo.getFileName()));
             dataOutputStream.writeBytes(getFileContentType());
@@ -54,8 +54,8 @@ public class UploadProtocol {
         dataOutputStream.flush();
     }
 
-    public UploadPayload parse(String incomingBody) {
-        UploadPayload uploadPayload = new UploadPayload();
+    public FileSet parse(String incomingBody) {
+        FileSet fileSet = new FileSet();
         String token = incomingBody.substring(0, incomingBody.indexOf("\n")).trim();
         String remaining = incomingBody.substring(token.length()).trim();
 
@@ -78,11 +78,11 @@ public class UploadProtocol {
             fileInfo.setFileName(filename);
             fileInfo.setFieldName(fieldname);
             fileInfo.setContent(filePayload.trim());
-            uploadPayload.add(fileInfo);
+            fileSet.add(fileInfo);
 
             remaining = remaining.substring(remaining.indexOf(token) + token.length()).trim();
         }
 
-        return uploadPayload;
+        return fileSet;
     }
 }

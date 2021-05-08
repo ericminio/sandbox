@@ -33,9 +33,9 @@ public class HttpDownloadZipTest {
 
     @Test
     public void worksForOneFile() throws Exception {
-        UploadPayload uploadPayload = new UploadPayload();
-        uploadPayload.add(new FileInfo("one", "one.txt", "content #1"));
-        HttpResponse response = upload("http://localhost:8001/zip", uploadPayload);
+        FileSet fileSet = new FileSet();
+        fileSet.add(new FileInfo("one", "one.txt", "content #1"));
+        HttpResponse response = upload("http://localhost:8001/zip", fileSet);
         assertThat(response.getStatusCode(), equalTo(200));
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(response.getBinaryBody());
@@ -49,10 +49,10 @@ public class HttpDownloadZipTest {
 
     @Test
     public void worksWithTwoFiles() throws Exception {
-        UploadPayload uploadPayload = new UploadPayload();
-        uploadPayload.add(new FileInfo("one", "one.txt", "content #1"));
-        uploadPayload.add(new FileInfo("two", "two.txt", "content #2"));
-        HttpResponse response = upload("http://localhost:8001/zip", uploadPayload);
+        FileSet fileSet = new FileSet();
+        fileSet.add(new FileInfo("one", "one.txt", "content #1"));
+        fileSet.add(new FileInfo("two", "two.txt", "content #2"));
+        HttpResponse response = upload("http://localhost:8001/zip", fileSet);
         assertThat(response.getStatusCode(), equalTo(200));
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(response.getBinaryBody());

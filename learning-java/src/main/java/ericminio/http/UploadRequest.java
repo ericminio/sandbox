@@ -8,13 +8,13 @@ import java.net.URL;
 
 public class UploadRequest {
 
-    public static HttpResponse upload(String url, UploadPayload uploadPayload) throws Exception {
+    public static HttpResponse upload(String url, FileSet fileSet) throws Exception {
         HttpURLConnection request = (HttpURLConnection) new URL( url ).openConnection();
         request.setDoOutput(true);
         request.setDoInput(true);
         request.setUseCaches(false);
         request.setRequestMethod("POST");
-        new UploadProtocol().send(uploadPayload, request);
+        new UploadProtocol().send(fileSet, request);
 
         HttpResponse response = new HttpResponse();
         response.setStatusCode(request.getResponseCode());

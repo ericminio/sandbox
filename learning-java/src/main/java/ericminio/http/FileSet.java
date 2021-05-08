@@ -3,11 +3,11 @@ package ericminio.http;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadPayload {
+public class FileSet {
 
     List<FileInfo> files;
 
-    public UploadPayload() {
+    public FileSet() {
         this.files = new ArrayList<>();
     }
 

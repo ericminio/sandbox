@@ -27,8 +27,8 @@ public class UploadPayloadParserTest {
         UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
 
-        UploadedFile uploadedFile = uploadPayload.get(0);
-        assertThat(uploadedFile.getFileName(), equalTo("any.txt"));
+        FileInfo fileInfo = uploadPayload.getFileInfo(0);
+        assertThat(fileInfo.getFileName(), equalTo("any.txt"));
     }
 
     @Test
@@ -43,8 +43,8 @@ public class UploadPayloadParserTest {
         UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
 
-        UploadedFile uploadedFile = uploadPayload.get(0);
-        assertThat(uploadedFile.getFieldName(), equalTo("field-name"));
+        FileInfo fileInfo = uploadPayload.getFileInfo(0);
+        assertThat(fileInfo.getFieldName(), equalTo("field-name"));
     }
 
     @Test
@@ -60,8 +60,8 @@ public class UploadPayloadParserTest {
         UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(1));
 
-        UploadedFile uploadedFile = uploadPayload.get(0);
-        assertThat(uploadedFile.getContent(), equalTo("" +
+        FileInfo fileInfo = uploadPayload.getFileInfo(0);
+        assertThat(fileInfo.getContent(), equalTo("" +
                 "any multi line\n" +
                 "content"));
     }
@@ -83,12 +83,12 @@ public class UploadPayloadParserTest {
         UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(2));
 
-        assertThat(uploadPayload.get(0).getFileName(), equalTo("one.txt"));
-        assertThat(uploadPayload.get(0).getFieldName(), equalTo("one"));
-        assertThat(uploadPayload.get(0).getContent(), equalTo("one content"));
-        assertThat(uploadPayload.get(1).getFileName(), equalTo("two.txt"));
-        assertThat(uploadPayload.get(1).getFieldName(), equalTo("two"));
-        assertThat(uploadPayload.get(1).getContent(), equalTo("two content"));
+        assertThat(uploadPayload.getFileInfo(0).getFileName(), equalTo("one.txt"));
+        assertThat(uploadPayload.getFileInfo(0).getFieldName(), equalTo("one"));
+        assertThat(uploadPayload.getFileInfo(0).getContent(), equalTo("one content"));
+        assertThat(uploadPayload.getFileInfo(1).getFileName(), equalTo("two.txt"));
+        assertThat(uploadPayload.getFileInfo(1).getFieldName(), equalTo("two"));
+        assertThat(uploadPayload.getFileInfo(1).getContent(), equalTo("two content"));
     }
 
     @Test
@@ -108,11 +108,11 @@ public class UploadPayloadParserTest {
         UploadPayload uploadPayload = uploadProtocol.parse(incomingBody);
         assertThat(uploadPayload.size(), equalTo(2));
 
-        assertThat(uploadPayload.get(0).getFileName(), equalTo("one.txt"));
-        assertThat(uploadPayload.get(0).getFieldName(), equalTo("one"));
-        assertThat(uploadPayload.get(0).getContent(), equalTo("one content"));
-        assertThat(uploadPayload.get(1).getFileName(), equalTo("two.txt"));
-        assertThat(uploadPayload.get(1).getFieldName(), equalTo("two"));
-        assertThat(uploadPayload.get(1).getContent(), equalTo("two content"));
+        assertThat(uploadPayload.getFileInfo(0).getFileName(), equalTo("one.txt"));
+        assertThat(uploadPayload.getFileInfo(0).getFieldName(), equalTo("one"));
+        assertThat(uploadPayload.getFileInfo(0).getContent(), equalTo("one content"));
+        assertThat(uploadPayload.getFileInfo(1).getFileName(), equalTo("two.txt"));
+        assertThat(uploadPayload.getFileInfo(1).getFieldName(), equalTo("two"));
+        assertThat(uploadPayload.getFileInfo(1).getContent(), equalTo("two content"));
     }
 }

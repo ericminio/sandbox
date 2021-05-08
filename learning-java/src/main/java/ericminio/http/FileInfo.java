@@ -1,14 +1,14 @@
 package ericminio.http;
 
-public class UploadedFile {
+public class FileInfo {
     private String fileName;
     private String fieldName;
     private String content;
 
-    public UploadedFile() {
+    public FileInfo() {
 
     }
-    public UploadedFile(String fieldName, String fileName, String content) {
+    public FileInfo(String fieldName, String fileName, String content) {
         this.fieldName = fieldName;
         this.fileName = fileName;
         this.content = content;

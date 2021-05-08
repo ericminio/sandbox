@@ -5,7 +5,7 @@ import java.util.List;
 
 public class UploadPayload {
 
-    List<UploadedFile> files;
+    List<FileInfo> files;
 
     public UploadPayload() {
         this.files = new ArrayList<>();
@@ -15,17 +15,17 @@ public class UploadPayload {
         return this.files.size();
     }
 
-    public UploadedFile get(int index) {
+    public FileInfo getFileInfo(int index) {
         return this.files.get(index);
     }
 
-    public void add(UploadedFile uploadedFile) {
-        this.files.add(uploadedFile);
+    public void add(FileInfo fileInfo) {
+        this.files.add(fileInfo);
     }
 
-    public UploadedFile getFileByFieldName(String field) {
+    public FileInfo getFileInfoByFieldName(String field) {
         for (int i=0; i<size(); i++) {
-            UploadedFile candidate = get(i);
+            FileInfo candidate = getFileInfo(i);
             if (candidate.getFieldName().equalsIgnoreCase(field)) {
                 return candidate;
             }

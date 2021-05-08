@@ -41,12 +41,12 @@ public class UploadProtocol {
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
         for (int i=0; i<uploadPayload.size(); i++) {
-            UploadedFile uploadedFile = uploadPayload.get(i);
+            FileInfo fileInfo = uploadPayload.getFileInfo(i);
             dataOutputStream.writeBytes(fileStart());
-            dataOutputStream.writeBytes(getFileContentDisposition(uploadedFile.getFieldName(), uploadedFile.getFileName()));
+            dataOutputStream.writeBytes(getFileContentDisposition(fileInfo.getFieldName(), fileInfo.getFileName()));
             dataOutputStream.writeBytes(getFileContentType());
             dataOutputStream.writeBytes(end);
-            dataOutputStream.write(uploadedFile.getContent().getBytes(), 0, uploadedFile.getContent().getBytes().length);
+            dataOutputStream.write(fileInfo.getContent().getBytes(), 0, fileInfo.getContent().getBytes().length);
             dataOutputStream.writeBytes(fileEnd());
         }
 
@@ -74,11 +74,11 @@ public class UploadProtocol {
                 filePayload = filePayload.substring(filePayload.indexOf("\n") + 1);
             }
 
-            UploadedFile uploadedFile = new UploadedFile();
-            uploadedFile.setFileName(filename);
-            uploadedFile.setFieldName(fieldname);
-            uploadedFile.setContent(filePayload.trim());
-            uploadPayload.add(uploadedFile);
+            FileInfo fileInfo = new FileInfo();
+            fileInfo.setFileName(filename);
+            fileInfo.setFieldName(fieldname);
+            fileInfo.setContent(filePayload.trim());
+            uploadPayload.add(fileInfo);
 
             remaining = remaining.substring(remaining.indexOf(token) + token.length()).trim();
         }

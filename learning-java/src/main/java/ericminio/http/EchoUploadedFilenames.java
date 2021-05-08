@@ -14,7 +14,7 @@ public class EchoUploadedFilenames implements HttpHandler {
         UploadPayload payload = new UploadProtocol().parse(incomingBody);
         String answer = "";
         for (int i=0; i<payload.size(); i++) {
-            answer += payload.get(i).getFileName() + " ";
+            answer += payload.getFileInfo(i).getFileName() + " ";
         }
         exchange.sendResponseHeaders( 200, answer.length() );
         exchange.getResponseBody().write( answer.getBytes() );

@@ -30,6 +30,7 @@ public class GetRequest {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(request.getResponseCode());
         response.setContentType(request.getContentType());
+        response.setContentDisposition(request.getHeaderField("content-disposition"));
         if (request.getResponseCode() < 400) {
             response.setBody(new Stringify().inputStream(request.getInputStream()));
         } else {

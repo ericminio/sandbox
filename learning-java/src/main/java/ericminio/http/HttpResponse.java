@@ -6,6 +6,7 @@ public class HttpResponse {
     private String body;
     private String contentType;
     private byte[] binaryBody;
+    private String contentDisposition;
 
     public int getStatusCode() {
         return statusCode;
@@ -37,5 +38,13 @@ public class HttpResponse {
 
     public byte[] getBinaryBody() {
         return binaryBody;
+    }
+
+    public String getContentDisposition() {
+        return contentDisposition;
+    }
+
+    public void setContentDisposition(String contentDisposition) {
+        this.contentDisposition = contentDisposition;
     }
 }

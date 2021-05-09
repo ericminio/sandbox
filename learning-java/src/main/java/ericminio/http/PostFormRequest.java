@@ -6,15 +6,15 @@ import ericminio.support.Stringify;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UploadRequest {
+public class PostFormRequest {
 
-    public static HttpResponse upload(String url, FileSet fileSet) throws Exception {
-        HttpURLConnection request = (HttpURLConnection) new URL( url ).openConnection();
+    public static HttpResponse postForm(String url, FormDataSet formDataSet) throws Exception {
+        HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
         request.setDoOutput(true);
         request.setDoInput(true);
         request.setUseCaches(false);
         request.setRequestMethod("POST");
-        new FormDataProtocol().send(fileSet, request);
+        new FormDataProtocol().post(formDataSet, request);
 
         HttpResponse response = new HttpResponse();
         response.setStatusCode(request.getResponseCode());

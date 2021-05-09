@@ -11,18 +11,23 @@ public class FormDataProtocol {
     public static String twoHyphens = "--";
     public static String end = "\n";
 
-    public void send(FileSet fileSet, HttpURLConnection request) throws IOException {
+    public void post(FormDataSet set, HttpURLConnection request) throws IOException {
         request.setRequestProperty("Content-Type", getRequestContentType());
         OutputStream outputStream = request.getOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        for (int i = 0; i< fileSet.size(); i++) {
-            FileInfo fileInfo = fileSet.getFileInfo(i);
+        for (int i = 0; i< set.size(); i++) {
+            FormData formData = set.get(i);
             dataOutputStream.writeBytes(fileStart());
-            dataOutputStream.writeBytes(getFileContentDisposition(fileInfo.getName(), fileInfo.getFileName()));
-            dataOutputStream.writeBytes(getFileContentType());
+            if (formData instanceof FileInfo) {
+                dataOutputStream.writeBytes(getFileContentDisposition(formData.getName(), ((FileInfo) formData).getFileName()));
+                dataOutputStream.writeBytes(getFileContentType());
+            }
+            else {
+                dataOutputStream.writeBytes(getFileContentDisposition(formData.getName()));
+            }
             dataOutputStream.writeBytes(end);
-            dataOutputStream.write(fileInfo.getContent().getBytes(), 0, fileInfo.getContent().getBytes().length);
+            dataOutputStream.write(formData.getValue().getBytes(), 0, formData.getValue().getBytes().length);
             dataOutputStream.writeBytes(fileEnd());
         }
 
@@ -85,6 +90,10 @@ public class FormDataProtocol {
 
     private String getFileContentDisposition(String fieldName, String fileName) {
         return "Content-Disposition:form-data;name="+fieldName+";filename=" + fileName + end;
+    }
+
+    private String getFileContentDisposition(String fieldName) {
+        return "Content-Disposition:form-data;name="+fieldName + end;
     }
 
     private String unquote(String input) {

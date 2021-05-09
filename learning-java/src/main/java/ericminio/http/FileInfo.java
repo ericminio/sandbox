@@ -5,8 +5,8 @@ public class FileInfo extends FormData {
 
     public FileInfo() {
     }
-    public FileInfo(String fieldName, String fileName, String value) {
-        setName(fieldName);
+    public FileInfo(String name, String fileName, String value) {
+        setName(name);
         setValue(value);
         setFileName(fileName);
     }

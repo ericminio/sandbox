@@ -2,6 +2,7 @@ package ericminio.http;
 
 public class FileInfo extends FormData {
     private String fileName;
+    private String contentType;
 
     public FileInfo() {
     }
@@ -9,6 +10,7 @@ public class FileInfo extends FormData {
         setName(name);
         setValue(value);
         setFileName(fileName);
+        setContentType("text/plain");
     }
 
     public String getFileName() {
@@ -25,5 +27,13 @@ public class FileInfo extends FormData {
 
     public void setContent(String content) {
         setValue(content);
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

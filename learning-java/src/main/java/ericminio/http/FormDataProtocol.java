@@ -20,11 +20,12 @@ public class FormDataProtocol {
             FormData formData = set.get(i);
             dataOutputStream.writeBytes(fileStart());
             if (formData instanceof FileInfo) {
-                dataOutputStream.writeBytes(getFileContentDisposition(formData.getName(), ((FileInfo) formData).getFileName()));
-                dataOutputStream.writeBytes(getFileContentType());
+                FileInfo fileInfo = (FileInfo) formData;
+                dataOutputStream.writeBytes(contentDisposition(formData.getName(), fileInfo.getFileName()));
+                dataOutputStream.writeBytes(contentType(fileInfo.getContentType()));
             }
             else {
-                dataOutputStream.writeBytes(getFileContentDisposition(formData.getName()));
+                dataOutputStream.writeBytes(contentDisposition(formData.getName()));
             }
             dataOutputStream.writeBytes(end);
             dataOutputStream.write(formData.getValue().getBytes(), 0, formData.getValue().getBytes().length);
@@ -72,8 +73,8 @@ public class FormDataProtocol {
         return "multipart/form-data;boundary=" + boundary;
     }
 
-    private String getFileContentType() {
-        return "Content-Type:application/octet-stream" + end;
+    private String contentType(String contentType) {
+        return "Content-Type:" + contentType + end;
     }
 
     private String fileStart() {
@@ -88,11 +89,11 @@ public class FormDataProtocol {
         return hyphens + boundary + twoHyphens + end;
     }
 
-    private String getFileContentDisposition(String fieldName, String fileName) {
+    private String contentDisposition(String fieldName, String fileName) {
         return "Content-Disposition:form-data;name="+fieldName+";filename=" + fileName + end;
     }
 
-    private String getFileContentDisposition(String fieldName) {
+    private String contentDisposition(String fieldName) {
         return "Content-Disposition:form-data;name="+fieldName + end;
     }
 

@@ -4,15 +4,24 @@
     <head>
         <meta charset="utf-8"/>
         <script>
+            function getFilename(disposition) {
+                let token = "filename=";
+                let filename = disposition.substring(disposition.indexOf(token) + token.length);
+                return filename;
+            }
             function go(document) {
                 let formData = new FormData(document.querySelector('#data'));
+                let disposition = {};
                 fetch('/explore', { method:'POST', body:formData })
-                    .then(response => response.blob())
+                    .then(response => {
+                        disposition = response.headers.get("content-disposition");
+                        return response.blob();
+                    })
                     .then(blob => {
                         let url = URL.createObjectURL(blob);
                         let a = document.createElement('a');
                         a.href = url;
-                        a.download = "explore.zip";
+                        a.download = getFilename(disposition);
                         document.body.appendChild(a);
                         a.click();
                         a.remove();

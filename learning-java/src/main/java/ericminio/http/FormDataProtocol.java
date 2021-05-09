@@ -19,10 +19,10 @@ public class FormDataProtocol {
         for (int i = 0; i< set.size(); i++) {
             FormData formData = set.get(i);
             dataOutputStream.writeBytes(fileStart());
-            if (formData instanceof FileInfo) {
-                FileInfo fileInfo = (FileInfo) formData;
-                dataOutputStream.writeBytes(contentDisposition(formData.getName(), fileInfo.getFileName()));
-                dataOutputStream.writeBytes(contentType(fileInfo.getContentType()));
+            if (formData instanceof FileFormData) {
+                FileFormData fileFormData = (FileFormData) formData;
+                dataOutputStream.writeBytes(contentDisposition(formData.getName(), fileFormData.getFileName()));
+                dataOutputStream.writeBytes(contentType(fileFormData.getContentType()));
             }
             else {
                 dataOutputStream.writeBytes(contentDisposition(formData.getName()));
@@ -52,11 +52,11 @@ public class FormDataProtocol {
             if (contentDisposition.indexOf("filename=") != -1) {
                 String filename = contentDisposition.substring(contentDisposition.indexOf("filename="));
                 filename = unquote(filename.substring("filename=".length()).trim());
-                FileInfo fileInfo = new FileInfo();
-                fileInfo.setName(fieldname);
-                fileInfo.setContent(value);
-                fileInfo.setFileName(filename);
-                formDataSet.add(fileInfo);
+                FileFormData fileFormData = new FileFormData();
+                fileFormData.setName(fieldname);
+                fileFormData.setContent(value);
+                fileFormData.setFileName(filename);
+                formDataSet.add(fileFormData);
             }
             else {
                 FormData formData = new FormData();

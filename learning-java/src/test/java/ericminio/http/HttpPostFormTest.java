@@ -1,6 +1,7 @@
 package ericminio.http;
 
 import com.sun.net.httpserver.HttpServer;
+import ericminio.zip.FileSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +30,11 @@ public class HttpPostFormTest {
 
     @Test
     public void works() throws Exception {
-        FileSet set = new FileSet();
-        set.add(new FileInfo("one", "one.txt", "content #1"));
-        set.add(new FileInfo("two", "two.txt", "content #2"));
-        set.add(new FormData("three", "content #3"));
-        HttpResponse response = postForm("http://localhost:8004", set);
+        FormDataSet formDataSet = new FormDataSet();
+        formDataSet.add(new FileFormData("one", "one.txt", "content #1"));
+        formDataSet.add(new FileFormData("two", "two.txt", "content #2"));
+        formDataSet.add(new FormData("three", "content #3"));
+        HttpResponse response = postForm("http://localhost:8004", formDataSet);
 
         assertThat(response.getStatusCode(), equalTo(200));
         assertThat(response.getContentType(), equalTo("text/plain"));

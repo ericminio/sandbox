@@ -1,7 +1,6 @@
 package ericminio.zip;
 
-import ericminio.http.FileInfo;
-import ericminio.http.FileSet;
+import ericminio.http.FileFormData;
 import ericminio.support.Stringify;
 
 import java.io.ByteArrayInputStream;
@@ -21,7 +20,7 @@ public class Unzip {
         while((entry = zipInputStream.getNextEntry()) != null) {
             String content = new Stringify().inputStream(zipInputStream);
             String fileName = entry.getName();
-            fileSet.add(new FileInfo(null, fileName, content));
+            fileSet.add(new FileInfo(fileName, content));
             zipInputStream.closeEntry();
         }
         zipInputStream.close();

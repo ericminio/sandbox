@@ -1,6 +1,7 @@
 package ericminio.http;
 
 import com.sun.net.httpserver.HttpServer;
+import ericminio.zip.FileSet;
 import ericminio.zip.Unzip;
 import org.junit.After;
 import org.junit.Before;
@@ -30,32 +31,32 @@ public class HttpDownloadZipTest {
 
     @Test
     public void worksForOneFile() throws Exception {
-        FileSet fileSet = new FileSet();
-        fileSet.add(new FileInfo("one", "one.txt", "content #1"));
-        HttpResponse response = postForm("http://localhost:8001/zip", fileSet);
+        FormDataSet formDataSet = new FormDataSet();
+        formDataSet.add(new FileFormData("one", "one.txt", "content #1"));
+        HttpResponse response = postForm("http://localhost:8001/zip", formDataSet);
         assertThat(response.getStatusCode(), equalTo(200));
         assertThat(response.getContentType(), equalTo("application/zip"));
         assertThat(response.getContentDisposition(), equalTo("attachment; filename=\"download.zip\""));
 
         FileSet output = new Unzip().please(response.getBinaryBody());
         assertThat(output.size(), equalTo(1));
-        assertThat(output.getFileInfo(0).getFileName(), equalTo("one.txt"));
-        assertThat(output.getFileInfo(0).getContent(), equalTo("content #1"));
+        assertThat(output.get(0).getFileName(), equalTo("one.txt"));
+        assertThat(output.get(0).getContent(), equalTo("content #1"));
     }
 
     @Test
     public void worksWithTwoFiles() throws Exception {
-        FileSet input = new FileSet();
-        input.add(new FileInfo("one", "one.txt", "content #1"));
-        input.add(new FileInfo("two", "two.txt", "content #2"));
-        HttpResponse response = postForm("http://localhost:8001/zip", input);
+        FormDataSet formDataSet = new FormDataSet();
+        formDataSet.add(new FileFormData("one", "one.txt", "content #1"));
+        formDataSet.add(new FileFormData("two", "two.txt", "content #2"));
+        HttpResponse response = postForm("http://localhost:8001/zip", formDataSet);
         assertThat(response.getStatusCode(), equalTo(200));
 
         FileSet output = new Unzip().please(response.getBinaryBody());
         assertThat(output.size(), equalTo(2));
-        assertThat(output.getFileInfo(0).getFileName(), equalTo("one.txt"));
-        assertThat(output.getFileInfo(0).getContent(), equalTo("content #1"));
-        assertThat(output.getFileInfo(1).getFileName(), equalTo("two.txt"));
-        assertThat(output.getFileInfo(1).getContent(), equalTo("content #2"));
+        assertThat(output.get(0).getFileName(), equalTo("one.txt"));
+        assertThat(output.get(0).getContent(), equalTo("content #1"));
+        assertThat(output.get(1).getFileName(), equalTo("two.txt"));
+        assertThat(output.get(1).getContent(), equalTo("content #2"));
     }
 }

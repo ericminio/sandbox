@@ -1,12 +1,12 @@
 package ericminio.http;
 
-public class FileInfo extends FormData {
+public class FileFormData extends FormData {
     private String fileName;
     private String contentType;
 
-    public FileInfo() {
+    public FileFormData() {
     }
-    public FileInfo(String name, String fileName, String value) {
+    public FileFormData(String name, String fileName, String value) {
         setName(name);
         setValue(value);
         setFileName(fileName);

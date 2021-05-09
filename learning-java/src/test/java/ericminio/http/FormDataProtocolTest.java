@@ -41,11 +41,11 @@ public class FormDataProtocolTest {
                 "-----token--\n";
         FormDataSet set = formDataProtocol.parse(incomingBody);
         assertThat(set.size(), equalTo(1));
-        assertThat(set.get(0), instanceOf(FileInfo.class));
-        FileInfo fileInfo = (FileInfo) set.get(0);
-        assertThat(fileInfo.getFileName(), equalTo("hello.txt"));
-        assertThat(fileInfo.getName(), equalTo("field"));
-        assertThat(fileInfo.getContent(), equalTo("any content"));
+        assertThat(set.get(0), instanceOf(FileFormData.class));
+        FileFormData fileFormData = (FileFormData) set.get(0);
+        assertThat(fileFormData.getFileName(), equalTo("hello.txt"));
+        assertThat(fileFormData.getName(), equalTo("field"));
+        assertThat(fileFormData.getContent(), equalTo("any content"));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class FormDataProtocolTest {
         FormDataSet set = formDataProtocol.parse(incomingBody);
         assertThat(set.size(), equalTo(1));
 
-        FileInfo fileInfo = (FileInfo) set.get(0);
-        assertThat(fileInfo.getContent(), equalTo("" +
+        FileFormData fileFormData = (FileFormData) set.get(0);
+        assertThat(fileFormData.getContent(), equalTo("" +
                 "any multi line\n" +
                 "content"));
     }
@@ -84,11 +84,11 @@ public class FormDataProtocolTest {
         FormDataSet set = formDataProtocol.parse(incomingBody);
         assertThat(set.size(), equalTo(2));
 
-        FileInfo first = (FileInfo) set.get(0);
+        FileFormData first = (FileFormData) set.get(0);
         assertThat(first.getFileName(), equalTo("one.txt"));
         assertThat(first.getName(), equalTo("one"));
         assertThat(first.getValue(), equalTo("one content"));
-        FileInfo second = (FileInfo) set.get(1);
+        FileFormData second = (FileFormData) set.get(1);
         assertThat(second.getFileName(), equalTo("two.txt"));
         assertThat(second.getName(), equalTo("two"));
         assertThat(second.getValue(), equalTo("two content"));
@@ -111,11 +111,11 @@ public class FormDataProtocolTest {
         FormDataSet set = formDataProtocol.parse(incomingBody);
         assertThat(set.size(), equalTo(2));
 
-        FileInfo first = (FileInfo) set.get(0);
+        FileFormData first = (FileFormData) set.get(0);
         assertThat(first.getFileName(), equalTo("one.txt"));
         assertThat(first.getName(), equalTo("one"));
         assertThat(first.getValue(), equalTo("one content"));
-        FileInfo second = (FileInfo) set.get(1);
+        FileFormData second = (FileFormData) set.get(1);
         assertThat(second.getFileName(), equalTo("two.txt"));
         assertThat(second.getName(), equalTo("two"));
         assertThat(second.getValue(), equalTo("two content"));
@@ -134,10 +134,10 @@ public class FormDataProtocolTest {
         FormDataSet set = formDataProtocol.parse(incomingBody);
         assertThat(set.size(), equalTo(1));
 
-        FileInfo fileInfo = (FileInfo) set.get(0);
-        assertThat(fileInfo.getFileName(), equalTo("hello.txt"));
-        assertThat(fileInfo.getName(), equalTo("one"));
-        assertThat(fileInfo.getValue(), equalTo("hello"));
+        FileFormData fileFormData = (FileFormData) set.get(0);
+        assertThat(fileFormData.getFileName(), equalTo("hello.txt"));
+        assertThat(fileFormData.getName(), equalTo("one"));
+        assertThat(fileFormData.getValue(), equalTo("hello"));
     }
 
     @Test
@@ -153,9 +153,9 @@ public class FormDataProtocolTest {
         FormDataSet set = formDataProtocol.parse(incomingBody);
         assertThat(set.size(), equalTo(1));
 
-        FileInfo fileInfo = (FileInfo) set.get(0);
-        assertThat(fileInfo.getFileName(), equalTo("hello.txt"));
-        assertThat(fileInfo.getName(), equalTo("one"));
-        assertThat(fileInfo.getValue(), equalTo("hello"));
+        FileFormData fileFormData = (FileFormData) set.get(0);
+        assertThat(fileFormData.getFileName(), equalTo("hello.txt"));
+        assertThat(fileFormData.getName(), equalTo("one"));
+        assertThat(fileFormData.getValue(), equalTo("hello"));
     }
 }

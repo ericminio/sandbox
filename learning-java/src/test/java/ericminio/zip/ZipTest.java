@@ -1,7 +1,6 @@
 package ericminio.zip;
 
-import ericminio.http.FileInfo;
-import ericminio.http.FileSet;
+import ericminio.http.FileFormData;
 import ericminio.support.Stringify;
 import org.junit.Test;
 
@@ -19,8 +18,8 @@ public class ZipTest {
     @Test
     public void createsExpectedZipEntries() throws IOException {
         FileSet fileSet = new FileSet();
-        fileSet.add(new FileInfo("field1", "one.txt", "hello world"));
-        fileSet.add(new FileInfo("field2", "two.txt", "hello world"));
+        fileSet.add(new FileInfo("one.txt", "hello world"));
+        fileSet.add(new FileInfo("two.txt", "hello world"));
         byte[] zip = new Zip().please(fileSet);
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zip);
@@ -35,8 +34,8 @@ public class ZipTest {
     @Test
     public void populatesEntriesWithExpectedContent() throws IOException {
         FileSet fileSet = new FileSet();
-        fileSet.add(new FileInfo("field1", "one.txt", "content #1"));
-        fileSet.add(new FileInfo("field2", "two.txt", "content #2"));
+        fileSet.add(new FileInfo("one.txt", "content #1"));
+        fileSet.add(new FileInfo("two.txt", "content #2"));
         byte[] zip = new Zip().please(fileSet);
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zip);

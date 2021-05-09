@@ -1,8 +1,5 @@
 package ericminio.zip;
 
-import ericminio.http.FileInfo;
-import ericminio.http.FileSet;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +12,7 @@ public class Zip {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream, StandardCharsets.UTF_8);
         for (int i = 0; i< fileSet.size(); i++) {
-            FileInfo fileInfo = fileSet.getFileInfo(i);
+            FileInfo fileInfo = fileSet.get(i);
             ZipEntry zipEntry = new ZipEntry(fileInfo.getFileName());
             zipOutputStream.putNextEntry(zipEntry);
             zipOutputStream.write(fileInfo.getContent().getBytes(), 0, fileInfo.getContent().length());

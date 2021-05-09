@@ -1,8 +1,6 @@
 package ericminio.http;
 
 import com.sun.net.httpserver.HttpServer;
-import ericminio.zip.FileInfo;
-import ericminio.zip.FileSet;
 import ericminio.zip.Unzip;
 import org.junit.After;
 import org.junit.Before;

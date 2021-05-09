@@ -1,16 +1,14 @@
 package ericminio.http;
 
 import com.sun.net.httpserver.HttpServer;
-import ericminio.zip.FileInfo;
-import ericminio.zip.FileSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;
 
-import static ericminio.http.UploadProtocol.boundary;
-import static ericminio.http.UploadProtocol.hyphens;
+import static ericminio.http.FormDataProtocol.boundary;
+import static ericminio.http.FormDataProtocol.hyphens;
 import static ericminio.http.UploadRequest.upload;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;

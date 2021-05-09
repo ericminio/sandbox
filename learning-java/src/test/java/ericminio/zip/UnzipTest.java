@@ -1,5 +1,7 @@
 package ericminio.zip;
 
+import ericminio.http.FileInfo;
+import ericminio.http.FileSet;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -1,5 +1,8 @@
 package ericminio.zip;
 
+import ericminio.http.FileInfo;
+import ericminio.http.FileSet;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

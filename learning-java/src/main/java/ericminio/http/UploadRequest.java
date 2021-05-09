@@ -2,7 +2,6 @@ package ericminio.http;
 
 import ericminio.support.Bytify;
 import ericminio.support.Stringify;
-import ericminio.zip.FileSet;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,7 +14,7 @@ public class UploadRequest {
         request.setDoInput(true);
         request.setUseCaches(false);
         request.setRequestMethod("POST");
-        new UploadProtocol().send(fileSet, request);
+        new FormDataProtocol().send(fileSet, request);
 
         HttpResponse response = new HttpResponse();
         response.setStatusCode(request.getResponseCode());

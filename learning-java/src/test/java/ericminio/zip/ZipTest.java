@@ -1,5 +1,7 @@
 package ericminio.zip;
 
+import ericminio.http.FileInfo;
+import ericminio.http.FileSet;
 import ericminio.support.Stringify;
 import org.junit.Test;
 

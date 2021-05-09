@@ -1,7 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <body>
-    <form action="/explore" method="post" enctype="multipart/form-data">
+    <head>
+        <meta charset="utf-8"/>
+        <script>
+            function go(document) {
+                let formData = new FormData(document.querySelector('#data'));
+                fetch('/explore', { method:'POST', body:formData })
+                    .then(response => response.blob())
+                    .then(blob => {
+                        let url = URL.createObjectURL(blob);
+                        let a = document.createElement('a');
+                        a.href = url;
+                        a.download = "explore.zip";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    });
+            };
+        </script>
+    </head>
+    <form id="data" method="post" enctype="multipart/form-data">
         <p>
             One:
             <input type="file" name="one" id="one">
@@ -14,7 +33,7 @@
             Three:
             <input type="text" name="three" id="three">
         </p>
-        <input type="submit" value="Send" name="submit">
+        <button type="button" onclick="go(document);">Send</button>
     </form>
 </body>
 </html>

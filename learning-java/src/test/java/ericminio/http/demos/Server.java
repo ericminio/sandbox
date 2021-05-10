@@ -7,17 +7,15 @@ import java.net.InetSocketAddress;
 
 public class Server {
 
-    private int port = 8005;
+    private int port;
     private HttpServer httpServer;
 
-    public static void main(String[] args) {
-        try {
-            Server server = new Server();
-            server.start();
-        }
-        catch (Exception raised) {
-            raised.printStackTrace();
-        }
+    public Server(int port) {
+        this.port = port;
+    }
+
+    public void stop() {
+        httpServer.stop(1);
     }
 
     public void start() throws IOException {

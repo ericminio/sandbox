@@ -22,4 +22,14 @@ public class FileSet {
     public FileInfo get(int index) {
         return set.get(index);
     }
+
+    public FileInfo getByFileName(String name) {
+        for (int i=0; i<size(); i++) {
+            FileInfo candidate = get(i);
+            if (name.equalsIgnoreCase(candidate.getFileName())) {
+                return candidate;
+            }
+        }
+        return null;
+    }
 }

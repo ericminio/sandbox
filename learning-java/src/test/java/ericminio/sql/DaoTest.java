@@ -21,7 +21,7 @@ public class DaoTest {
 
     @Test
     public void exposesFindAllValues() throws SQLException {
-        dao.setRepository(() -> new ResulSetUsingStaticData(Arrays.asList(
+        dao.setRepository(() -> new ResultSetUsingStaticData(Arrays.asList(
                 Arrays.asList("hello"),
                 Arrays.asList("world")
         )));

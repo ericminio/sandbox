@@ -24,15 +24,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class ResulSetUsingStaticData implements ResultSet {
+public class ResultSetUsingStaticData implements ResultSet {
     private List<List<Object>> data;
     private int row;
+    private List<String> columnNames;
 
-    public ResulSetUsingStaticData() {
-        this(new ArrayList<>());
+    public ResultSetUsingStaticData() {
+        this(new ArrayList<List<Object>>());
     }
 
-    public ResulSetUsingStaticData(List<List<Object>> data) {
+    public ResultSetUsingStaticData(List<List<Object>> data) {
         this.data = data;
         this.row = -1;
     }
@@ -109,7 +110,7 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public Date getDate(int columnIndex) throws SQLException {
-        return null;
+        return new Date(getTimestamp(columnIndex).getTime());
     }
 
     @Override
@@ -139,7 +140,7 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public String getString(String columnLabel) throws SQLException {
-        return null;
+        return getString(findColumn(columnLabel));
     }
 
     @Override
@@ -189,7 +190,7 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public Date getDate(String columnLabel) throws SQLException {
-        return null;
+        return getDate(findColumn(columnLabel));
     }
 
     @Override
@@ -199,7 +200,7 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public Timestamp getTimestamp(String columnLabel) throws SQLException {
-        return null;
+        return getTimestamp(findColumn(columnLabel));
     }
 
     @Override
@@ -234,7 +235,7 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return null;
+        return new ResulSetMetaDataUsingStaticData(this.data);
     }
 
     @Override
@@ -249,6 +250,11 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public int findColumn(String columnLabel) throws SQLException {
+        for (int i=0; i<columnNames.size(); i++) {
+            if (columnLabel.equalsIgnoreCase(columnNames.get(i))) {
+                return i+1;
+            }
+        }
         return 0;
     }
 
@@ -269,7 +275,7 @@ public class ResulSetUsingStaticData implements ResultSet {
 
     @Override
     public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
-        return null;
+        return getBigDecimal(findColumn(columnLabel));
     }
 
     @Override
@@ -995,5 +1001,9 @@ public class ResulSetUsingStaticData implements ResultSet {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
+    }
+
+    public void setColumnNames(List<String> columnNames) {
+        this.columnNames = columnNames;
     }
 }

@@ -9,10 +9,10 @@ import static java.sql.DriverManager.getConnection;
 
 public class DatabaseTest {
 
-    protected Connection connection;
+    protected static Connection connection;
 
     @Before
-    public void connect() throws ClassNotFoundException, SQLException {
+    public void connect() throws SQLException {
         connection = getConnection("jdbc:derby:memory:myDb;create=true", "sa", "sa");
     }
 
@@ -20,7 +20,7 @@ public class DatabaseTest {
         connection.prepareCall(sql).execute();
     }
 
-    protected void executeIgnoringErrors(String sql) throws SQLException {
+    protected void executeIgnoringErrors(String sql) {
         try {
             connection.prepareCall(sql).execute();
         }

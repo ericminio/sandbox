@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,12 +21,16 @@ public class FunctionReturningCursorTest extends DatabaseTest {
         execute("insert into product (name) values ('two')");
         execute("" +
                 "create function any_function() \n" +
-                "returns TABLE(name varchar(15)) \n" +
-                "language java \n" +
-                "parameter style DERBY_JDBC_RESULT_SET \n" +
-                "no sql \n" +
-                "external name 'ericminio.sql.derby.AnyFunction.read'"
+                "   returns TABLE(name varchar(15)) \n" +
+                "   language java \n" +
+                "   parameter style DERBY_JDBC_RESULT_SET \n" +
+                "   external name 'ericminio.sql.derby.FunctionReturningCursorTest.read'"
         );
+    }
+
+    public static ResultSet read() throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("select name from product");
+        return statement.executeQuery();
     }
 
     @Test

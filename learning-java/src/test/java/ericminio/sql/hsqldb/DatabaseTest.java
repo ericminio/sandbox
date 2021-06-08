@@ -20,7 +20,7 @@ public class DatabaseTest {
         connection.prepareCall(sql).execute();
     }
 
-    protected void executeIgnoringErrors(String sql) throws SQLException {
+    protected void executeIgnoringErrors(String sql) {
         try {
             connection.prepareCall(sql).execute();
         }

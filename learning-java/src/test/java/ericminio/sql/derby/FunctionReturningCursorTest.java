@@ -24,11 +24,11 @@ public class FunctionReturningCursorTest extends DatabaseTest {
                 "   returns TABLE(name varchar(15)) \n" +
                 "   language java \n" +
                 "   parameter style DERBY_JDBC_RESULT_SET \n" +
-                "   external name 'ericminio.sql.derby.FunctionReturningCursorTest.read'"
+                "   external name 'ericminio.sql.derby.FunctionReturningCursorTest.fetch'"
         );
     }
 
-    public static ResultSet read() throws SQLException {
+    public static ResultSet fetch() throws SQLException {
         PreparedStatement statement = connection.prepareStatement("select name from product");
         return statement.executeQuery();
     }

@@ -12,7 +12,7 @@ public class DatabaseTest {
     protected Connection connection;
 
     @Before
-    public void connect() throws ClassNotFoundException, SQLException {
+    public void connect() throws SQLException {
         connection = getConnection("jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1", "sa", "sa");
     }
 
@@ -20,7 +20,7 @@ public class DatabaseTest {
         connection.prepareCall(sql).execute();
     }
 
-    protected void executeIgnoringErrors(String sql) throws SQLException {
+    protected void executeIgnoringErrors(String sql) {
         try {
             connection.prepareCall(sql).execute();
         }

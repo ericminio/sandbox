@@ -27,7 +27,7 @@ public class FunctionReturningCursorTest extends DatabaseTest {
         rs.addColumn("ID", Types.INTEGER, 10, 0);
         rs.addColumn("NAME", Types.VARCHAR, 255, 0);
         rs.addRow(15, "Hello");
-        rs.addRow(15, "World");
+        rs.addRow(42, "World");
         return rs;
     }
 
@@ -42,8 +42,19 @@ public class FunctionReturningCursorTest extends DatabaseTest {
     }
 
     @Test
-    public void withPreparedCallAndResultSet() throws SQLException {
+    public void withCallableStatementAndResultSet() throws SQLException {
         CallableStatement statement = connection.prepareCall("{? = call test.someValues() }");
+        statement.execute();
+        ResultSet resultSet = statement.getResultSet();
+        resultSet.next();
+        resultSet.next();
+
+        assertThat(resultSet.getString(2), equalTo("World"));
+    }
+
+    @Test
+    public void withCallableStatementAndSelect() throws SQLException {
+        CallableStatement statement = connection.prepareCall("select * from test.someValues()");
         statement.execute();
         ResultSet resultSet = statement.getResultSet();
         resultSet.next();

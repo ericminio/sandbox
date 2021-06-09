@@ -12,7 +12,8 @@ public class DatabaseTest {
     protected Connection connection;
 
     @Before
-    public void connect() throws SQLException {
+    public void connect() throws SQLException, ClassNotFoundException {
+        Class.forName("org.hsqldb.jdbcDriver");
         connection = getConnection("jdbc:hsqldb:mem:mymemdb", "sa", "sa");
     }
 

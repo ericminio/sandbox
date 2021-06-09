@@ -12,7 +12,8 @@ public class DatabaseTest {
     protected static Connection connection;
 
     @Before
-    public void connect() throws SQLException {
+    public void connect() throws SQLException, ClassNotFoundException {
+        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         connection = getConnection("jdbc:derby:memory:myDb;create=true", "sa", "sa");
     }
 

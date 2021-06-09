@@ -12,7 +12,8 @@ public class DatabaseTest {
     protected Connection connection;
 
     @Before
-    public void connect() throws SQLException {
+    public void connect() throws SQLException, ClassNotFoundException {
+        Class.forName("org.h2.Driver");
         connection = getConnection("jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1", "sa", "sa");
     }
 

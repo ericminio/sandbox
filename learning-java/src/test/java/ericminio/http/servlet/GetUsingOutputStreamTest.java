@@ -13,7 +13,7 @@ import static java.lang.String.format;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class ServiceUsingOutputStreamTest {
+public class GetUsingOutputStreamTest {
 
     private HttpServer server;
     private int port = 8003;
@@ -21,9 +21,7 @@ public class ServiceUsingOutputStreamTest {
     @Before
     public void startServer() throws Exception {
         server = HttpServer.create( new InetSocketAddress( port ), 0 );
-        server.createContext( "/", exchange -> {
-            new WebServletWrapper(new ServiceUsingOutputStream()).handle(exchange);
-        } );
+        new AddContextFrom(new GetUsingOutputStream()).in(server);
         server.start();
     }
 
@@ -33,7 +31,14 @@ public class ServiceUsingOutputStreamTest {
     }
 
     @Test
-    public void isExposed() throws Exception {
+    public void isNotVisibleFromAnywhere() throws Exception {
+        HttpResponse response = get( format("http://localhost:%d", port));
+
+        assertThat(response.getStatusCode(), equalTo(404));
+    }
+
+    @Test
+    public void isExposedWithExpectedUri() throws Exception {
         HttpResponse response = get( format("http://localhost:%d/any", port));
 
         assertThat(response.getStatusCode(), equalTo(200));

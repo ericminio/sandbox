@@ -5,7 +5,6 @@ import support.FakeHttpServletRequest;
 import support.FakeHttpServletResponse;
 
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class WebServletWrapper {

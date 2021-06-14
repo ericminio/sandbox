@@ -18,10 +18,14 @@ public class PostRequest {
     }
 
     public static HttpResponse post(String url, Map<String, String> headers, byte[] data) throws Exception {
+        return post(url, headers, data, "application/json");
+    }
+
+    public static HttpResponse post(String url, Map<String, String> headers, byte[] data, String contentType) throws Exception {
         HttpURLConnection request = (HttpURLConnection) new URL( url ).openConnection();
         request.setDoOutput(true);
         request.setRequestMethod("POST");
-        request.setRequestProperty( "Content-Type", "application/json");
+        request.setRequestProperty( "Content-Type", contentType);
         request.setRequestProperty( "Content-Length", Integer.toString(data.length));
         for (String header: headers.keySet()) {
             request.setRequestProperty( header, headers.get(header));

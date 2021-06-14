@@ -32,6 +32,21 @@ public class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
+    public String getMethod() {
+        return exchange.getRequestMethod();
+    }
+
+    @Override
+    public String getQueryString() {
+        return exchange.getRequestURI().getQuery();
+    }
+
+    @Override
+    public RequestDispatcher getRequestDispatcher(String s) {
+        return new FakeRequestDispatcher();
+    }
+
+    @Override
     public String getAuthType() {
         return null;
     }
@@ -67,11 +82,6 @@ public class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public String getMethod() {
-        return exchange.getRequestMethod();
-    }
-
-    @Override
     public String getPathInfo() {
         return null;
     }
@@ -83,11 +93,6 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getContextPath() {
-        return null;
-    }
-
-    @Override
-    public String getQueryString() {
         return null;
     }
 
@@ -294,11 +299,6 @@ public class FakeHttpServletRequest implements HttpServletRequest {
     @Override
     public boolean isSecure() {
         return false;
-    }
-
-    @Override
-    public RequestDispatcher getRequestDispatcher(String s) {
-        return null;
     }
 
     @Override

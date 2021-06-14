@@ -13,7 +13,7 @@ import static java.lang.String.format;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class GetUsingOutputStreamTest {
+public class GetTest {
 
     private HttpServer server;
     private int port = 8003;
@@ -21,7 +21,7 @@ public class GetUsingOutputStreamTest {
     @Before
     public void startServer() throws Exception {
         server = HttpServer.create( new InetSocketAddress( port ), 0 );
-        new AddContextFrom(new GetUsingOutputStream()).in(server);
+        new AddContextFrom(new Get()).in(server);
         server.start();
     }
 

@@ -7,12 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/any")
-public class GetUsingOutputStream extends HttpServlet {
+@WebServlet("/query")
+public class GetQueryString extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String body = "hello world";
+        String body = "received: " + request.getQueryString();
         response.setContentType("text/plain");
         response.setContentLength(body.length());
         response.setStatus(HttpServletResponse.SC_OK);

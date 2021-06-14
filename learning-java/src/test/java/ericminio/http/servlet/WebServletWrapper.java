@@ -4,6 +4,8 @@ import com.sun.net.httpserver.HttpExchange;
 import support.FakeHttpServletRequest;
 import support.FakeHttpServletResponse;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 
@@ -12,6 +14,10 @@ public class WebServletWrapper {
 
     public WebServletWrapper(HttpServlet httpServlet) {
         this.httpServlet = httpServlet;
+    }
+
+    public void init(ServletConfig servletConfig) throws ServletException {
+        httpServlet.init(servletConfig);
     }
 
     public void handle(HttpExchange exchange) throws IOException {

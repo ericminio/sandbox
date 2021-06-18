@@ -1,5 +1,6 @@
 package ericminio.support;
 
+import ericminio.demo.filter.ClientHttpRequestInterceptorAddingHeader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ public class ValidCredentials {
         BasicAuthenticationInterceptor.class.getClass();
         interceptors.removeIf(BasicAuthenticationInterceptor.class::isInstance);
         interceptors.add(new BasicAuthenticationInterceptor(username, password));
+        interceptors.add(new ClientHttpRequestInterceptorAddingHeader());
         restTemplate.setInterceptors(interceptors);
 
         return restTemplate;

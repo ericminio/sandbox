@@ -28,7 +28,7 @@ public class ClientHttpRequestInterceptorTest {
 
     @Before
     public void buildEndpoint() {
-        filtered = "http://localhost:"+ port +"/filtered";
+        filtered = "http://localhost:"+ port +"/intercepted";
     }
 
     @Test

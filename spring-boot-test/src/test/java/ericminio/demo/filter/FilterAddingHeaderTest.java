@@ -16,10 +16,7 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= RANDOM_PORT,
-        properties= {
-                "spring.profiles.include=filtered"
-        })
+@SpringBootTest(webEnvironment= RANDOM_PORT)
 public class FilterAddingHeaderTest {
 
     @LocalServerPort
@@ -47,6 +44,6 @@ public class FilterAddingHeaderTest {
         ResponseEntity<Filtered> response = restTemplate.getForEntity(filtered, Filtered.class);
         Filtered filtered = response.getBody();
 
-        assertThat( filtered.getValue(), equalTo( "this-value" ) );
+        assertThat( filtered.getValue(), equalTo( "filtered" ) );
     }
 }

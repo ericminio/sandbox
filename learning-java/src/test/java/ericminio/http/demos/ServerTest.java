@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 public class ServerTest {
 
     Server server;
-    Integer port = 8005;
+    Integer port = 8007;
 
     @Before
     public void start() throws IOException {

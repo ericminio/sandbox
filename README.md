@@ -1,4 +1,4 @@
 # sandbox
 
-[![Build Status](https://travis-ci.org/ericminio/sandbox.svg?branch=master)](https://travis-ci.org/ericminio/sandbox)
+[![Build Status](https://github.com/ericminio/sandbox/actions/workflows/tests.yml/badge.svg)](https://github.com/ericminio/sandbox/actions)
 
